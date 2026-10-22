@@ -137,6 +137,7 @@ from .resource_status_report import (
 )
 from .bic_output import (
     ensure_generated_target,
+    existing_target_text,
     generated_target_id,
     generated_target_record,
     generated_target_root,
@@ -4140,6 +4141,52 @@ class SageControlCenter:
             if self._bic_progress_signature(run) == before:
                 return run
 
+    def _confirm_target_replacement(self, project: Job, run: Run, rewrite_path: Path) -> bool:
+        """Ask once per Run before SELF-CHECK replaces existing Paratext TARGET text; never a hard stop.
+
+        A localdata TARGET, or a scope whose TARGET verses are empty, needs no question. A decline
+        keeps the staged REWRITE candidate, leaves the TARGET untouched, and reports the scope.
+        """
+        marker = run.root / "target-replacement-confirmed.json"
+        if marker.is_file() or generated_target_record(self.root, project.output_project) is not None:
+            return True
+        config = load_ecosystem(self.store.ensure_runtime_files(project))
+        manifest = _json_file(rewrite_path)
+        scope_value = str(manifest.get("target_scope") or manifest.get("scope") or run.scope)
+        references = [
+            reference
+            for rows in existing_target_text(config.project(project.output_project), scope_value).values()
+            for reference in rows
+        ]
+        if not references:
+            return True
+        shown = ", ".join(references[:8]) + (f", and {len(references) - 8} more" if len(references) > 8 else "")
+        self.io.write(
+            f"TARGET {project.output_project} already has text in {len(references)} verse(s) of {scope_value}: {shown}."
+        )
+        self.io.write(
+            "SELF-CHECK will replace them with the new rewrite. The previous text stays in TARGET history "
+            "and can be restored with Revert TARGET Scope."
+        )
+        if self.io.confirm("Replace the existing TARGET text in this Run?", default=False):
+            atomic_write_json(marker, {"scope": scope_value, "references": references, "confirmed_utc": utc_now()})
+            return True
+        record_exception(run.root, ExceptionRecord(
+            tool="bic",
+            code="BIC_TARGET_REPLACEMENT_DECLINED",
+            message=(
+                f"The Operator declined to replace existing TARGET text in {scope_value}; SELF-CHECK did not run "
+                "and the scope was not committed. The staged REWRITE candidate is kept."
+            ),
+            effect=NOT_ASSESSED,
+            run_id=run.run_id,
+            job_id=project.job_id,
+            stage="SELF_CHECK",
+            coordinates=tuple(references),
+            severity="INFORMATION",
+        ))
+        return False
+
     def _bic_step(self, project: Job, run: Run) -> tuple[Run, bool]:
         """Perform the next governed action of an unpartitioned BIC Run."""
         tasks = self._tasks_by_operation(run)
@@ -4178,6 +4225,10 @@ class SageControlCenter:
 
         self_check_tasks = tasks.get("self_check", [])
         if not self_check_tasks:
+            if not self._confirm_target_replacement(project, run, rewrite_path):
+                return self._finish_bic_run(
+                    project, run, "The existing TARGET text was kept; the staged rewrite was not committed."
+                ), False
             run, result = self._create_task(
                 project,
                 run,
@@ -4250,6 +4301,10 @@ class SageControlCenter:
                 None,
             )
             if self_check is None:
+                if not self._confirm_target_replacement(project, run, rewrite_path):
+                    return self._finish_bic_run(
+                        project, run, "The existing TARGET text was kept; staged rewrites were not committed."
+                    ), False
                 run, result = self._create_task(
                     project,
                     run,
@@ -5657,6 +5712,14 @@ class SageControlCenter:
                 output = self.choose_or_add_resource("CHOOSE BIC <TARGET>", "GENERATED_TARGET")
                 if not output: return
                 self.io.write("The TARGET is the only Project that BIC may modify. All changes remain governed and auditable.")
+                existing = existing_target_text(output)
+                if existing:
+                    verses = sum(len(references) for references in existing.values())
+                    self.io.write(
+                        f"{output.project_id} already has text in {len(existing)} book(s) ({verses} verses). "
+                        "Each BIC Run replaces the verses in its scope with a new rewrite from SOURCE; "
+                        "BIC never reads or revises the existing text. SAGE asks again before each commit."
+                    )
                 if not self.io.confirm(f"Use {output.project_id} as BIC TARGET?", default=False): return
                 target_id = output.project_id
                 target_language = output.language_code

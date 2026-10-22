@@ -42,6 +42,9 @@ secondary option.
   created and fixed for that folder.
 - One localdata folder belongs to one BIC Job. Removing the Job releases the name and keeps the files.
 - A book is built one scope at a time: a scope in a chapter the book does not have yet adds that chapter.
+- BIC replaces in-scope TARGET verses without reading them. For a Paratext TARGET with existing text, the Job
+  wizard warns and the menu asks once per Run before SELF-CHECK; a decline keeps the staged rewrite and reports
+  the scope. Commit records list `replaced_existing_text`.
 
 Use `./system/bin/bic --help` for operator syntax. Use `--source`, `--donor`, and `--target` for BIC resource bindings.
 Omit `--target` (or pass `--target-output localdata`) to write into localdata; `--target-versification donor`

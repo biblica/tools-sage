@@ -664,6 +664,8 @@ def _bic_chain(make_workspace, monkeypatch, behavior: dict[str, str]):
 
     monkeypatch.setattr(center, "_create_task", create_task)
     monkeypatch.setattr(center, "_task_action", task_action)
+    # The fixture TARGET already has MAT 1 text; these chains test retries, not the replacement question.
+    monkeypatch.setattr("sage.menu.existing_target_text", lambda _project, _scope=None: {})
     return center, job, run, attempts
 
 
@@ -678,6 +680,47 @@ def test_bic_chain_runs_every_stage_in_one_continue(make_workspace, monkeypatch)
     assert finished.status == "COMPLETE"
     assert "bounded target commit is recorded" in center.io.output.getvalue()
     assert exceptions_for_run(run.root) == []
+
+
+def _replacement_chain(make_workspace, monkeypatch, answers: list[str]):
+    """Run the BIC chain against a Paratext TARGET whose scope already has text, answering the question."""
+    import io
+
+    center, job, run, attempts = _bic_chain(
+        make_workspace, monkeypatch, {"inspect": "OK", "rewrite": "OK", "self_check": "OK"}
+    )
+    monkeypatch.setattr(
+        "sage.menu.existing_target_text", lambda _project, _scope=None: {"MAT": ["MAT 1:1", "MAT 1:2"]}
+    )
+    center.io = MenuIO(input_func=ScriptedInput(answers), output=io.StringIO())
+    return center, job, run, attempts
+
+
+def test_bic_chain_asks_before_replacing_existing_target_text(make_workspace, monkeypatch) -> None:
+    """A confirmed replacement runs SELF-CHECK and is remembered for the rest of the Run."""
+    center, job, run, attempts = _replacement_chain(make_workspace, monkeypatch, ["y"])
+    finished = center._continue_bic(job, run)
+
+    assert attempts == ["inspect", "rewrite", "self_check"]
+    assert finished.status == "COMPLETE"
+    output = center.io.output.getvalue()
+    assert "already has text in 2 verse(s)" in output and "MAT 1:1, MAT 1:2" in output
+    assert json.loads((run.root / "target-replacement-confirmed.json").read_text(encoding="utf-8"))["references"] == [
+        "MAT 1:1", "MAT 1:2"
+    ]
+
+
+def test_declined_target_replacement_keeps_target_and_reports(make_workspace, monkeypatch) -> None:
+    """Declining skips SELF-CHECK, keeps the staged rewrite, and reports the scope; the Run still completes."""
+    center, job, run, attempts = _replacement_chain(make_workspace, monkeypatch, ["n"])
+    finished = center._continue_bic(job, run)
+
+    assert attempts == ["inspect", "rewrite"]
+    assert finished.status == "COMPLETE"
+    assert "existing TARGET text was kept" in center.io.output.getvalue()
+    [row] = exceptions_for_run(run.root)
+    assert row["code"] == "BIC_TARGET_REPLACEMENT_DECLINED"
+    assert row["effect"] == NOT_ASSESSED and row["coordinates"] == ["MAT 1:1", "MAT 1:2"]
 
 
 def test_bic_chain_seals_a_stage_that_keeps_failing_and_finishes(make_workspace, monkeypatch) -> None:

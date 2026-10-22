@@ -21,7 +21,9 @@ from .project_inventory import (
     register_project,
     registered_project_records,
 )
+from .references import parse_scope
 from .registry import ProjectSpec, load_ecosystem
+from .scripture import discover_book_ids
 from .storage import storage_layout
 
 TARGET_OUTPUT_LOCALDATA = "LOCALDATA"
@@ -280,3 +282,28 @@ def output_summary(root: Path, project_id: str) -> dict[str, Any] | None:
     folder = generated_target_root(root, project_id)
     books = sorted(path.name for path in folder.glob("*.SFM")) if folder.is_dir() else []
     return {**metadata, "folder": str(folder), "book_files": books}
+
+
+def existing_target_text(project: ProjectSpec, scope_value: str | None = None) -> dict[str, list[str]]:
+    """Return, per book, the TARGET verses that already carry text; only the scope's book when scoped.
+
+    BIC replaces in-scope TARGET verses without reading them, so the Operator sees this before a
+    Paratext TARGET is chosen and before each commit. A book SAGE cannot parse is skipped, not fatal.
+    """
+    from .bounded_target import existing_text_references
+
+    books = discover_book_ids(project.path)
+    if scope_value:
+        book = parse_scope(scope_value).book
+        books = {book: books[book]} if book in books else {}
+    found: dict[str, list[str]] = {}
+    for book, path in sorted(books.items()):
+        try:
+            references = existing_text_references(
+                path.read_text(encoding="utf-8", errors="replace"), scope_value or book
+            )
+        except (OSError, ValidationError):
+            continue
+        if references:
+            found[book] = references
+    return found

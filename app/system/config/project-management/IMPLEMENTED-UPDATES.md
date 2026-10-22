@@ -9,6 +9,29 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-006 — BIC warns and asks before replacing existing TARGET text (TODO-20261022-005)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-005` (now `DONE`; PO decision 2026-10-22)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - `bounded_target.existing_text_references` lists the in-scope verses that carry readable text; an empty
+    `\v` marker, a heading, or a verse holding only a footnote does not count, and a poetry or paragraph tail
+    counts for its verse. `bic_output.existing_target_text` applies it per book of a Project.
+  - Job wizard: choosing an existing Paratext project as TARGET states how many books and verses already
+    have text and that each Run replaces in-scope verses without reading them; the existing "Use ... as
+    BIC TARGET?" confirmation follows.
+  - Menu BIC chain: before SELF-CHECK is created (single scope and partitioned), a Paratext TARGET with text
+    in the target scope triggers one question per Run listing the verses. Yes is remembered for the Run
+    (`target-replacement-confirmed.json`); no keeps the staged REWRITE, leaves the TARGET untouched, records
+    `BIC_TARGET_REPLACEMENT_DECLINED` (`NOT_ASSESSED`, with the verses) in the exception report, and completes
+    the Run. A localdata TARGET or an empty scope asks nothing.
+  - Every TARGET commit record carries `replaced_existing_text`, so the CLI path also reports replacements.
+  - BIC cheat sheet and workflow README describe the behavior.
+- **Verification:** new chain tests for confirm and decline, verse-text detection, and the commit record;
+  full suite 2026-10-22: 2266 passed, 2 skipped.
+
 ### IMP-20261022-005 — BIC protected contracts re-pinned: naturalness first, familiarity rule, model-only verb contract (TODO-20261022-003)
 
 - **Version:** `0.02a3` (development branch)

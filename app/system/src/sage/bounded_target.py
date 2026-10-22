@@ -553,6 +553,66 @@ def remove_scope_usfm(target_text: str, scope_value: str) -> str:
     return _render_blocks(output)
 
 
+_NOTE_SPAN_RE = re.compile(r"\\(f|fe|x)\s.*?\\\1\*")
+_INLINE_MARKER_RE = re.compile(r"\\\+?[A-Za-z]+\d*\*?")
+
+
+def _line_has_text(line: str) -> bool:
+    """Return whether one logical USFM line carries readable text beyond markers, numbers, and notes."""
+    body = re.sub(r"^\\v\s+\S+", "", line.strip())
+    body = _INLINE_MARKER_RE.sub(" ", _NOTE_SPAN_RE.sub(" ", body))
+    return any(character.isalpha() for character in body)
+
+
+def _verse_text_map(text: str, scope: ScriptureScope) -> dict[tuple[int, int, int], tuple[str, ...]]:
+    """Map each in-scope verse to its text lines: the verse line plus any poetry or paragraph tail."""
+    blocks = _parse_blocks(text)
+    result: dict[tuple[int, int, int], tuple[str, ...]] = {}
+    for index, block in enumerate(blocks):
+        if not isinstance(block, VerseBlock) or not _block_inside_scope(block, scope)[1]:
+            continue
+        lines = [block.lines[-1]]
+        following = blocks[index + 1] if index + 1 < len(blocks) else None
+        tail = following.lines[:-1] if isinstance(following, VerseBlock) else (
+            following.lines if isinstance(following, RawBlock) and not _is_chapter_marker(following) else ()
+        )
+        lines.extend(line for line in tail if _TAIL_LINE_RE.match(line))
+        result[(block.chapter, block.start_verse, block.end_verse)] = tuple(lines)
+    return result
+
+
+def _verse_label(book: str, key: tuple[int, int, int]) -> str:
+    """Render one (chapter, start, end) verse key as a reference label."""
+    chapter, start, end = key
+    return f"{book} {chapter}:{start}" + (f"-{end}" if end != start else "")
+
+
+def existing_text_references(text: str, scope_value: str) -> list[str]:
+    """Return the in-scope TARGET verses that already carry text; a bare verse marker does not count."""
+    if not text.strip():
+        return []
+    scope = parse_scope(scope_value)
+    return [
+        _verse_label(scope.book, key)
+        for key, lines in _verse_text_map(text, scope).items()
+        if any(_line_has_text(line) for line in lines)
+    ]
+
+
+def _replaced_existing_text(before_text: str, after_text: str, scope_value: str) -> list[str]:
+    """Return the in-scope verses whose existing TARGET text a commit replaced."""
+    if not before_text.strip():
+        return []
+    scope = parse_scope(scope_value)
+    before = _verse_text_map(before_text, scope)
+    after = _verse_text_map(after_text, scope)
+    return [
+        _verse_label(scope.book, key)
+        for key, lines in before.items()
+        if any(_line_has_text(line) for line in lines) and after.get(key) != lines
+    ]
+
+
 def history_root(job_root: Path) -> Path:
     """Return the BIC Job-owned bounded TARGET history directory."""
     return job_root / "target-history"
@@ -605,6 +665,7 @@ def record_target_commit(
         "before_book_sha256": sha256_bytes(before_text.encode("utf-8")),
         "after_book_sha256": sha256_bytes(after_text.encode("utf-8")),
         "created_chapters": sorted(chapter_numbers(after_text) - chapter_numbers(before_text)) if before_text.strip() else [],
+        "replaced_existing_text": _replaced_existing_text(before_text, after_text, scope_value),
     }
     atomic_write_json(entry / "manifest.json", manifest)
     return {**manifest, "history_path": str(entry / "manifest.json")}

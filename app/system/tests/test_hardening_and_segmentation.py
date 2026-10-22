@@ -812,3 +812,30 @@ def test_ol_micro_grammar_issue_may_cite_a_routed_rule_pass_one_left_out() -> No
     unknown = dict(result, grammar_issues=[{"rule_id": "R9", "evidence": "Not a routed rule."}])
     with pytest.raises(ValidationError):
         _apply_bic_ol_micro_result(files, manifest, request, unknown)
+
+
+def test_existing_target_text_ignores_empty_markers_headings_and_note_only_verses() -> None:
+    """Only verses with readable text count; poetry tails belong to their verse."""
+    from sage.bounded_target import existing_text_references
+
+    text = (
+        "\\id MRK\n\\c 1\n\\p\n\\v 1 Hello there.\n\\v 2\n\\q1\n"
+        "\\v 3 \\f + \\fr 1:3 \\ft note\\f*\n\\q1\n\\v 4\n\\q2 poetry tail\n\\s Heading\n\\p\n\\v 5\n"
+    )
+    assert existing_text_references(text, "MRK 1") == ["MRK 1:1", "MRK 1:4"]
+    assert existing_text_references(text, "MRK 1:2-3") == []
+    assert existing_text_references("", "MRK 1") == []
+
+
+def test_target_commit_history_lists_the_verses_whose_text_was_replaced(tmp_path: Path) -> None:
+    """The commit record names replaced verses; an empty verse that gains text is not a replacement."""
+    from sage.bounded_target import record_target_commit
+
+    before = "\\id MRK\n\\c 1\n\\p\n\\v 1 Old one.\n\\v 2\n\\v 3 Old three.\n"
+    after = "\\id MRK\n\\c 1\n\\p\n\\v 1 New one.\n\\v 2 New two.\n\\v 3 Old three.\n"
+    record = record_target_commit(
+        job_root=tmp_path, target_file=tmp_path / "41MRK.SFM", scope_value="MRK 1", before_text=before,
+        after_text=after, transaction_id="T" * 16, task_id="TASK", run_id="RUN",
+        created_utc="2026-10-22T00:00:00+00:00",
+    )
+    assert record["replaced_existing_text"] == ["MRK 1:1"]

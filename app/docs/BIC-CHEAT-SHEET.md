@@ -25,6 +25,12 @@ Choose this in the BIC Job wizard (**SAGE localdata**), or omit `--target` on th
 the secondary option (`--target PROJECT`). Commit history, revert, and generation publish work the same in
 both modes; Job internals stay in `localdata/work/jobs/bic/`.
 
+BIC never reads or revises existing TARGET text: each Run replaces the verses in its scope with a new rewrite
+from SOURCE. When a Paratext TARGET already has text, the Job wizard says so, and before SELF-CHECK the menu
+lists the in-scope verses that will be replaced and asks once per Run. Declining keeps the staged rewrite,
+leaves the TARGET untouched, and reports the scope (`BIC_TARGET_REPLACEMENT_DECLINED`). Each commit record
+lists `replaced_existing_text`; Revert TARGET Scope restores the previous text.
+
 **Evidence invariant:** content evidence is SAGE-local and governed. Use only sealed SOURCE, lexical-only DONOR, explicitly routed OL, authorized project-index evidence, and derived packs traceable to those sources. Model recall/pretraining, external Scripture/translations/lexicons/commentary, web/search, and unstated facts are prohibited as evidence. General model competence is limited to orthography, morphology, grammar, and syntax and may not supply missing content.
 
 ## Natural-language entry
