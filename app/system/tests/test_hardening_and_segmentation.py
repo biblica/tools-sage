@@ -468,8 +468,8 @@ def test_bic_conditional_ol_is_one_question_and_one_raw_scripture_verse() -> Non
     assert "system/config/rules.yml" not in focused
 
 
-def test_bic_conditional_ol_rejects_multi_verse_challenge() -> None:
-    """Controller-derived OL clarification cannot silently broaden a challenge to multiple verses."""
+def test_bic_conditional_ol_never_broadens_a_multi_verse_challenge() -> None:
+    """A range challenge gets no OL check (never a broadened one); it is flagged so REWRITE can stand."""
     raw = __import__("json").dumps(
         {
             "challenges": [
@@ -479,14 +479,24 @@ def test_bic_conditional_ol_rejects_multi_verse_challenge() -> None:
                     "category": "VERB_CHOICE",
                     "risk": {"before_ol": 2, "material_triggers": ["ambiguity"]},
                     "ol_referral": {"performed": False},
-                }
+                },
+                {
+                    "challenge_id": "CH-ONE",
+                    "scripture_reference": "MAT 1:3",
+                    "category": "VERB_CHOICE",
+                    "risk": {"before_ol": 2, "material_triggers": ["ambiguity"]},
+                    "ol_referral": {"performed": False},
+                },
             ]
         }
     )
-    import pytest
-
-    with pytest.raises(ValidationError, match="single verse"):
-        _conditional_requests({"output/translation-challenges.json": raw})
+    requests = _conditional_requests({"output/translation-challenges.json": raw})
+    assert [(row["challenge_id"], row.get("unavailable_code")) for row in requests] == [
+        ("CH-RANGE", "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE"),
+        ("CH-ONE", None),
+    ]
+    assert "question" not in requests[0]
+    assert requests[1]["scripture_reference"] == "MAT 1:3"
 
 def test_hardening_schedules_every_test_module(package_root: Path) -> None:
     """The documented hardening gate must automatically include every test_*.py module."""

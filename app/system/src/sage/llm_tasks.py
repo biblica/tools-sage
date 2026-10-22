@@ -1213,7 +1213,12 @@ def _parse_response(content: str, manifest: dict[str, Any]) -> dict[str, str]:
 
 
 def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
-    """Return one question-specific OL micro-scope request per material first-pass challenge."""
+    """Return one question-specific OL micro-scope request per material first-pass challenge.
+
+    A challenge whose reference is not one verse cannot get a single-verse OL check; its request carries
+    ``unavailable_code`` instead, so only that challenge is reported OL-unavailable and keeps its pass-1
+    candidate. The check is never broadened to several verses.
+    """
     raw = files.get("output/translation-challenges.json")
     if not raw:
         return []
@@ -1240,13 +1245,17 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
         if not (performed or (score >= 2 and isinstance(triggers, list) and bool(triggers))):
             continue
         reference = str(item.get("scripture_reference", "")).strip()
+        challenge_id = str(item.get("challenge_id", f"challenge-{index}")).strip() or f"challenge-{index}"
         try:
             parsed = parse_scope(reference)
-        except ValidationError as exc:
-            raise ValidationError(
-                "Material BIC OL clarification requires one valid single-verse scripture_reference",
-                code="BIC_OL_MICROSCOPE_INVALID",
-            ) from exc
+        except ValidationError:
+            requests.append({
+                "challenge_id": challenge_id,
+                "scripture_reference": reference,
+                "unavailable_code": "BIC_OL_MICROSCOPE_INVALID",
+                "message": f"OL check skipped: {reference!r} is not a valid Scripture reference",
+            })
+            continue
         end_chapter = parsed.end_chapter or parsed.start_chapter
         end_verse = parsed.end_verse or parsed.start_verse
         if (
@@ -1255,11 +1264,13 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
             or end_chapter != parsed.start_chapter
             or end_verse != parsed.start_verse
         ):
-            raise ValidationError(
-                f"BIC OL clarification must be a single verse, not {reference!r}",
-                code="BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
-                affected_scope=reference or None,
-            )
+            requests.append({
+                "challenge_id": challenge_id,
+                "scripture_reference": reference,
+                "unavailable_code": "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE",
+                "message": f"OL check skipped: {reference!r} is not a single verse",
+            })
+            continue
         category = str(item.get("category", "MATERIAL_RISK")).strip().upper() or "MATERIAL_RISK"
         summary = str(item.get("summary", "")).strip()
         if category == "VERB_CHOICE":
@@ -1271,7 +1282,7 @@ def _conditional_requests(files: dict[str, str]) -> list[dict[str, str]]:
             question = f"Resolve only the material issue at {parsed.label()}: {trigger_text or category}."
         requests.append(
             {
-                "challenge_id": str(item.get("challenge_id", f"challenge-{index}")).strip() or f"challenge-{index}",
+                "challenge_id": challenge_id,
                 "scripture_reference": parsed.label(),
                 "category": category,
                 "question": question,
@@ -2293,6 +2304,17 @@ def execute_task(
             phase_count = 2
         final_files = _materialize_provider_files(manifest, parsed_files)
         conditional_requests = _conditional_requests(final_files) if conditional_reads else []
+        for skipped in (row for row in conditional_requests if row.get("unavailable_code")):
+            # A challenge that names several verses keeps its pass-1 candidate; the rest of REWRITE stands.
+            skipped_exc = ValidationError(skipped["message"], code=skipped["unavailable_code"])
+            final_files = _mark_bic_ol_unavailable(final_files, skipped, skipped_exc)
+            micro_failures.append({
+                "challenge_id": skipped["challenge_id"],
+                "scripture_reference": skipped["scripture_reference"],
+                "code": skipped["unavailable_code"],
+                "message": skipped["message"],
+            })
+        conditional_requests = [row for row in conditional_requests if not row.get("unavailable_code")]
         base_phase_count = phase_count
         for request_index, conditional_request in enumerate(conditional_requests, start=1):
             used_conditional = True

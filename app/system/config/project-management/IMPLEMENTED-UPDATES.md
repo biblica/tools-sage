@@ -9,6 +9,31 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261022-007 — BIC partitioned Runs work; a range challenge no longer rejects REWRITE (TODO-20261022-010, TODO-20261022-012)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-REVIEW-20261022`
+- **TODO:** `TODO-20261022-010` and `TODO-20261022-012` (now `DONE`)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - Partitioning (`act_tasks.py`): a partition plan passes context-before/after references to child tasks only
+    for RTC/STC, which route context packets; a BIC child carries none. Since `b43d561` every BIC scope over
+    the INSPECT discourse cap (four units, reached by a 6-verse dialogue passage) failed with "Context-only
+    references are reserved for controller-generated analysis work units".
+  - Per-unit stages (`act_common.py`): a BIC REWRITE or SELF-CHECK may take a unit scope inside its Run, as
+    the menu's partitioned step creates them. Each still requires the committed INSPECT of exactly that unit
+    scope, which only the partition plan creates. This second defect was hidden behind the first.
+  - Range challenges (`llm_tasks.py`): a material challenge whose reference is not one verse (or not a valid
+    reference) gets no OL check; it is recorded OL-unavailable (`BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE` or
+    `BIC_OL_MICROSCOPE_INVALID`) with its pass-1 candidate, and the other challenges and REWRITE stand. The
+    check is never broadened to several verses. Previously the whole REWRITE was rejected (seen in all three
+    experiment variants on MRK 1:40-45).
+- **Verification:** new `test_partitioned_bic_inspect_units_each_reach_their_own_rewrite` (fails before the
+  fix on the context guard), `test_range_challenge_skips_its_ol_check_and_rewrite_completes`, and the
+  never-broadened range unit test; on real data (`itaPEVt2`, MRK 10:17-31) INSPECT now partitions into three
+  units, a unit with committed INSPECT gets its REWRITE (dry run ready), and a unit without one is refused.
+  Full suite 2026-10-22: 2268 passed, 2 skipped.
+
 ### IMP-20261022-006 — BIC warns and asks before replacing existing TARGET text (TODO-20261022-005)
 
 - **Version:** `0.02a3` (development branch)

@@ -1115,6 +1115,74 @@ def test_saw_provider_object_is_materialised_as_canonical_json_text() -> None:
     assert materialised["output/findings.json"].endswith("\n")
 
 
+def test_range_challenge_skips_its_ol_check_and_rewrite_completes(make_workspace, monkeypatch) -> None:
+    """A material challenge naming several verses keeps its pass-1 candidate; REWRITE is not rejected."""
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    manifest = _synthetic_task(root, conditional=True)
+    config = load_ecosystem(root / "ecosystem.yml")
+    calls: list[int] = []
+
+    class FakeExecutor:
+        """Return one pass-1 REWRITE whose only material challenge names a verse range."""
+
+        def status(self, **_kwargs):
+            """Expose a deterministic live catalog for policy routing."""
+            return _fake_codex_status()
+
+        def execute_prevalidated(self, request, status):
+            """Reuse the task-scoped readiness snapshot for every provider phase."""
+            return self.execute(request)
+
+        def execute(self, request):
+            """Answer pass 1; any OL micro call would be a failure of this test."""
+            calls.append(1)
+            candidate = {
+                "candidate_id": "C1", "form": "phase1", "meaning_features": ["event"], "tone_and_force": "neutral",
+                "register": "plain", "main_risk": "sense drift", "rejection_code": "", "rejection_reason": "",
+            }
+            payload = {
+                "schema_version": "1.0",
+                "task_id": "synthetic-task-1",
+                "files": {
+                    "output/rewrite.usfm": "\\id MAT Fixture\n\\c 1\n\\v 1 phase1\n",
+                    "output/grammar-assessment.json": {
+                        "rules": [
+                            {"rule_id": "R1", "status": "PASS", "evidence": ""},
+                            {"rule_id": "R2", "status": "NOT_APPLICABLE", "evidence": ""},
+                        ],
+                        "unresolved": [],
+                    },
+                    "output/translation-challenges.json": {
+                        "challenges": [{
+                            "challenge_id": "CH-RANGE",
+                            "scripture_reference": "MAT 1:1-2",
+                            "category": "VERB_CHOICE",
+                            "summary": "Resolve the disputed verb across two verses",
+                            "confidence": "MEDIUM",
+                            "candidates": [candidate],
+                            "recommended_candidate_id": "C1",
+                            "risk": {"before_ol": 3, "material_triggers": ["COMPETING_NON_EQUIVALENT_SENSES"]},
+                            "inherited_challenge_ids": [],
+                            "recommended_action": "Review the verb.",
+                        }],
+                        "minor_summary": {"by_category": {}, "notes": []},
+                    },
+                },
+            }
+            return ProviderResponse("codex", request.model, json.dumps(payload), {"phase": len(calls)}, request.reasoning_effort)
+
+    monkeypatch.setattr("sage.llm_tasks.make_executor", lambda provider, settings: FakeExecutor())
+    result = execute_task(config, task_manifest=manifest)
+
+    assert len(calls) == 1
+    assert result["phase_count"] == 1
+    challenges = json.loads((manifest.parent / "output" / "translation-challenges.json").read_text(encoding="utf-8"))
+    referral = challenges["challenges"][0]["ol_referral"]
+    assert referral["performed"] is False
+    assert referral["unavailable_code"] == "BIC_OL_MICROSCOPE_NOT_SINGLE_VERSE"
+    assert "phase1" in (manifest.parent / "output" / "rewrite.usfm").read_text(encoding="utf-8")
+
+
 def test_conditional_ol_evidence_is_released_only_after_material_trigger(make_workspace, monkeypatch) -> None:
     """Verify conditional OL evidence stays sealed until the first pass establishes material risk."""
     root = make_workspace(configured=True, qualification_status="VALIDATED")

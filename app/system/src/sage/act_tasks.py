@@ -546,8 +546,9 @@ def _partition_act_request(
                 expected_ol_request_ids=child_expected_ids,
                 expected_ol_requests=child_expected_ol_requests,
                 rtc_stage_references=child_stage_references,
-                context_before_references=unit_record["context_before"],
-                context_after_references=unit_record["context_after"],
+                # Only RTC/STC route context-only packets; a BIC child carries none.
+                context_before_references=unit_record["context_before"] if is_analysis_workflow(workflow) else (),
+                context_after_references=unit_record["context_after"] if is_analysis_workflow(workflow) else (),
                 ol_referral_contract=ol_referral_contract,
             )
             created_children.append(child)

@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from sage.errors import MemoryGovernanceError
 from sage.act_tasks import ACT_OPERATIONS, create_act_task, submit_act_task
 from sage.bounded_target import extract_scope_usfm
 from sage.bic_memory import record_human_memory_review
@@ -289,6 +290,58 @@ def test_rewrite_is_the_only_canonical_bic_target_text_operation() -> None:
                 "3JN",
             ]
         )
+
+
+def test_partitioned_bic_inspect_units_each_reach_their_own_rewrite(package_root: Path, make_workspace) -> None:
+    """A BIC scope over the INSPECT discourse cap partitions; a unit takes REWRITE once its INSPECT commits."""
+    workspace = make_workspace(qualification_status="VALIDATED")
+    profile_path = workspace / "system" / "config" / "workflows" / "bic" / "profile.yml"
+    profile = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
+    policies = profile.setdefault("evidence_policies", {})
+    policies["inspect"] = {**policies.get("default", {}), **policies.get("inspect", {}), "maximum_primary_discourse_units": 1}
+    profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
+    # One paragraph per verse gives the SOURCE three discourse units, over the cap of one.
+    source_file = load_ecosystem(workspace / "ecosystem.yml").project("idKKHv0").path / "41MAT.SFM"
+    source_file.write_text(
+        "\\id MAT Fixture\n\\c 1\n\\p\n\\v 1 Verse 1.\n\\p\n\\v 2 Verse 2.\n\\p\n\\v 3 Verse 3.\n",
+        encoding="utf-8",
+    )
+    _initialise(package_root, workspace)
+    config = load_ecosystem(workspace / "ecosystem.yml")
+    plan = create_act_task(
+        config,
+        workflow="bic",
+        operation="inspect",
+        output_project_id="usBOLx1",
+        contemporary_source_id="idKKHv0",
+        scope_value="MAT 1",
+    )
+    assert plan["status"] == "PARTITIONED"
+    units = [
+        {**json.loads(Path(unit["manifest_path"]).read_text(encoding="utf-8")), "manifest_path": unit["manifest_path"]}
+        for unit in plan["work_units"]
+    ]
+    assert len(units) >= 2
+    for unit in units:
+        assert not any("context" in item["path"] for item in unit["allowed_reads"])
+    _submit_inspect(config, units[0])
+
+    def rewrite(unit: dict) -> dict:
+        """Create the REWRITE for one work unit inside the partitioned Run."""
+        return create_act_task(
+            config,
+            workflow="bic",
+            operation=CANONICAL_TARGET_TEXT_OPERATION,
+            output_project_id="usBOLx1",
+            contemporary_source_id="idKKHv0",
+            scope_value=unit["scope"],
+            job_id=unit["job_id"],
+            run_id=unit["run_id"],
+        )
+
+    assert Path(rewrite(units[0])["manifest_path"]).is_file()
+    with pytest.raises(MemoryGovernanceError, match="committed INSPECT"):
+        rewrite(units[1])
 
 
 def test_generated_rewrite_and_self_check_acts_enforce_contract_and_vocabulary(

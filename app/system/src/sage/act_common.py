@@ -895,7 +895,10 @@ def _ensure_task_context(
         raise ValidationError(f"Job {job.job_id} is not ACTIVE")
     if not scripture_scopes_equal(run.scope, scope.label(), workflow=workflow, operation=run.operation):
         run_scope = validate_scripture_scope(run.scope, workflow=workflow, operation=run.operation)
-        if not (allow_run_subscope and _scope_is_contained(run_scope, scope)):
+        # A partitioned BIC Run creates REWRITE and SELF-CHECK per work unit; each still needs the committed
+        # INSPECT of exactly that unit scope, which only the partition plan creates.
+        bic_unit_stage = workflow == "bic" and operation in {"rewrite", "self_check"}
+        if not ((allow_run_subscope or bic_unit_stage) and _scope_is_contained(run_scope, scope)):
             raise ValidationError("Task scope does not match the owning Run scope")
     if workflow == "bic":
         if run.operation != "bic":
