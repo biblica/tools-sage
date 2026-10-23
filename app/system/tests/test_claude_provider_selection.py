@@ -156,3 +156,15 @@ def test_sqs_bridge_reports_claude_token_usage():
     result = adapter.execute(model_id="claude-opus-5-5", reasoning="medium", prompt="check")
     assert adapter.execution_channel == "claude_workspace"
     assert (result.input_tokens, result.output_tokens) == (1196, 123)
+
+
+def test_a_disabled_provider_can_be_evaluated_but_never_execute_governed_work():
+    """Synthetic qualification is how Claude earns enablement; governed execution stays refused."""
+    from sage.executors import make_evaluation_executor, make_executor
+    from sage.llm_settings import DEFAULT_LLM_SETTINGS
+
+    assert isinstance(make_evaluation_executor("claude", DEFAULT_LLM_SETTINGS), ClaudeCLIExecutor)
+    with pytest.raises(ConfigurationError, match="disabled by the 0.02b1 build policy"):
+        make_executor("claude", DEFAULT_LLM_SETTINGS)
+    with pytest.raises(ConfigurationError, match="disabled by the 0.02b1 build policy"):
+        make_evaluation_executor("ollama", DEFAULT_LLM_SETTINGS)

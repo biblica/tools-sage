@@ -853,3 +853,27 @@ def test_shared_rule_change_invalidates_model_qualification(package_root: Path, 
     with pytest.raises(ValidationError) as caught:
         routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
     assert caught.value.code == "SKILL_ROUTE_EVIDENCE_STALE"
+
+
+def test_qualified_evidence_at_administrative_only_reasoning_neither_routes_nor_blocks(
+    package_root: Path, tmp_path: Path
+) -> None:
+    """Codex `low` evidence must never run a Skill, and must not stop the no-data fallback either."""
+    routing = _routing_module()
+    root, skill_sha256, suite_sha256 = _route_workspace(package_root, tmp_path, "rtc")
+    capability = _capability()
+    _write_seed(
+        root,
+        provider="codex",
+        capability=capability,
+        fingerprint=routing.capability_fingerprint(capability),
+        reasoning_id="low",
+        skill_id="rtc",
+        skill_sha256=skill_sha256,
+        suite_sha256=suite_sha256,
+    )
+
+    route = routing.resolve_skill_route(root, "rtc", [_status("codex", capability)])
+
+    assert route.qualification == "PROVISIONAL_UNQUALIFIED"
+    assert route.identity.reasoning_id == "medium"

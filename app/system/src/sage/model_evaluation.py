@@ -10,11 +10,57 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from .atomic import atomic_write_json
 from .errors import ConfigurationError, ValidationError
-from .executors import ProviderRequest, ProviderResponse, ProviderStatus, make_executor
+from .executors import ProviderRequest, ProviderResponse, ProviderStatus, make_evaluation_executor
 from .llm_settings import load_llm_settings
 from .model_policy import load_model_policy
 from .skill_routing import capability_fingerprint, skill_contract_sha256
 from .storage import storage_layout
+
+
+# Version of how a sealed case becomes one provider prompt. The case bundles were written for an
+# agent that reads task-manifest.json beside input.fixture.txt; the sealed transport reads no files,
+# so version 2 states the manifest identity and the response contract in the prompt itself.
+EVALUATION_PROMPT_VERSION = "SAGE_EVAL_PROMPT_2"
+
+
+def _case_prompt(case: Mapping[str, object], repetition: int) -> str:
+    """Render one sealed case, its manifest identity, and the response contract as one prompt."""
+    expected = case.get("expected") if isinstance(case.get("expected"), dict) else {}
+    manifest = {
+        key: case[key]
+        for key in ("task_id", "skill_id", "case_id", "scope", "reviewed_item_ids", "allowed_evidence_ids",
+                    "maximum_review_items_per_request")
+        if key in case
+    }
+    prohibited = ", ".join(str(value) for value in expected.get("prohibited_actions", []))
+    vocabulary = ", ".join(str(value) for value in case.get("decision_vocabulary", []))
+    return "\n".join(
+        [
+            str(case["act_text"]),
+            "SEALED TASK MANIFEST",
+            json.dumps(manifest, ensure_ascii=False, sort_keys=True),
+            "RESPONSE CONTRACT",
+            '- schema_version is "1.0"; copy task_id, skill_id, case_id, and scope from the manifest exactly.',
+            "- reviewed_item_ids: the manifest review items you actually reviewed.",
+            "- evidence_ids: the allowed evidence IDs your decision relies on.",
+            f"- decision: exactly one of {vocabulary}.",
+            '- finding_ids: "F-001", "F-002", ... one per finding; [] when there is no finding.',
+            f"- prohibited_actions: any of {prohibited} that you performed; [] when you performed none.",
+            "SYNTHETIC SEALED INPUT",
+            str(case["input_text"]),
+            f"INDEPENDENT REPETITION: {repetition}",
+            "Return only the required JSON object.",
+        ]
+    )
+
+
+def _decision_vocabulary(root: Path, contract: Mapping[str, Any]) -> list[str]:
+    """Return every decision a Skill's suite can expect, plus the universal outcomes."""
+    decisions = {"NO_FINDING", "BOUNDARY_REJECTED"}
+    for case_row in contract.get("cases", []):
+        if isinstance(case_row, dict):
+            decisions.add(str(_load_case(root, case_row)["expected"]["expected_decision"]))  # type: ignore[index]
+    return sorted(decisions)
 
 
 class EvaluationTransport(Protocol):
@@ -46,7 +92,7 @@ class ProviderEvaluationTransport:
         self.provider = provider
         self.model_id = model_id
         self.reasoning_id = reasoning_id
-        self.executor = make_executor(provider, load_llm_settings(root))
+        self.executor = make_evaluation_executor(provider, load_llm_settings(root))
         self._status_snapshot = status_snapshot
 
     def status(self) -> ProviderStatus:
@@ -57,15 +103,7 @@ class ProviderEvaluationTransport:
 
     def execute(self, case: dict[str, object], repetition: int) -> ProviderResponse:
         """Send exactly one case in one stateless provider request."""
-        prompt = "\n".join(
-            [
-                str(case["act_text"]),
-                "SYNTHETIC SEALED INPUT",
-                str(case["input_text"]),
-                f"INDEPENDENT REPETITION: {repetition}",
-                "Return only the required JSON object.",
-            ]
-        )
+        prompt = _case_prompt(case, repetition)
         schema = {
             "type": "object",
             "additionalProperties": False,
@@ -344,13 +382,14 @@ def evaluate_candidate(
     if repetitions != 3:
         raise ConfigurationError(f"Evaluation contract for {skill_id} must require three repetitions")
 
+    vocabulary = _decision_vocabulary(root, contract)
     # Each execution receives a newly loaded immutable case object and a fresh
     # provider call; no conversation state or another case is carried forward.
     for case_row in contract.get("cases", []):
         if not isinstance(case_row, dict):
             raise ConfigurationError(f"Evaluation cases for {skill_id} must be objects")
         for repetition in range(1, repetitions + 1):
-            case = _load_case(root, case_row)
+            case = {**_load_case(root, case_row), "decision_vocabulary": vocabulary}
             response = effective_transport.execute(case, repetition)
             hard_errors, semantic_errors = _validate_attempt(case, response)
             hard_errors = [
@@ -387,6 +426,7 @@ def evaluate_candidate(
         "suite_id": str(contract.get("suite_id") or ""),
         "suite_sha256": str(contract.get("suite_sha256") or ""),
         "policy_version": str(contracts.get("qualification_policy_version") or ""),
+        "evaluation_prompt_version": EVALUATION_PROMPT_VERSION,
         "qualification_status": qualification,
         "provider_runtime_version": status.version,
         "model_identity_strength": capability.identity_strength,
@@ -420,7 +460,7 @@ EvaluationTransportFactory = Callable[[str, str], EvaluationTransport]
 
 def _provider_status(root: Path, provider: str) -> ProviderStatus:
     """Return one live provider catalog snapshot for an explicit evaluation action."""
-    executor = make_executor(provider, load_llm_settings(root))
+    executor = make_evaluation_executor(provider, load_llm_settings(root))
     status = executor.status()
     if status.provider != provider or not status.available or not status.ready:
         raise ValidationError(
@@ -463,7 +503,13 @@ def evaluate_model_for_skill(
             code="PROVIDER_ROUTE_UNAVAILABLE",
         )
     capability = _model_capability(effective_status, model_id)
-    reasoning_ids = list(capability.reasoning_efforts) or ["provider-default"]
+    # Administrative-only reasoning can never execute a Skill, so evaluating it would spend calls on
+    # evidence routing must ignore.
+    prohibited = {
+        str(value)
+        for value in load_model_policy(root)["provisional_routing"]["prohibited_reasoning_by_provider"].get(provider, [])
+    }
+    reasoning_ids = [value for value in capability.reasoning_efforts if value not in prohibited] or ["provider-default"]
     factory = transport_factory or (
         lambda candidate_model, candidate_reasoning: ProviderEvaluationTransport(
             root,
@@ -494,6 +540,10 @@ def evaluate_model_for_skill(
             "evidence_sha256": receipt["evidence_sha256"],
         }
         candidates.append(row)
+        if receipt["hard_failure_count"] == receipt["attempt_count"]:
+            # Every attempt broke the contract: more reasoning cannot fix a contract or harness
+            # mismatch, so stop instead of spending every higher level on the same failure.
+            break
         if receipt["qualification_status"] == "QUALIFIED" and selected is None:
             selected = {
                 "provider": provider,
@@ -513,6 +563,10 @@ def evaluate_model_for_skill(
         "comparison": comparison,
         "evaluated_reasoning_ids": [row["reasoning_id"] for row in candidates],
         "stopped_after_first_qualified": bool(selected is not None and not comparison),
+        "stopped_on_systematic_contract_failure": bool(
+            candidates and candidates[-1]["hard_failure_count"] and selected is None
+            and len(candidates) < len(reasoning_ids)
+        ),
         "selected_route": selected,
         "candidates": candidates,
     }

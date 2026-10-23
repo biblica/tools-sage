@@ -9,6 +9,36 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261023-001 — Model qualification can actually pass live; administrative-only reasoning never routes (TODO-20261022-018, partial)
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** `TODO-20261022-018` (stays `OPEN`: the Claude qualification itself has to be re-run)
+- **Commits:** the commit that introduced this entry.
+- **Implemented:**
+  - Found by the first live Claude run (Opus 5.5, all eight Skills, 2026-10-22): the sealed evaluation prompt
+    sent only `ACT.md` and `input.fixture.txt`, while the validator requires the manifest identity
+    (`task_id`, scope, review-item and evidence IDs), a Skill-specific decision value, and `F-001`-style
+    finding IDs, none of which the prompt contained. All 312 attempts failed on identity; no model, Codex
+    included, could ever qualify, which is why no qualification evidence existed. Prompt version 2
+    (`EVALUATION_PROMPT_VERSION`, recorded on receipts) states the manifest, the decision vocabulary derived
+    from the Skill's suite, the finding-ID convention, and that `prohibited_actions` lists only actions
+    performed. Sealed case bundles and suite hashes are unchanged. One live Opus 5.5 call under version 2
+    passed with no hard or semantic errors.
+  - Progression stops when every attempt at a reasoning setting breaks the hard contract; the first run climbed
+    to `max` on all eight Skills (about 312 calls instead of 78).
+  - Administrative-only reasoning (`prohibited_reasoning_by_provider`) is skipped by evaluation and ignored as
+    evidence by routing; before, a qualified `low` receipt would have routed Skills at `low` against the
+    routing design.
+  - Qualification evaluation may run on an implemented provider the build policy has not enabled
+    (`make_evaluation_executor`); governed execution stays refused.
+  - The 32 version-1 Claude receipts were moved out of `localdata/.system/state/model-qualification/` to
+    `model-qualification-invalid-20261023/` (with a README), so they cannot block Claude routing.
+- **Verification:** `test_model_evaluation.py` (prompt carries every echoed value; stop on contract-wide hard
+  failure; administrative-only reasoning skipped), `test_skill_routing_policy.py` (low evidence neither routes
+  nor blocks), `test_claude_provider_selection.py` (evaluation executor vs. governed executor). Full suite
+  2026-10-22: 2324 passed apart from two local-checkout artifacts.
+
 ### IMP-20261022-011 — SQS qualifies a second provider family (TODO-20261022-017)
 
 - **Version:** `0.02a3` (development branch)

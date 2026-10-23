@@ -281,11 +281,17 @@ def _candidate_skill_routes(
     preferred_providers = [str(value) for value in release_preference.get("providers", [])]
     preferred_models = release_preference.get("models")
     preferred_models = preferred_models if isinstance(preferred_models, dict) else {}
+    # Administrative-only reasoning (Codex none/minimal/low, Claude low) never executes a Skill,
+    # with or without qualification evidence; such a record is not Skill evidence at all, so it can
+    # neither route nor block the no-data fallback.
+    prohibited_by_provider = policy["provisional_routing"]["prohibited_reasoning_by_provider"]
     repository = evidence_repository or qualification_evidence_repository(root)
     evidence = [
         dict(row)
         for row in repository.records_for_skill(skill_id)
         if str(row.get("skill_id") or "") == skill_id
+        and str(row.get("reasoning_id") or "")
+        not in {str(value) for value in prohibited_by_provider.get(str(row.get("provider") or ""), [])}
     ]
     candidates: list[tuple[tuple[Any, ...], SkillRoute]] = []
     exact_but_unavailable = False

@@ -184,10 +184,20 @@ that passes some repetitions but not all produces `UNRELIABLE`. Semantic thresho
 per Skill and cannot be supplied or changed by the candidate model. A model may explain its output
 inside a test response, but it cannot rate, qualify, or recommend itself.
 
-Evaluation proceeds through each model's provider-native reasoning settings from lowest to highest.
+Evaluation proceeds through each model's provider-native reasoning settings from lowest to highest,
+skipping administrative-only settings (`prohibited_reasoning_by_provider` in `model-policy.yml`:
+Codex `none`/`minimal`/`low`, Claude `low`), which can never execute a Skill. Evidence recorded at
+such a setting is not Skill evidence: it neither routes nor blocks the no-data fallback.
 Testing for that model/Skill stops at the first setting that fully qualifies unless an explicit
-comparison evaluation is requested. This finds the least reasoning that satisfies the Skill rather
-than assuming that greater reasoning is automatically better.
+comparison evaluation is requested. It also stops when every attempt at a setting breaks the hard
+contract, because more reasoning cannot repair a contract or harness mismatch. This finds the least
+reasoning that satisfies the Skill rather than assuming that greater reasoning is automatically better.
+
+The sealed transport reads no files, so each prompt (`EVALUATION_PROMPT_VERSION`, recorded on every
+receipt) states the case's manifest identity, the Skill's decision vocabulary, the finding-ID
+convention, and that `prohibited_actions` lists only prohibited actions actually performed. Version 1
+sent only the ACT text and input fixture; no model could reproduce identities it was never given, so
+no version-1 receipt is evidence of anything.
 
 The catalog evaluator can apply that process to one or all registered Skills and one or all models
 advertised by the selected provider. It obtains one capability snapshot before the cases run,

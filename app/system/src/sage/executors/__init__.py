@@ -72,6 +72,18 @@ def cli_executor(provider: str) -> CodexCLIExecutor | ClaudeCLIExecutor:
     raise ConfigurationError(f"Not a governed CLI provider: {provider}")
 
 
+def make_evaluation_executor(provider: str, settings: dict[str, Any]) -> Executor:
+    """Construct an executor for sealed synthetic qualification only.
+
+    Evaluation sends no Scripture or Job evidence and is how a provider earns enablement, so an
+    implemented governed CLI provider may be evaluated before the build policy enables it.
+    """
+    provider_id = provider.strip().lower()
+    if provider_id in GOVERNED_CLI_PROVIDER_IDS:
+        return cli_executor(provider_id)
+    return make_executor(provider_id, settings)
+
+
 def make_executor(provider: str, settings: dict[str, Any]) -> Executor:
     """Construct the selected executor from non-secret SAGE provider settings."""
     provider_id = require_provider_enabled(provider)
@@ -99,6 +111,7 @@ __all__ = [
     "PROVIDER_IDS",
     "PROVIDER_LABELS",
     "cli_executor",
+    "make_evaluation_executor",
     "make_executor",
     "provider_labels",
     "receipt_transport_policy",

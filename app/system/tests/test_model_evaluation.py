@@ -548,3 +548,75 @@ def test_only_current_qualified_receipts_can_be_promoted_to_seed_candidates(
     assert len(seeds["routes"]) == 1
     assert seeds["routes"][0]["skill_id"] == "rtc-focused-check"
     assert seeds["routes"][0]["evidence_sha256"] == receipt["evidence_sha256"]
+
+
+def test_evaluation_never_spends_calls_on_administrative_only_reasoning(package_root: Path) -> None:
+    """Claude `low` is administrative-only, so catalog evaluation starts at `medium`."""
+    from sage.executors.claude_cli import load_catalog
+
+    evaluation = _evaluation_module()
+    status = ProviderStatus(provider="claude", available=True, ready=True, auth_mode="CLAUDE_SUBSCRIPTION",
+                            version="2.1.307 (Claude Code)", model_capabilities=load_catalog())
+    created: list[str] = []
+
+    def factory(model_id: str, reasoning_id: str):
+        """Record each evaluated reasoning level; the first one qualifies."""
+        created.append(reasoning_id)
+        return NativeReasoningTransport(status, model_id=model_id, reasoning_id=reasoning_id, qualifies=True)
+
+    result = evaluation.evaluate_model_for_skill(
+        package_root, skill_id="rtc", provider="claude", model_id="claude-opus-5-5", status=status,
+        transport_factory=factory,
+    )
+
+    assert created == ["medium"]
+    assert result["selected_route"]["reasoning_id"] == "medium"
+
+
+def test_live_prompt_states_the_identity_and_contract_the_validator_checks(package_root: Path) -> None:
+    """A sealed transport reads no files, so the prompt itself must carry every value to be echoed."""
+    evaluation = _evaluation_module()
+    contract = evaluation.load_evaluation_contracts(package_root)["skills"]["rtc"]
+    row = next(item for item in contract["cases"] if item["case_id"] == "seeded-variance")
+    case = {**evaluation._load_case(package_root, row),
+            "decision_vocabulary": evaluation._decision_vocabulary(package_root, contract)}
+    prompt = evaluation._case_prompt(case, 2)
+    expected = case["expected"]["passing_response"]
+    for field in ("task_id", "case_id", "scope"):
+        assert str(expected[field]) in prompt
+    for value in (*expected["reviewed_item_ids"], *expected["evidence_ids"], expected["decision"]):
+        assert value in prompt
+    assert '"F-001"' in prompt and "[] when you performed none" in prompt
+    assert "INDEPENDENT REPETITION: 2" in prompt
+
+
+def test_progression_stops_when_every_attempt_breaks_the_contract(package_root: Path) -> None:
+    """Contract-wide hard failures are not fixed by more reasoning, so higher levels are not spent."""
+    evaluation = _evaluation_module()
+    status = _native_status()
+    created: list[str] = []
+
+    class ContractBreaker(NativeReasoningTransport):
+        """Answer every case with the wrong task identity."""
+
+        def execute(self, case, repetition):
+            """Return a response whose identity never matches the sealed case."""
+            response = super().execute(case, repetition)
+            content = json.loads(response.content)
+            content["task_id"] = "WRONG"
+            return ProviderResponse(provider=response.provider, model=response.model,
+                                    reasoning_effort=response.reasoning_effort, content=json.dumps(content))
+
+    def factory(model_id: str, reasoning_id: str):
+        """Record each evaluated level."""
+        created.append(reasoning_id)
+        return ContractBreaker(status, model_id=model_id, reasoning_id=reasoning_id, qualifies=True)
+
+    result = evaluation.evaluate_model_for_skill(
+        package_root, skill_id="rtc", provider=status.provider, model_id="model-a", status=status,
+        transport_factory=factory,
+    )
+
+    assert created == ["swift"]
+    assert result["status"] == "NOT_QUALIFIED"
+    assert result["stopped_on_systematic_contract_failure"] is True
