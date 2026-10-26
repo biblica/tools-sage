@@ -276,13 +276,13 @@ def test_normalized_ol_review_note_does_not_claim_the_original_language_text():
     """EZR 1:10 feedback: a normalized index reading must not be presented as the literal OL text."""
     document = report_document()
     document["groups"][0]["comparison"].update(review_context={
-        "kind": "OL_NORMALIZED_UNDOCUMENTED", "ol_text": "OL fixture text", "bsb_text": "BSB fixture text",
+        "kind": "INDEX_UNSETTLED", "reason": "OL_NORMALIZED_UNDOCUMENTED", "ol_text": "OL fixture text", "bsb_text": "BSB fixture text",
         "niv_values": ["3", "4"], "normalizations": [{"LAYER": "FINAL_OL_VERSE_OVERRIDE", "SOURCE_EXPRESSION": "",
                                                       "REASON": "Corpus-wide audit"}]})
     report = render_nca_report(document)
     note_line = next(line for line in report.splitlines() if line.startswith("> MAT 1:2"))
     assert "based on the original-language text" not in note_line
-    assert "The index does not read every number-like word" in note_line
+    assert "cannot settle this verse: the index adjusted the original-language numbers" in note_line
     assert 'Original-language text: "OL fixture text"' in note_line
     assert 'Reference translation (BSB): "BSB fixture text". Also see the NIV' in note_line
 
@@ -291,7 +291,7 @@ def test_documented_normalization_note_names_the_expression():
     """A documented override names the OL expression and reason the index did not count."""
     document = report_document()
     document["groups"][0]["comparison"].update(review_context={
-        "kind": "OL_NORMALIZATION_DIFFERENCE", "ol_text": "OL", "bsb_text": "BSB", "niv_values": [],
+        "kind": "INDEX_UNSETTLED", "reason": "OL_NORMALIZATION_DIFFERENCE", "ol_text": "OL", "bsb_text": "BSB", "niv_values": [],
         "normalizations": [{"LAYER": "AUDITED_OL_NORMALIZATION_MANIFEST", "SOURCE_EXPRESSION": "שֵׁת",
                             "REASON": "Proper name, not the numeral six."}]})
     report = render_nca_report(document)

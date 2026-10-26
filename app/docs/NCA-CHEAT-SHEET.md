@@ -2,22 +2,9 @@
 
 **SAGE NUMBERS CHECK** compares the numbers in one read-only WIP Project with SAGE's own number index of the original-language text, reports the formatting consistency of those numbers, and lists the text-critical decisions an operator must make. Open **Main Menu → 5. Number Consistency & Accuracy (NCA)**. SAGE Maintenance is option **6**.
 
-## Reference index
+## Reference and counting rules
 
-SAGE ships one typed reference package, `SAGE_NUMBERS_TYPED_2026-10-09` (format `sage-numbers-typed-1.1`) under `system/resources/numbers/2026-10-09`, pinned by `system/config/numbers-reference.json`. No archive import is required. It indexes 3,814 verses with 5,345 original-language values and 5,021 NIV values, and records what each number counts.
-
-- The original-language layer is built in SAGE from MACULA Hebrew (WLC) and MACULA Greek (SBLGNT) word data. It is Authority 1 and the only basis for a FAIL against the source. MACULA is © Biblica, Inc. under CC BY 4.0; licenses and attribution for every source are in [Third-Party Data Notices](advanced/projects-and-resources/THIRD-PARTY-NOTICES.md).
-- The NIV layer (Biblica) is secondary evidence. It never silently replaces an original-language value.
-- Every index review item has been decided; the package has no provisional rows. Build and review records are in the [index rebuild summary](advanced/release/nca-index-rebuild/SUMMARY.md), [NIV layer summary](advanced/release/nca-index-rebuild/NIV-SUMMARY.md) and [apparatus summary](advanced/release/nca-index-rebuild/APPARATUS-SUMMARY.md).
-- The earlier `SAGE_NUMBERS_REFERENCE_2026-09-09` package remains in Core for comparison only; its text-critical registries (variants, footnote guidance, unit conversions) are carried into the typed package.
-
-The package diagnostics block is shown once per package per session, as short readable lines.
-
-## What counts as a number
-
-The index and the model use one shared [counting convention, version 2.0](../system/skills/nca-numbers/references/COUNTING-CONVENTION.md): NCA checks **numbers that state a quantity or a date** (twelve men, half a hin, the fourteenth day of the first month). It does not count implied numbers ("tithe", "twice"), frequency ("seven times"), pronoun or idiom "one", rank ordinals ("the first one"), "both", "a pair", indefinite plurals ("thousands"), or numbers inside names. A difference NCA reports is therefore a translation question, not a difference in counting rules.
-
-Extraction follows [contract 3.0](../system/skills/nca-numbers/references/TARGET-EXTRACTION-CONTRACT.md): the model returns each number's exact text in the verse, its value, kind and the item it counts (with an English gloss). SAGE verifies that each text occurs in the verse, drops invented ones, reads every digit numeral itself, corrects and flags a numeral the model read otherwise, and adds numerals the model missed.
+NCA checks against SAGE's bundled number index (original language first, NIV second), built from MACULA and shipped with the app; no import is needed. It counts **numbers that state a quantity or a date**, using one shared [counting convention](../system/skills/nca-numbers/references/COUNTING-CONVENTION.md), so a difference NCA reports is a translation question, not a difference in counting rules. Details, sources and licences: [NCA reference package and rules](advanced/workflows/NCA-REFERENCE-AND-RULES.md). The package diagnostics block is shown once per package per session.
 
 ## Set up a Job
 
@@ -46,13 +33,15 @@ After checks and scope, the menu seals the Run and shows a short preflight: lang
 Each finding is a **Variance** or a **Consistency check** (stored as `FAIL` and `NEEDS_REVIEW` in the Run's results and diagnostics), with the WIP and original-language evidence, the quoted Berean Standard Bible (BSB) text, the NIV numbers as **Also see — NIV**, and a copy-paste translator note. Every variance is reported as a statement of what differs; no note asks the Operator for input. A Variance note says what to correct; a Consistency check note starts with "Check consistency:" and names the difference. No NIV Scripture text is shipped or quoted (NIV fair use allows at most 500 verses).
 
 - **Variance** (`FAIL`) is reserved for clear translation errors: `VALUE_DIFFERENCE` (the WIP has a number that matches neither the original language nor the NIV, ; a substituted value is always a Variance, and when the unit it counts differs from the source's or is not determined, the report adds both units without converting), `WRONG_ASSOCIATION` (the same numbers as the source, attached to different items, such as "1 000 gold dishes" for "30 gold dishes"), `MALFORMED_NUMERAL` (for example `10,0000`), and `NUMBER_NOT_IN_SOURCE` (a digit numeral in a verse whose source has no number).
-- **Consistency check** (`NEEDS_REVIEW`) covers cases the index cannot settle alone: the WIP follows the NIV where it differs from the original language, NIV-only or mixed authority, an attested variant reading, an order difference that cannot be verified, and convention edge cases. One reason reports a difference without analysing it (PO decision 2026-10-26: NCA reports number mismatches for the consultant; it does not explain or harmonize them, and grammar and wording are RTC/STC work):
-  - `NUMBERS_DIFFER`: the WIP leaves out or adds numbers and substitutes none (a repeated number stated once, an explicit "one", a number made explicit from context). The report names the numbers not in the translation and the numbers not in the source.
-
-  A mismatch at a verse where the textual apparatus records a number variant is `APPARATUS_VARIANT` review, never a Variance.
+- **Consistency check** (`NEEDS_REVIEW`) is a difference NCA reports without deciding it (PO decision 2026-10-26: NCA reports number mismatches for the consultant; it does not explain or harmonize them, and grammar and wording are RTC/STC work). The reasons are:
+  - `NUMBERS_DIFFER`: the WIP leaves out or adds numbers and substitutes none (a repeated number stated once, an explicit "one", a number made explicit from context, an extra ordinal). The report names the numbers not in the translation and the numbers not in the source.
+  - `INDEX_UNSETTLED`: the index cannot settle the verse: it has no numbers there, only the NIV gives one, bridged verses mix original-language and NIV readings, the original-language numbers were adjusted by the index, or the index value is not yet reviewed. The report shows the values with the original-language and BSB text.
+  - `MATCHES_SECONDARY_AUTHORITY`: the WIP follows the NIV where it differs from the original language.
+  - `ATTESTED_VARIANT_READING` and `APPARATUS_VARIANT`: the WIP follows an attested alternate reading, or a mismatch sits at a verse where the textual apparatus records a number variant.
+  - `ORDER_DIFFERENCE`: the same numbers in a different order that cannot be verified item by item.
 - **Association check**: each WIP number's counted item is matched against the item the index records. A faithful reordering passes and appears under **Notes (no action needed)**.
 
-**Text-critical variants** lists the verses where the original language and NIV differ and the textual apparatus records a number variant. These are editorial decisions, not errors: NCA states both readings, which one the WIP follows, whether a footnote is present, and a suggested footnote basis when there is none. Each entry cites its evidence: NET Bible text-critical notes (short excerpts quoted with attribution and a link), the SBLGNT apparatus, OSHB ketiv/qere, Brenton's Septuagint, the Douay-Rheims Vulgate, the KJV, Berean Standard Bible footnotes, and synoptic parallel passages checked against SAGE's own index. The BSB reading itself is cited as a modern rendering reference with **Also see** (MT or Greek NT, NIV, LXX, Vulgate, KJV); it never decides a variant. Every report ends with **Sources and attribution** for each quoted source.
+**Text-critical variants** lists the verses where the original language and NIV differ and the textual apparatus records a number variant. These are editorial decisions, not errors: NCA states both readings, which one the WIP follows, whether a footnote is present, and a suggested footnote basis when there is none. Evidence and sources: [NCA reference package and rules](advanced/workflows/NCA-REFERENCE-AND-RULES.md).
 
 Verses with no issue, verses without numbers in the source or the index, and verses that were not checked (with the reason) are summarized at the end of each report, under **Summary: no issue and not checked**, before the attribution and limitations.
 

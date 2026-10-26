@@ -13,17 +13,15 @@ A BLOCKING FAIL is reserved for a mismatch against an original-language (OL)
 reading the index actually vouches for. Every other mismatch is NEEDS_REVIEW,
 because the index itself says the reading is not authoritative there:
 
-- NIV-only rows (OL has no explicit number) and bridged groups that mix OL and
-  NIV authority -- the index's own guidance is "do not auto-validate from NIV";
+- ``INDEX_UNSETTLED`` (with a ``reason``): the index has no numbers for the verse, only the NIV gives a
+  number (NIV-only rows, the index's own guidance is "do not auto-validate from NIV"), a bridged group
+  mixes OL and NIV authority, the OL values were normalized away from the literal tokens (undocumented verse
+  overrides always, documented ones when undoing them reproduces the WIP values; EZR 1:10 drops OL
+  "second"), or the index value is rebuilt but not yet reviewed (typed packages, REVIEW_STATUS PROVISIONAL);
 - the WIP follows a registered alternate (textual-variant) reading;
-- OL_VALUES was normalized away from the literal OL tokens (normalization
-  overrides): undocumented verse overrides always, documented ones when undoing
-  them reproduces the WIP values (EZR 1:10 drops OL "second");
 - the WIP follows the NIV where the NIV differs from the original language (decision D1);
-- the only difference is extra WIP values the extractor tagged as convention
-  edge cases (ordinals, multipliers, percentages, approximations);
-- the index value at that verse is rebuilt but not yet reviewed (typed packages,
-  REVIEW_STATUS PROVISIONAL).
+- numbers were left out or added and none substituted (``NUMBERS_DIFFER``, including extra ordinals,
+  multipliers, percentages and approximations; reported, never analyzed).
 
 A WIP that matches neither the original language nor the NIV is a FAIL (a mistyped or misread
 number). With the same numbers as the source, each number must sit on the same item: a swap
@@ -49,15 +47,9 @@ from .models import COMPARISON_MODES, COMPARISON_OUTCOMES, ReferenceRow
 AUTHORITIES = frozenset({"OL", "NIV", "MIXED", "NONE"})
 REVIEW_KINDS = frozenset({
     "ORDER_DIFFERENCE",
-    "NIV_ONLY_AUTHORITY",
-    "MIXED_AUTHORITY",
+    "INDEX_UNSETTLED",  # reason: NIV_ONLY_AUTHORITY, MIXED_AUTHORITY, NO_INDEXED_VALUES, PROVISIONAL_INDEX, OL_NORMALIZED_UNDOCUMENTED or OL_NORMALIZATION_DIFFERENCE
     "ATTESTED_VARIANT_READING",
-    "OL_NORMALIZED_UNDOCUMENTED",
-    "OL_NORMALIZATION_DIFFERENCE",
     "MATCHES_SECONDARY_AUTHORITY",
-    "CONVENTION_EDGE_CASE",
-    "NO_INDEXED_VALUES",
-    "PROVISIONAL_INDEX",
     "APPARATUS_VARIANT",
     "NUMBERS_DIFFER",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
@@ -65,9 +57,6 @@ REVIEW_KINDS = frozenset({
 # FAIL kinds: a value differs from the source, a number sits on the wrong item, a numeral is
 # malformed, or a digit numeral stands in a verse the source has no number for.
 FAIL_KINDS = frozenset({"VALUE_DIFFERENCE", "WRONG_ASSOCIATION", "MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"})
-# Extracted value kinds the counting convention marks as edge cases: an extra WIP value
-# of one of these kinds is a convention question for review, not a numeric error.
-EDGE_KINDS = frozenset({"ORDINAL", "MULTIPLIER", "PERCENT", "APPROX"})
 _UNDOCUMENTED_OVERRIDE_LAYER = "FINAL_OL_VERSE_OVERRIDE"
 _MAX_REVERSIBLE_OVERRIDES = 8
 
@@ -193,16 +182,6 @@ def _review(kind: str, mode: str, wip: Tuple[Fraction, ...], expected: Tuple[Fra
                             {"kind": kind, **evidence, **extra})
 
 
-def _edge_case_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...],
-                    kinds: Sequence[str]) -> bool:
-    """Whether the only difference is extra WIP values tagged as convention edge cases."""
-    if len(kinds) != len(wip) or Counter(expected) - Counter(wip):
-        return False
-    extra = Counter(wip) - Counter(expected)
-    edge = Counter(value for value, kind in zip(wip, kinds) if kind in EDGE_KINDS)
-    return bool(extra) and not (extra - edge)
-
-
 def _words(text: str) -> set[str]:
     """Lowercased content words of an English gloss, plural -s removed ("talents" -> "talent")."""
     from .association import _tokens
@@ -310,17 +289,19 @@ def compare_group(
                            alternate_values=[str(value) for value in alternate.values],
                            variant_guidance=dict(alternate.guidance))
     if authority == "NONE":
-        return _review("NO_INDEXED_VALUES", mode, wip_values, expected, authority, evidence)
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence, reason="NO_INDEXED_VALUES")
     if authority == "NIV":
-        return _review("NIV_ONLY_AUTHORITY", mode, wip_values, expected, authority, evidence)
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence, reason="NIV_ONLY_AUTHORITY")
     if authority == "MIXED":
-        return _review("MIXED_AUTHORITY", mode, wip_values, expected, authority, evidence)
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence, reason="MIXED_AUTHORITY")
     overrides = [item for row in rows for item in row.ol_normalizations]
     if any(item["LAYER"] == _UNDOCUMENTED_OVERRIDE_LAYER for item in overrides):
-        return _review("OL_NORMALIZED_UNDOCUMENTED", mode, wip_values, expected, authority, evidence,
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence,
+                       reason="OL_NORMALIZED_UNDOCUMENTED",
                        normalizations=[dict(item) for item in overrides])
     if overrides and _normalization_explains(wip_values, expected, overrides):
-        return _review("OL_NORMALIZATION_DIFFERENCE", mode, wip_values, expected, authority, evidence,
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence,
+                       reason="OL_NORMALIZATION_DIFFERENCE",
                        normalizations=[dict(item) for item in overrides])
     niv = tuple(value for row in rows for value in row.niv_values)
     if Counter(niv) != Counter(expected) and Counter(wip_values) == Counter(niv):
@@ -328,10 +309,7 @@ def compare_group(
         return _review("MATCHES_SECONDARY_AUTHORITY", mode, wip_values, expected, authority, evidence)
     if any(row.metadata.get("OL_REVIEW_STATUS") == "PROVISIONAL" for row in rows):
         # The index value here is rebuilt but not yet reviewed: report, never FAIL.
-        return _review("PROVISIONAL_INDEX", mode, wip_values, expected, authority, evidence)
-    if _edge_case_only(wip_values, expected, wip_kinds):
-        return _review("CONVENTION_EDGE_CASE", mode, wip_values, expected, authority, evidence,
-                       wip_kinds=list(wip_kinds))
+        return _review("INDEX_UNSETTLED", mode, wip_values, expected, authority, evidence, reason="PROVISIONAL_INDEX")
     if any(row.metadata.get("TC_STATUS") == "VARIANT_ATTESTED" for row in rows):
         # The apparatus records a number variant here: the WIP may follow another witness. Review.
         return _review("APPARATUS_VARIANT", mode, wip_values, expected, authority, evidence)
@@ -339,7 +317,7 @@ def compare_group(
     extra = Counter(wip_values) - Counter(expected)
     if not (missing and extra):
         # Numbers left out or added, nothing substituted (a repeated number stated once, an explicit
-        # "one", a number made explicit): report the difference, never analyse it (PO decision 2026-10-26).
+        # "one", a number made explicit): report the difference, never analyze it (PO decision 2026-10-26).
         return _review("NUMBERS_DIFFER", mode, wip_values, expected, authority, evidence,
                        omitted=[str(value) for value in missing.elements()],
                        added=[str(value) for value in extra.elements()])

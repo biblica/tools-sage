@@ -13,7 +13,7 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
 - **Version:** `0.02a3` (development branch)
 - **Milestone:** `MS-02A3`
-- **TODO:** none (PO direction 2026-10-26: "if the units used differ from the indexed sources, report it; do not analyse or harmonize; that is not the NCA purpose")
+- **TODO:** none (PO direction 2026-10-26: "if the units used differ from the indexed sources, report it; do not analyze or harmonize; that is not the NCA purpose")
 - **Implemented:**
   - `numbers/compare.py`: removed the explain-the-difference machinery (`_unit_conversions`, `_restructured`,
     `_one_only`, `_omission_only`, `_addition_only`). Review kinds `UNIT_CONVERSION`, `RESTRUCTURED`,
@@ -36,6 +36,25 @@ lines record the suites re-run on 2026-10-13 against `6bce03f`.
 - **Verification:** `tests/numbers` and the NCA reporting tests pass (977 passed, 2 skipped on 2026-10-26). Replaying the saved gate data (969 verses, no model calls)
   before the final revision it moved 12 FAILs to review; the final rule keeps substituted values as Variances.
 - **Not done:** not committed; no live gate run under the new rules.
+
+### IMP-20261026-002 — NCA review reasons folded; cheat sheet trimmed
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** none (PO direction 2026-10-26: review NCA for scope creep)
+- **Implemented:**
+  - Six index-internal review reasons (`NO_INDEXED_VALUES`, `NIV_ONLY_AUTHORITY`, `MIXED_AUTHORITY`,
+    `OL_NORMALIZED_UNDOCUMENTED`, `OL_NORMALIZATION_DIFFERENCE`, `PROVISIONAL_INDEX`) are one `INDEX_UNSETTLED`
+    review that keeps the old name as `reason` in the context. `CONVENTION_EDGE_CASE` is gone: extra ordinals
+    and similar values are `NUMBERS_DIFFER` (added numbers). Review reasons: 13 before today, 7 now.
+  - `NCA-CHEAT-SHEET.md` is shorter (91 to 80 lines); the reference package description, counting-rule detail
+    and text-critical evidence sources moved to `docs/advanced/workflows/NCA-REFERENCE-AND-RULES.md`
+    (listed in `INDEX.md` and the install manifest).
+- **Verification:** full suite 2,323 passed on 2026-10-26 before the final manifest and spelling fixes; the NCA,
+  numbers, reporting and style tests (977), package, documentation-contract and release-builder tests pass after
+  them. One documentation-contract test fails on an untracked private file
+  (`project-management/private/bic-experiment/drive.py`, missing docstrings), unrelated to this change.
+- **Not done:** no live gate run.
 
 ### IMP-20261023-001 — Model qualification can actually pass live; administrative-only reasoning never routes (TODO-20261022-018, partial)
 

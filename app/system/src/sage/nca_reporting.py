@@ -77,9 +77,9 @@ _ENGLISH.update({
     'report.nca.translator_note_heading': 'Note for translator (copy below)',
     'report.nca.passes_not_listed': 'counted here, not listed below',
     'report.nca.translator_note_normalized':
-        '{ref}: Check consistency: the translation has {wip}; the number index lists {expected}. The index '
-        'does not read every number-like word in the original-language text here as a number{detail}. '
-        'Original-language text: "{ol_text}". Reference translation (BSB): "{bsb_text}". Also see the NIV ({niv}).',
+        '{ref}: Check consistency: the translation has {wip}; the number index lists {expected} but cannot settle '
+        'this verse: {reason}{detail}. Original-language text: "{ol_text}". Reference translation (BSB): '
+        '"{bsb_text}". Also see the NIV ({niv}).',
 })
 _ENGLISH_LANGUAGES = frozenset({"en", "en-US", "en-GB"})
 _CATALOG_LANGUAGES = _ENGLISH_LANGUAGES | {"id", "fr", "ru", "pt-BR", "uk"}
@@ -331,9 +331,6 @@ def _finding_lines(finding, text) -> list[str]:
     ]
 
 
-_NORMALIZED_REVIEW_KINDS = frozenset({'OL_NORMALIZED_UNDOCUMENTED', 'OL_NORMALIZATION_DIFFERENCE'})
-
-
 def _normalization_detail(review_context: Mapping[str, object]) -> str:
     """Name the documented OL expressions the index normalized; blank when none are recorded."""
     items = [f'"{item["SOURCE_EXPRESSION"]}": {item["REASON"]}'
@@ -545,43 +542,27 @@ _ACTION_TEXT = {
         "The same numbers appear in a different order: translation {wip}, source {expected}.",
     "report.nca.action.ORDER_DIFFERENCE":
         "{ref}: Check consistency: the numbers {wip} appear in a different order than the source ({expected}); each number must stay attached to its item.",
-    "report.nca.issue.NIV_ONLY_AUTHORITY":
-        "The original language has no explicit number here. The NIV reads {expected}; the translation has {wip}.",
-    "report.nca.action.NIV_ONLY_AUTHORITY":
-        "{ref}: Check consistency: the NIV has {expected} where the original language has no explicit number; the translation has {wip}.",
-    "report.nca.issue.MIXED_AUTHORITY":
-        "Across these bridged verses the expected values ({expected}) combine original-language and "
-        "NIV-only readings; the translation has {wip}.",
-    "report.nca.action.MIXED_AUTHORITY":
-        "{ref}: Check consistency: the translation has {wip}; the reference readings across these verses are {expected}, part of them from the NIV only.",
     "report.nca.issue.ATTESTED_VARIANT_READING":
         "The translation follows an attested alternate reading at {variant} ({alternate}); "
         "scholarship status: {status}.",
     "report.nca.action.ATTESTED_VARIANT_READING":
         "{ref}: This verse follows an alternate manuscript reading ({alternate}), which is acceptable. "
         "A footnote is {footnote}. Suggested note: {note}",
-    "report.nca.issue.OL_NORMALIZED_UNDOCUMENTED":
-        "The index normalized this verse's original-language numbers without a word-level record; "
-        "the translation has {wip}, the index lists {expected}.",
-    "report.nca.issue.OL_NORMALIZATION_DIFFERENCE":
-        "The translation matches the original-language words before the index's documented "
-        "normalization{detail}; the index lists {expected}.",
     "report.nca.issue.MATCHES_SECONDARY_AUTHORITY":
         "The translation matches the NIV ({niv}) but not the original-language reading ({expected}).",
     "report.nca.action.MATCHES_SECONDARY_AUTHORITY":
         "{ref}: Check consistency: the translation follows the NIV's numbers ({niv}); the original language reads {expected}.",
-    "report.nca.issue.CONVENTION_EDGE_CASE":
-        "The only difference is the extra value(s) {extra}, tagged as {kinds} by extraction.",
-    "report.nca.action.CONVENTION_EDGE_CASE":
-        "{ref}: Check consistency: {extra} is an ordinal or descriptive number word (such as \"second\" or \"twice\") that the reference does not count.",
-    "report.nca.issue.NO_INDEXED_VALUES":
-        "The index lists this coordinate without numeric values, but the translation has {wip}.",
-    "report.nca.action.NO_INDEXED_VALUES":
-        "{ref}: Check consistency: the translation has {wip}; the number index has no numbers for this verse.",
-    "report.nca.issue.PROVISIONAL_INDEX":
-        "The translation has {wip}; the rebuilt index has {expected}, which is not yet reviewed.",
-    "report.nca.action.PROVISIONAL_INDEX":
-        "{ref}: Check consistency: the translation has {wip}; the rebuilt index has {expected}, not yet reviewed.",
+    "report.nca.issue.INDEX_UNSETTLED":
+        "The translation has {wip}; the index lists {expected} but cannot settle this verse: {reason}{detail}.",
+    "report.nca.index_reason.NO_INDEXED_VALUES": "the index has no numbers for it",
+    "report.nca.index_reason.NIV_ONLY_AUTHORITY": "only the NIV gives a number here and the original language has none",
+    "report.nca.index_reason.MIXED_AUTHORITY":
+        "the readings across these bridged verses come partly from the NIV only",
+    "report.nca.index_reason.OL_NORMALIZED_UNDOCUMENTED":
+        "the index adjusted the original-language numbers without a word-level record",
+    "report.nca.index_reason.OL_NORMALIZATION_DIFFERENCE":
+        "the index does not count every number-like original-language word here",
+    "report.nca.index_reason.PROVISIONAL_INDEX": "the index value is rebuilt and not yet reviewed",
     "report.nca.footnote.REQUIRE": "required",
     "report.nca.footnote.RECOMMEND": "recommended",
     "report.nca.footnote.NONE": "not required",
@@ -654,10 +635,12 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
         "ref": ref, "wip": wip, "expected": expected, "authority": authority,
         "ol": _list(context.get("ol_values"), text), "niv": _list(context.get("niv_values"), text),
     }
-    if kind in _NORMALIZED_REVIEW_KINDS:
-        issue = text("report.nca.issue." + kind).format(detail=_normalization_detail(context), **values)
+    if kind == "INDEX_UNSETTLED":
+        reason = text("report.nca.index_reason." + str(context.get("reason") or "NO_INDEXED_VALUES"))
+        issue = text("report.nca.issue.INDEX_UNSETTLED").format(
+            reason=reason, detail=_normalization_detail(context), **values)
         action = text("report.nca.translator_note_normalized").format(
-            ref=ref, wip=wip, expected=expected, detail=_normalization_detail(context),
+            ref=ref, wip=wip, expected=expected, reason=reason, detail=_normalization_detail(context),
             ol_text=context.get("ol_text") or "NOT RECORDED", bsb_text=context.get("bsb_text") or "NOT RECORDED",
             niv=values["niv"])
         return issue, action
@@ -690,13 +673,6 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
             for item in context.get("units") or () if isinstance(item, Mapping)) or wip)
     if kind in {"MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"}:
         values.update(numerals=", ".join(str(item) for item in context.get("numerals") or ()) or wip)
-    if kind == "CONVENTION_EDGE_CASE":
-        from collections import Counter
-        wip_values = list(finding.get("wip_values") or ())
-        extra = Counter(wip_values) - Counter(finding.get("expected_values") or ())
-        kinds = list(context.get("wip_kinds") or ())
-        values.update(extra=_list(list(extra.elements()), text),
-                      kinds=", ".join(sorted({kinds[i] for i, v in enumerate(wip_values) if v in extra and i < len(kinds)})) or "edge case")
     key = kind if ("report.nca.issue." + kind) in _ENGLISH else "VALUE_DIFFERENCE"
     action = text("report.nca.action." + key).format(**values)
     if key == "ORDER_DIFFERENCE" and context.get("authority_text"):

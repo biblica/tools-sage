@@ -12,6 +12,7 @@ in the `docs/` root. Technical and governance material is grouped under
 - [BIC Cheat Sheet](BIC-CHEAT-SHEET.md) — BIC Job, Run, task, state, and recovery quick reference.
 - [RTC/STC Cheat Sheet](RTC-STC-CHEAT-SHEET.md) — canonical RTC/STC Job setup, authority, finalization, and read-only boundaries.
 - [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) — number accuracy, FAIL/NEEDS_REVIEW findings, text-critical decisions, optional style profiles and the number-style report, Run switches, and coverage limits.
+- [NCA Reference Package and Rules](advanced/workflows/NCA-REFERENCE-AND-RULES.md) — the bundled number index, MACULA/NIV layers, and text-critical evidence sources.
 - [NCA Counting Convention](../system/skills/nca-numbers/references/COUNTING-CONVENTION.md) — which numbers NCA counts (quantities and dates) and what value each gets.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.

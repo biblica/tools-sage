@@ -159,22 +159,13 @@ _MESSAGES = {
     "NUMBER_NOT_IN_SOURCE": "The verse has a numeral although the source has no number here.",
     "ORDER_DIFFERENCE": "Same numeric values in a different order -- confirm this is a faithful reordering, "
                         "not a swapped referent.",
-    "NIV_ONLY_AUTHORITY": "Numeric values differ from the NIV reading; the original language has no explicit "
-                          "number here, so NIV is guidance only.",
-    "MIXED_AUTHORITY": "Numeric values differ across a bridged group whose expected values mix original-language "
-                       "and NIV-only readings.",
     "ATTESTED_VARIANT_READING": "The WIP follows a registered alternate (textual-variant) reading; confirm the "
                                 "choice and the required footnote.",
-    "OL_NORMALIZED_UNDOCUMENTED": "Numeric values differ from an index reading normalized away from the literal "
-                                  "original-language tokens without a token record.",
-    "OL_NORMALIZATION_DIFFERENCE": "Numeric values match the original-language tokens before the index's "
-                                   "documented normalization.",
     "MATCHES_SECONDARY_AUTHORITY": "Numeric values differ from the original-language reading but match the NIV.",
-    "CONVENTION_EDGE_CASE": "The only difference is extra ordinal, multiplier, percentage or approximate values.",
-    "NO_INDEXED_VALUES": "The index lists this coordinate without numeric values, but the WIP has numbers.",
-    "PROVISIONAL_INDEX": "Numeric values differ from a rebuilt index value that is not yet reviewed.",
+    "INDEX_UNSETTLED": "The index cannot settle this verse (no numbers, NIV-only or mixed authority, an unreviewed or normalized "
+                       "reading); the values are reported with the source text.",
     "APPARATUS_VARIANT": "Numeric values differ where the textual apparatus records a number variant.",
-    "NUMBERS_DIFFER": "The translation leaves out or adds numbers the source does not match; reported, not analysed.",
+    "NUMBERS_DIFFER": "The translation leaves out or adds numbers the source does not match; reported, not analyzed.",
 }
 
 

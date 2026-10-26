@@ -116,7 +116,7 @@ def test_row_with_neither_ol_nor_niv_values_routes_wip_numbers_to_review():
     """A row that indexes no values cannot vouch for a FAIL; WIP numbers there need review."""
     result = compare_values(values(3), row((), ()), mode='ORDERED')
     assert result.outcome == 'NEEDS_REVIEW'
-    assert result.review_context['kind'] == 'NO_INDEXED_VALUES'
+    assert result.review_context['kind'] == 'INDEX_UNSETTLED' and result.review_context['reason'] == 'NO_INDEXED_VALUES'
     assert result.authority == 'NONE'
     assert compare_values(values(), row((), ()), mode='ORDERED').outcome == 'PASS'
 
@@ -149,7 +149,8 @@ def test_undocumented_verse_override_mismatch_is_review_not_blocking_fail():
     for mode in ('ORDERED', 'UNORDERED'):
         result = compare_values(values(30, 2, 410, 1000), reference, mode=mode)
         assert result.outcome == 'NEEDS_REVIEW'
-        assert result.review_context['kind'] == 'OL_NORMALIZED_UNDOCUMENTED'
+        assert result.review_context['kind'] == 'INDEX_UNSETTLED'
+        assert result.review_context['reason'] == 'OL_NORMALIZED_UNDOCUMENTED'
         assert result.review_context['ol_text'] == 'OL text'
         assert result.review_context['bsb_text'] == 'BSB text'
         assert result.review_context['normalizations'][0]['LAYER'] == 'FINAL_OL_VERSE_OVERRIDE'
@@ -161,7 +162,8 @@ def test_documented_drop_explains_mismatch_only_when_reversal_reproduces_wip():
     reference = normalized_row((40,), override(expression='הַשְּׁמִינִית', original='8', reason='musical term'))
     explained = compare_values(values(8, 40), reference, mode='UNORDERED')
     assert explained.outcome == 'NEEDS_REVIEW'
-    assert explained.review_context['kind'] == 'OL_NORMALIZATION_DIFFERENCE'
+    assert explained.review_context['kind'] == 'INDEX_UNSETTLED'
+    assert explained.review_context['reason'] == 'OL_NORMALIZATION_DIFFERENCE'
     assert compare_values(values(7, 40), reference, mode='UNORDERED').review_context['kind'] == 'NUMBERS_DIFFER'
 
 
@@ -178,7 +180,7 @@ def test_niv_authority_is_never_rerouted_by_ol_normalizations():
     reference = normalized_row((), override('FINAL_OL_VERSE_OVERRIDE', 'REPLACE_VERSE_VALUES'), niv_values=(3,))
     result = compare_values(values(4), reference, mode='UNORDERED')
     assert (result.outcome, result.authority) == ('NEEDS_REVIEW', 'NIV')
-    assert result.review_context['kind'] == 'NIV_ONLY_AUTHORITY'
+    assert result.review_context['kind'] == 'INDEX_UNSETTLED' and result.review_context['reason'] == 'NIV_ONLY_AUTHORITY'
 
 
 def test_order_difference_review_context_is_labelled():
@@ -211,7 +213,7 @@ def test_niv_only_rows_never_block():
     """The index says 'do not auto-validate from NIV': an NIV-only mismatch is review."""
     result = compare_values(values(), row((), (1,)), mode='UNORDERED')
     assert result.outcome == 'NEEDS_REVIEW'
-    assert result.review_context['kind'] == 'NIV_ONLY_AUTHORITY'
+    assert result.review_context['kind'] == 'INDEX_UNSETTLED' and result.review_context['reason'] == 'NIV_ONLY_AUTHORITY'
 
 
 def test_follows_niv_where_it_differs_is_review_and_neither_is_fail():
@@ -241,11 +243,11 @@ def test_registered_alternate_reading_is_review_with_guidance():
     assert result.review_context['variant_guidance']['footnote_if_target_follows_alt'] == 'REQUIRE'
 
 
-def test_extra_edge_kind_values_are_convention_review():
-    """EZR 1:10 shape: an extra WIP value tagged ORDINAL is a convention question, not a FAIL."""
+def test_extra_edge_kind_values_are_reported_as_added_numbers():
+    """EZR 1:10 shape: an extra WIP value is reported as an added number, never a FAIL."""
     result = compare_values(values(30, 2, 410, 1000), row((30, 410, 1000), (30, 410, 1000)), mode='UNORDERED',
                             wip_kinds=('CARDINAL', 'ORDINAL', 'CARDINAL', 'CARDINAL'))
-    assert result.review_context['kind'] == 'CONVENTION_EDGE_CASE'
+    assert result.review_context['kind'] == 'NUMBERS_DIFFER' and result.review_context['added'] == ['2']
     untagged = compare_values(values(30, 2, 410, 1000), row((30, 410, 1000), (30, 410, 1000)), mode='UNORDERED',
                               wip_kinds=('CARDINAL',) * 4)
     assert untagged.review_context['kind'] == 'NUMBERS_DIFFER'

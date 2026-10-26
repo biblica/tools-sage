@@ -102,7 +102,7 @@ def test_mismatch_on_a_provisional_row_is_review_not_fail():
     provisional = ReferenceRow(VerseRef("GEN", 5, 3), "GEN 5:3", "HEB", "", (F(130),), "", (),
                                {"MATCH_STATUS": "OL_EXPLICIT_NIV_NONEXPLICIT", "OL_REVIEW_STATUS": "PROVISIONAL"})
     result = compare_group((F(131),), [provisional], mode="UNORDERED")
-    assert result.outcome == "NEEDS_REVIEW" and result.review_context["kind"] == "PROVISIONAL_INDEX"
+    assert result.outcome == "NEEDS_REVIEW" and result.review_context["kind"] == "INDEX_UNSETTLED" and result.review_context["reason"] == "PROVISIONAL_INDEX"
 
 
 def test_rule_decisions_leave_no_provisional_rows(package_root):

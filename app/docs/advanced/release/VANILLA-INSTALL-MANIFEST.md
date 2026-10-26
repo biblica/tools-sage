@@ -129,6 +129,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/workflows/GUIDED-INPUT-AND-INIT-REMEDIATION.md`
 - `docs/advanced/workflows/JOB-STORAGE-MAINTENANCE.md`
 - `docs/advanced/workflows/NATURAL-LANGUAGE-COMMAND-ROUTING.md`
+- `docs/advanced/workflows/NCA-REFERENCE-AND-RULES.md`
 - `docs/advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md`
 - `docs/advanced/workflows/RTC-CHECK-POLICY.md`
 - `docs/advanced/workflows/RTC-STC-OPERATOR-MODES.md`
@@ -943,6 +944,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/numbers/index_build/package.py`
 - `system/src/sage/numbers/index_build/versify.py`
 - `system/src/sage/numbers/index_build/witnesses.py`
+- `system/src/sage/numbers/measures.py`
 - `system/src/sage/numbers/model_tasks.py`
 - `system/src/sage/numbers/models.py`
 - `system/src/sage/numbers/numerals.py`
@@ -1092,6 +1094,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_footnotes.py`
 - `system/tests/numbers/test_hybrid_execution.py`
 - `system/tests/numbers/test_index_build.py`
+- `system/tests/numbers/test_measures.py`
 - `system/tests/numbers/test_model_tasks.py`
 - `system/tests/numbers/test_nca_cli.py`
 - `system/tests/numbers/test_nca_jobs.py`
