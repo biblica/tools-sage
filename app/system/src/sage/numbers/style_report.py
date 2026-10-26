@@ -4,6 +4,8 @@ Local and deterministic. Every number NCA read is classified by how it is writte
 - form: ``DIGITS`` ("42 360"), ``WORDS`` ("сорок дві тисячі"), ``MIXED`` ("5 тисяч");
 - digit script (Latin, Arabic-Indic, Devanagari ...), grouping separator (numerals of 1 000
   and more), decimal mark;
+- measure system (ancient or modern) of the unit a number counts, from the extraction's English
+  gloss and closed word lists (``measures.py``); the translation should keep to one;
 - location: ``BODY`` (verse text, from extraction) or ``NOTE`` (footnote numerals, read here).
 
 With a configured Number Style Profile every occurrence is checked against its rules and each
@@ -19,6 +21,7 @@ from fractions import Fraction
 import unicodedata
 from typing import Iterable, Mapping
 
+from .measures import has_lexicon, measure_system
 from .numerals import find_numerals
 
 _BANDS = ((0, 9), (10, 99), (100, 999), (1000, None))
@@ -75,7 +78,7 @@ def _name(char: str) -> str:
             ",": "comma", ".": "period", "'": "apostrophe", "’": "apostrophe"}.get(char, repr(char))
 
 
-def occurrences(groups: Iterable[object]) -> list[dict[str, object]]:
+def occurrences(groups: Iterable[object], language: str = "") -> list[dict[str, object]]:
     """Every written number of a Run: body numbers from extraction, footnote numerals read locally."""
     found = []
     for group in groups:
@@ -87,7 +90,8 @@ def occurrences(groups: Iterable[object]) -> list[dict[str, object]]:
             surface = extraction.surfaces[index] if index < len(extraction.surfaces) else ""
             if not surface:
                 continue
-            found.append(_occurrence(ref, "BODY", surface, value))
+            counts = extraction.counts[index] if index < len(extraction.counts) else ""
+            found.append({**_occurrence(ref, "BODY", surface, value), "measure": measure_system(counts, language)})
         for note in unit.target.notes:
             for numeral in find_numerals(note.text):
                 if numeral.readings:
@@ -100,7 +104,7 @@ def _occurrence(ref: str, location: str, surface: str, value: Fraction) -> dict[
     form = _form(surface)
     grouping, decimal = _separators(surface, value) if form != "WORDS" else ("", "")
     return {"reference": ref, "location": location, "surface": surface, "value": str(value), "form": form,
-            "script": _script(surface), "grouping": grouping, "decimal": decimal}
+            "script": _script(surface), "grouping": grouping, "decimal": decimal, "measure": ""}
 
 
 def _band(value: Fraction) -> tuple[int, int | None] | None:
@@ -137,6 +141,25 @@ def _dominant(counter: Counter) -> tuple[str, float] | None:
     return (choice, share) if share >= _DOMINANT_SHARE else None
 
 
+def _measure_consistency(found: list[dict[str, object]]) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    """One measure system per translation: the dominant system and the uses of the other, or both when even."""
+    items = [item for item in found if item["location"] == "BODY" and item.get("measure")]
+    by_system = {system: [item for item in items if item["measure"] == system] for system in ("ANCIENT", "MODERN")}
+    names = {"ANCIENT": "ancient measures", "MODERN": "modern measures"}
+    dominant = _dominant(Counter(item["measure"] for item in items))
+    if dominant is not None:
+        choice, share = dominant
+        other = "MODERN" if choice == "ANCIENT" else "ANCIENT"
+        rules = [{"area": "measures", "location": "BODY", "rule": names[choice], "share_percent": round(100 * share),
+                  "count": len(items), "value": choice}]
+        patterns = [_pattern("measures", "BODY", names[choice], names[other], by_system[other])] if by_system[other] else []
+        return rules, patterns
+    if by_system["ANCIENT"] and by_system["MODERN"]:
+        return [], [_pattern("measures", "BODY", "one measure system (none dominant)", names[system], by_system[system])
+                    for system in ("ANCIENT", "MODERN")]
+    return [], []
+
+
 def reconstruct(found: list[dict[str, object]]) -> dict[str, object]:
     """Infer the dominant number style of the WIP and list the minority uses."""
     rules, patterns = [], []
@@ -170,7 +193,8 @@ def reconstruct(found: list[dict[str, object]]) -> dict[str, object]:
             for other in sorted({item[key] for item in items} - {choice}):
                 patterns.append(_pattern(area, location, label, other if area == "digits" else _name(other),
                                          [item for item in items if item[key] == other]))
-    return {"basis": "RECONSTRUCTED", "rules": rules, "patterns": patterns}
+    measure_rules, measure_patterns = _measure_consistency(found)
+    return {"basis": "RECONSTRUCTED", "rules": rules + measure_rules, "patterns": patterns + measure_patterns}
 
 
 def variance(found: list[dict[str, object]], profile: Mapping[str, object]) -> dict[str, object]:
@@ -205,17 +229,21 @@ def variance(found: list[dict[str, object]], profile: Mapping[str, object]) -> d
             allowed = {_script(alphabet) for alphabet in digits.get("allowed", ())}
             if item["script"] not in allowed:
                 patterns[("digits", "BODY", ", ".join(sorted(allowed)), item["script"])].append(item)
+    measure_patterns = _measure_consistency(found)[1]
     return {"basis": "PROFILE", "profile": str((profile.get("profile") or {}).get("id") or ""),
             "rules": [], "patterns": [_pattern(area, location, expected, other, items)
-                                      for (area, location, expected, other), items in sorted(patterns.items())]}
+                                      for (area, location, expected, other), items in sorted(patterns.items())]
+            + measure_patterns}
 
 
-def analyze(groups: Iterable[object], style_profile: Mapping[str, object]) -> dict[str, object]:
+def analyze(groups: Iterable[object], style_profile: Mapping[str, object], language: str = "") -> dict[str, object]:
     """The Run's number-style report: variance against the profile, or a reconstructed guide."""
-    found = occurrences(groups)
+    found = occurrences(groups, language)
     configured = (style_profile.get("profile") or {}).get("status") == "CONFIGURED"
     result = variance(found, style_profile) if configured else reconstruct(found)
     result["numbers"] = len(found)
+    if not has_lexicon(language):
+        result["not_checked"] = [f"Measure-system consistency: no measure word list for language {language or 'unknown'}"]
     return result
 
 
@@ -303,6 +331,8 @@ def render(style: Mapping[str, object], *, project: str, profile_path: str | Non
             if len(item["references"]) > _EXAMPLES:
                 lines += [f"**{item['area']} — {item['found']}** ({item['count']}): "
                           + ", ".join(item["references"]), ""]
+    for note in style.get("not_checked", ()):
+        lines += [f"Not checked: {note}.", ""]
     lines += [f"Numbers classified: {style.get('numbers', 0)}. Number formatting only; wording and grammar are "
               "outside NCA."]
     return "\n".join(lines).rstrip() + "\n"

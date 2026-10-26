@@ -455,59 +455,37 @@ def test_bsb_citation_points_to_the_original_language_niv_and_versions():
     assert "Berean Standard Bible, public domain" in report.split("## Sources and attribution", 1)[1]
 
 
-def test_value_omitted_note_names_the_missing_number_and_asks_about_consistency():
-    """The translator note names the omitted value as a consistency check, without asking for input."""
+def test_numbers_differ_note_names_the_omitted_and_added_numbers():
+    """2CH 3:8 and REV 11:4: the note states which numbers differ, as a consistency check; nothing is explained."""
     from sage.nca_reporting import _ENGLISH, _finding_text
 
-    group = {"comparison": {"authority": "OL", "review_context": {"kind": "VALUE_OMITTED", "omitted": ["20"]}}}
-    finding = {"kind": "VALUE_OMITTED", "target_references": ["2CH 3:8"],
+    group = {"comparison": {"authority": "OL",
+                            "review_context": {"kind": "NUMBERS_DIFFER", "omitted": ["20"], "added": []}}}
+    finding = {"kind": "NUMBERS_DIFFER", "target_references": ["2CH 3:8"],
                "wip_values": ["20", "600"], "expected_values": ["20", "20", "600"]}
     issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
-    assert "20" in issue and action.startswith("2CH 3:8: Check consistency: 20 left out")
+    assert "Not in the translation: 20" in issue and "Not in the source" not in issue
+    assert action.startswith("2CH 3:8: Check consistency: the numbers differ from the source")
+    group["comparison"]["review_context"] = {"kind": "NUMBERS_DIFFER", "omitted": [], "added": ["2"]}
+    issue, _action = _finding_text({**finding, "target_references": ["REV 11:4"]}, group, lambda key: _ENGLISH[key])
+    assert "Not in the source: 2" in issue and "Not in the translation" not in issue
 
 
-def test_value_added_note_names_the_added_number():
-    """REV 11:4 "these two witnesses": the note names the added number as a consistency check."""
+def test_value_difference_note_reports_both_values_and_units():
+    """MAT 25:15 talents as coins: the numbers differ; both units are reported, a missing unit says so."""
     from sage.nca_reporting import _ENGLISH, _finding_text
 
-    group = {"comparison": {"authority": "OL", "review_context": {"kind": "VALUE_ADDED", "added": ["2"]}}}
-    finding = {"kind": "VALUE_ADDED", "target_references": ["REV 11:4"],
-               "wip_values": ["2", "2", "2"], "expected_values": ["2", "2"]}
-    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
-    assert "adds 2" in issue and action.startswith("REV 11:4: Check consistency: 2 added")
-
-
-def test_restructured_note_names_the_construction():
-    """EZK 45:23 and 2KI 25:17: the note says how the quantities were restated, as a consistency check."""
-    from sage.nca_reporting import _ENGLISH, _finding_text
-
-    restructured = [{"pattern": "REPEAT_STATED_ONCE", "omitted": ["7"], "made_explicit": ["male goat"]}]
+    units = [{"source_value": "5", "source_unit": "talent", "wip_value": "5000", "wip_unit": "coins",
+              "state": "DIFFERS"},
+             {"source_value": "11", "source_unit": "hour", "wip_value": "5", "wip_unit": "", "state": "NOT_DETERMINED"}]
     group = {"comparison": {"authority": "OL",
-                            "review_context": {"kind": "RESTRUCTURED", "restructured": restructured}}}
-    finding = {"kind": "RESTRUCTURED", "target_references": ["EZK 45:23"],
-               "wip_values": ["7", "7", "7", "1"], "expected_values": ["7", "7", "7", "7"]}
-    issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
-    assert "another construction" in issue
-    assert action == 'EZK 45:23: Check consistency: the repeated 7 stated once, and "one" made explicit for male goat.'
-    group["comparison"]["review_context"]["restructured"] = [{"pattern": "PAIR_AS_TWO"}]
-    _issue, action = _finding_text({**finding, "target_references": ["2KI 25:17"]}, group, lambda key: _ENGLISH[key])
-    assert action == '2KI 25:17: Check consistency: "one ... the second" stated as two.'
-
-
-def test_unit_conversion_note_shows_wip_value_and_original_unit():
-    """MAT 25:15 talents as coins: the note names both sides of the conversion and asks about style."""
-    from sage.nca_reporting import _ENGLISH, _finding_text
-
-    conversions = [{"ol_value": "5", "ol_unit": "talents", "wip_value": "5000", "wip_unit": "coins",
-                    "conversion": "UNIT_SCALED"},
-                   {"ol_value": "11", "ol_unit": "hour of the day", "wip_value": "5",
-                    "conversion": "HOUR_TO_CLOCK"}]
-    group = {"comparison": {"authority": "OL",
-                            "review_context": {"kind": "UNIT_CONVERSION", "conversions": conversions}}}
-    finding = {"kind": "UNIT_CONVERSION", "target_references": ["MAT 25:15"],
+                            "review_context": {"kind": "VALUE_DIFFERENCE", "unit_state": "DIFFERS", "units": units}}}
+    finding = {"kind": "VALUE_DIFFERENCE", "target_references": ["MAT 25:15"],
                "wip_values": ["5000", "5"], "expected_values": ["5", "11"]}
     issue, action = _finding_text(finding, group, lambda key: _ENGLISH[key])
-    assert "5 talents (original language) as 5000 coins" in issue
-    assert "hour 11 of the day (original language) as 5 o'clock" in issue
-    assert action == ("MAT 25:15: Check consistency: talents converted to modern measures; "
-                      "hour of the day converted to clock time.")
+    assert "source 5 talent; translation 5000 coins" in issue
+    assert "source 11 hour; translation 5 (unit not determined)" in issue
+    assert action.startswith("MAT 25:15: Correct the numbers") and "source 5 talent" in action
+    group["comparison"]["review_context"] = {"kind": "VALUE_DIFFERENCE", "unit_state": "SAME", "units": units}
+    issue, _action = _finding_text(finding, group, lambda key: _ENGLISH[key])
+    assert "Units" not in issue

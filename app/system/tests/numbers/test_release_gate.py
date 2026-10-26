@@ -28,7 +28,7 @@ def _row(label: str, ol: tuple, niv: tuple | None = None, *, kind: str = "CARDIN
     chapter, verse = coordinate.split(":")
     ol_values = tuple(Fraction(value) for value in ol)
     niv_values = ol_values if niv is None else tuple(Fraction(value) for value in niv)
-    items = tuple({"VALUE": str(value), "KIND": kind, "ROLE": role} for value in ol_values)
+    items = tuple({"VALUE": str(value), "KIND": kind, "ROLE": role, "REFERENT": "men"} for value in ol_values)
     return ReferenceRow(VerseRef(book, int(chapter), int(verse)), label, "HEB", "ol text", ol_values,
                         "bsb text", niv_values, {"TC_STATUS": tc, "OL_REVIEW_STATUS": review}, (), items, ())
 
@@ -120,11 +120,11 @@ def test_judges_see_one_fail_per_call_with_kind_and_referents(tmp_path):
     assert labels["verdicts"]["c1"]["a"]["cause"] == "VALUE_CHANGED"
 
 
-def _group(label: str, outcome: str, values: tuple, expected: tuple) -> dict:
+def _group(label: str, outcome: str, values: tuple, expected: tuple, counts: str = "") -> dict:
     """Build one serialized group as qualify_nca reads it from sut.json."""
     return {"western_references": [label], "evidence": {"wip_text": "text"},
             "extraction": {"status": "COMPLETE", "limitations": [], "values": list(values), "kinds": ["CARDINAL"] * len(values),
-                           "counts_en": [""] * len(values), "issues": []},
+                           "counts_en": [counts] * len(values), "issues": []},
             "comparison": {"outcome": outcome, "expected_values": list(expected), "wip_values": list(values),
                            "review_context": {}}}
 
@@ -133,7 +133,7 @@ def test_planted_error_fails_and_skips_rows_that_only_review():
     """A changed index value must FAIL; provisional and apparatus rows are not planted."""
     bundle = _Bundle([_row("JOS 4:2", ("12",)), _row("JOS 4:3", ("12",), review="PROVISIONAL"),
                       _row("JOS 4:4", ("12",), tc="VARIANT_ATTESTED")])
-    assert gate.planted_outcome(_group("JOS 4:2", "PASS", ("12",), ("12",)), bundle, "UNORDERED") == "FAIL"
+    assert gate.planted_outcome(_group("JOS 4:2", "PASS", ("12",), ("12",), "men"), bundle, "UNORDERED") == "FAIL"
     assert gate.planted_outcome(_group("JOS 4:3", "PASS", ("12",), ("12",)), bundle, "UNORDERED") is None
     assert gate.planted_outcome(_group("JOS 4:4", "PASS", ("12",), ("12",)), bundle, "UNORDERED") is None
 
@@ -142,7 +142,7 @@ def test_metrics_and_gate_pool_languages_and_apply_thresholds():
     """Metrics count per WIP; the gate pools them and applies every threshold."""
     bundle = _Bundle([_row("JOS 4:2", ("12",)), _row("JOS 4:8", ("12",))])
     sut = {"project_id": "p", "language": "uk-UA",
-           "groups": [_group("JOS 4:2", "PASS", ("12",), ("12",)), _group("JOS 4:8", "FAIL", (), ("12",))]}
+           "groups": [_group("JOS 4:2", "PASS", ("12",), ("12",), "men"), _group("JOS 4:8", "FAIL", (), ("12",))]}
     labels = {"values": {"c0": {"a": {"values": ["12"]}, "b": {"values": ["12"]}},
                          "c1": {"a": {"values": ["12"]}, "b": {"values": ["12"]}}},
               "verdicts": {"c1": {"a": {"verdict": "FALSE_ALARM"}, "b": {"verdict": "FALSE_ALARM"}}}}

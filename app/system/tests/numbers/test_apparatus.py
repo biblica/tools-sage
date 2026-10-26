@@ -70,7 +70,9 @@ def test_mismatch_at_an_attested_variant_is_review_not_fail():
     plain = ReferenceRow(VerseRef("LUK", 10, 1), "LUK 10:1", "GRK", "", (F(72),), "", (F(72),),
                          {"MATCH_STATUS": "PASS_EXACT", "OL_REVIEW_STATUS": "AGREES", "TC_STATUS": "NONE",
                           "TC_EVIDENCE": ""})
-    assert compare_group((F(70),), [plain], mode="UNORDERED").outcome == "FAIL"
+    typed = ReferenceRow(VerseRef("LUK", 10, 1), "LUK 10:1", "GRK", "", (F(72),), "", (F(72),),
+                         plain.metadata, ol_items=({"VALUE": "72", "REFERENT": "disciples"},))
+    assert compare_group((F(70),), [typed], mode="UNORDERED", wip_counts_en=("disciples",)).outcome == "FAIL"
 
 
 def test_net_parallel_references_are_read_from_tagged_tc_notes(tmp_path):

@@ -73,21 +73,26 @@ def test_unordered_mode_cannot_catch_the_same_swap_by_design():
 
 def test_ordered_mode_fails_when_multiset_also_disagrees():
     """A real value difference is FAIL, not NEEDS_REVIEW, under either mode."""
-    reference = row((14, 200))
+    reference = _typed_row(((14, 'elders'), (200, 'men')))
     for mode in ('ORDERED', 'UNORDERED'):
-        result = compare_values(values(14, 9), reference, mode=mode)
+        result = compare_values(values(14, 9), reference, mode=mode, wip_counts_en=('elders', 'men'))
         assert result.outcome == 'FAIL'
+        undetermined = compare_values(values(14, 9), reference, mode=mode)
+        assert undetermined.outcome == 'FAIL' and undetermined.review_context['kind'] == 'VALUE_DIFFERENCE'
+        assert undetermined.review_context['unit_state'] == 'NOT_DETERMINED'
 
 
 def test_missing_and_added_values_are_review_under_both_modes():
-    """A missing value is VALUE_OMITTED and an extra one VALUE_ADDED review; a changed value is a FAIL."""
-    reference = row((3, 4))
+    """A missing or an extra value is a NUMBERS_DIFFER review naming it; a changed value in the same unit is a FAIL."""
+    reference = _typed_row(((3, 'sheep'), (4, 'goats')))
     omitted = compare_values(values(3), reference, mode='ORDERED')
-    assert omitted.outcome == 'NEEDS_REVIEW' and omitted.review_context['kind'] == 'VALUE_OMITTED'
+    assert omitted.outcome == 'NEEDS_REVIEW' and omitted.review_context['kind'] == 'NUMBERS_DIFFER'
+    assert omitted.review_context['omitted'] == ['4'] and omitted.review_context['added'] == []
     added = compare_values(values(3, 4, 5), reference, mode='UNORDERED')
-    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'VALUE_ADDED'
+    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'NUMBERS_DIFFER'
     assert added.review_context['added'] == ['5']
-    assert compare_values(values(3, 5), reference, mode='UNORDERED').outcome == 'FAIL'
+    assert compare_values(values(3, 5), reference, mode='UNORDERED',
+                          wip_counts_en=('sheep', 'goats')).outcome == 'FAIL'
 
 
 def test_repeated_values_are_not_collapsed_into_a_set():
@@ -157,7 +162,7 @@ def test_documented_drop_explains_mismatch_only_when_reversal_reproduces_wip():
     explained = compare_values(values(8, 40), reference, mode='UNORDERED')
     assert explained.outcome == 'NEEDS_REVIEW'
     assert explained.review_context['kind'] == 'OL_NORMALIZATION_DIFFERENCE'
-    assert compare_values(values(7, 40), reference, mode='UNORDERED').review_context['kind'] == 'VALUE_ADDED'
+    assert compare_values(values(7, 40), reference, mode='UNORDERED').review_context['kind'] == 'NUMBERS_DIFFER'
 
 
 def test_documented_recomposition_reversal_is_review():
@@ -191,7 +196,11 @@ def _niv_row(ol_values, niv_values, match_status):
 
 def test_fail_is_reserved_for_ol_authority_and_carries_ol_and_niv_evidence():
     """A BLOCKING FAIL only ever stands on an OL reading, and always shows OL + NIV text."""
-    result = compare_values(values(4), row((3,), (3,), ol_text='שְׁלֹשָׁה', bsb_text='three'), mode='UNORDERED')
+    reference = _typed_row(((3, 'men'),))
+    reference = type(reference)(reference.western_reference, reference.ol_reference, reference.language, 'שְׁלֹשָׁה',
+                                reference.ol_values, 'three', reference.niv_values, reference.metadata,
+                                reference.ol_normalizations, ol_items=reference.ol_items, niv_items=reference.niv_items)
+    result = compare_values(values(4), reference, mode='UNORDERED', wip_counts_en=('men',))
     assert (result.outcome, result.authority) == ('FAIL', 'OL')
     assert result.review_context['kind'] == 'VALUE_DIFFERENCE'
     assert result.review_context['ol_text'] == 'שְׁלֹשָׁה'
@@ -208,9 +217,11 @@ def test_niv_only_rows_never_block():
 def test_follows_niv_where_it_differs_is_review_and_neither_is_fail():
     """OL and NIV differ: following the NIV is review (D1); matching neither is a wrong number."""
     row = _niv_row((100,), (1,), 'DIFFERENT_NUMERIC_EXPRESSION')
+    row = type(row)(row.western_reference, row.ol_reference, row.language, row.ol_text, row.ol_values, row.bsb_text,
+                    row.niv_values, row.metadata, ol_items=({"VALUE": "100", "REFERENT": "men"},))
     follows = compare_values(values(1), row, mode='UNORDERED')
     assert follows.outcome == 'NEEDS_REVIEW' and follows.review_context['kind'] == 'MATCHES_SECONDARY_AUTHORITY'
-    neither = compare_values(values(7), row, mode='UNORDERED')
+    neither = compare_values(values(7), row, mode='UNORDERED', wip_counts_en=('men',))
     assert neither.outcome == 'FAIL' and neither.review_context['kind'] == 'VALUE_DIFFERENCE'
 
 
@@ -237,7 +248,7 @@ def test_extra_edge_kind_values_are_convention_review():
     assert result.review_context['kind'] == 'CONVENTION_EDGE_CASE'
     untagged = compare_values(values(30, 2, 410, 1000), row((30, 410, 1000), (30, 410, 1000)), mode='UNORDERED',
                               wip_kinds=('CARDINAL',) * 4)
-    assert untagged.review_context['kind'] == 'VALUE_ADDED'
+    assert untagged.review_context['kind'] == 'NUMBERS_DIFFER'
 
 
 def test_bridged_group_mixing_ol_and_niv_is_mixed_review():
@@ -318,24 +329,33 @@ def _ol_row(ref, items, niv=()):
                                                               'OL_REVIEW_STATUS': 'AGREES'}, ol_items=ol)
 
 
-def test_hour_of_the_day_as_clock_time_is_a_unit_conversion_review():
-    """MAT 20:9 NVI "about five in the afternoon" for the 11th hour; the stated day's wage is a "one"."""
+def test_hour_of_the_day_as_clock_time_is_a_value_difference_with_units_reported():
+    """MAT 20:9 NVI "about five in the afternoon" for the 11th hour: the numbers differ; both units are shown."""
     row = _ol_row(('MAT', 20, 9), [(11, "ORDINAL", "DATE", "hour")], niv=(5,))
     result = compare_values(values(5, 1), row, mode='UNORDERED', wip_kinds=("APPROX", "CARDINAL"),
-                            wip_counts_en=("", "day"))
-    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'UNIT_CONVERSION'
-    assert result.review_context['conversions'] == [{"ol_value": "11", "ol_unit": "hour of the day",
-                                                     "wip_value": "5", "conversion": "HOUR_TO_CLOCK"}]
+                            wip_counts_en=("afternoon", "day"))
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+    assert result.review_context['unit_state'] == 'DIFFERS'
+    assert result.review_context['units'][0]['source_value'] == '11' and result.review_context['units'][0]['wip_value'] == '1'
 
 
-def test_a_measure_restated_in_another_unit_is_a_unit_conversion_review():
-    """MAT 25:15 NVI "five thousand coins ... two thousand ... one thousand" for 5 and 2 talents."""
+def test_a_measure_restated_in_another_unit_reports_both_units():
+    """MAT 25:15 NVI "five thousand coins" for 5 talents: the numbers differ, both units are reported, nothing converted."""
     row = _ol_row(('MAT', 25, 15), [(5, "CARDINAL", "MEASURE", "talents"), (2, "CARDINAL", "MEASURE", "talents")])
-    result = compare_values(values(5000, 2000, 1000), row, mode='UNORDERED', wip_kinds=("CARDINAL",) * 3,
-                            wip_counts_en=("coins", "coins", "coins"))
-    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'UNIT_CONVERSION'
-    assert [item["wip_value"] for item in result.review_context['conversions']] == ["5000", "2000"]
-    assert result.review_context['conversions'][0]["ol_unit"] == "talents"
+    result = compare_values(values(5000, 2000), row, mode='UNORDERED', wip_kinds=("CARDINAL",) * 2,
+                            wip_counts_en=("coins", "coins"))
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+    assert result.review_context['unit_state'] == 'DIFFERS'
+    assert [item["wip_value"] for item in result.review_context['units']] == ["2000", "5000"]
+    assert result.review_context['units'][0]["wip_unit"] == "coins"
+    assert "talent" in result.review_context['units'][0]["source_unit"]
+
+
+def test_a_missing_unit_does_not_soften_a_changed_number():
+    """A differing value whose unit is not stated is still a Variance; the report says the unit is not determined."""
+    row = _ol_row(('EZK', 40, 7), [(5, "CARDINAL", "MEASURE", "cubits")])
+    result = compare_values(values(50), row, mode='UNORDERED', wip_counts_en=("",))
+    assert result.outcome == 'FAIL' and result.review_context['unit_state'] == 'NOT_DETERMINED'
 
 
 def test_a_wrong_value_in_the_same_unit_is_still_a_fail():
@@ -358,44 +378,20 @@ EZK_45_23 = (("EZK", 45, 23), [(7, "days festival", "the.days"), (7, "bulls", "y
                                (7, "days", "days")])
 
 
-def test_a_repeat_stated_once_with_an_explicit_one_is_restructured_review():
-    """EZK 45:23: "seven days" said once and "a male goat" as "one goat" -- the same quantities."""
+def test_a_repeat_stated_once_with_an_explicit_one_is_a_substituted_value():
+    """EZK 45:23: no construction analysis; a 1 stands where a 7 is indexed, so the numbers differ."""
     result = compare_values(values(7, 7, 7, 1), _restructure_row(*EZK_45_23), mode='UNORDERED',
                             wip_counts_en=("days of the festival", "young bulls", "rams", "male goat"))
-    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'RESTRUCTURED'
-    assert result.review_context['restructured'] == [
-        {"pattern": "REPEAT_STATED_ONCE", "omitted": ["7"], "made_explicit": ["male goat"]}]
+    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
+    assert result.review_context['units'][0]['wip_value'] == '1'
 
 
-def test_a_one_that_replaces_a_missing_item_is_still_a_fail():
-    """"One bull" for seven bulls shares the missing item's word; a number no longer stated is not a repeat."""
+def test_a_one_that_replaces_a_missing_item_in_the_same_unit_is_a_fail():
+    """"One bull" for seven bulls counts the same item, so the changed value is a FAIL."""
     row = _restructure_row(*EZK_45_23)
     replaced = compare_values(values(7, 7, 7, 1), row, mode='UNORDERED',
                               wip_counts_en=("days of the festival", "rams", "days", "young bull"))
     assert replaced.outcome == 'FAIL' and replaced.review_context['kind'] == 'VALUE_DIFFERENCE'
-    unglossed = compare_values(values(7, 7, 7, 1), row, mode='UNORDERED', wip_counts_en=("", "", "", ""))
-    assert unglossed.outcome == 'FAIL'
-    gone = compare_values(values(1), _restructure_row(("NUM", 7, 87), [(12, "bulls", "bulls")]), mode='UNORDERED',
-                          wip_counts_en=("male goat",))
-    assert gone.outcome == 'FAIL'
-
-
-def test_one_and_the_second_stated_as_two_is_restructured_review():
-    """2KI 25:17: "one pillar ... the second pillar" as "the two columns"."""
-    row = _restructure_row(("2KI", 25, 17), [(18, "cubits", "cubit[s]"), (1, "height pillar", "the.height"),
-                                             (3, "height capital", "the.height")],
-                           bsb="Each pillar was eighteen cubits tall. The bronze capital atop one pillar was three "
-                               "cubits high. The second pillar, with its network, was similar.")
-    result = compare_values(values(18, 3, 2), row, mode='UNORDERED', wip_counts_en=("cubits", "cubits", "columns"))
-    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['restructured'] == [{"pattern": "PAIR_AS_TWO"}]
-
-
-def test_one_as_two_beside_a_counted_second_is_still_a_fail():
-    """In "the second year ... one ram", "second" is a counted date, so "two rams" is a changed value."""
-    row = _restructure_row(("NUM", 7, 15), [(2, "year", "year"), (1, "ram", "ram")],
-                           bsb="In the second year he brought one ram.")
-    result = compare_values(values(2, 2), row, mode='UNORDERED', wip_counts_en=("year", "rams"))
-    assert result.outcome == 'FAIL' and result.review_context['kind'] == 'VALUE_DIFFERENCE'
 
 
 def test_a_changed_value_in_one_of_several_units_is_still_a_fail():
@@ -455,22 +451,24 @@ def test_text_critical_note_records_which_reading_the_wip_follows():
 
 
 def test_a_difference_of_only_one_is_for_review_not_blocking():
-    """2KI 23:33 "one talent" for "a talent"; EXO 26:8 a repeated "one" left out: review, never FAIL."""
+    """2KI 23:33 "one talent" for "a talent"; EXO 26:8 a repeated "one" left out: reported, never FAIL."""
     row = _typed_row(((100, "talents of silver"),))
     added = compare_values(values(100, 1), row, mode='UNORDERED')
-    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'ONE_ONLY_DIFFERENCE'
+    assert added.outcome == 'NEEDS_REVIEW' and added.review_context['kind'] == 'NUMBERS_DIFFER'
+    assert added.review_context['added'] == ['1']
     dropped = compare_values(values(30, 4), _typed_row(((1, "curtain"), (30, "cubits"), (4, "cubits"))),
                              mode='UNORDERED')
-    assert dropped.review_context['kind'] == 'ONE_ONLY_DIFFERENCE'
-    assert compare_values(values(200), row, mode='UNORDERED').outcome == 'FAIL'
+    assert dropped.review_context['kind'] == 'NUMBERS_DIFFER' and dropped.review_context['omitted'] == ['1']
+    assert compare_values(values(200), row, mode='UNORDERED', wip_counts_en=("talents",)).outcome == 'FAIL'
 
 
 def test_a_pure_omission_is_for_review_not_blocking():
-    """2CH 3:8 "twenty cubits long and wide" for 20, 20: a repeated number stated once is a style choice."""
+    """2CH 3:8 "twenty cubits long and wide" for 20, 20: the omitted number is named, nothing is explained."""
     row = _typed_row(((20, "cubits long"), (20, "cubits wide"), (600, "talents")))
     result = compare_values(values(20, 600), row, mode='UNORDERED')
-    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'VALUE_OMITTED'
+    assert result.outcome == 'NEEDS_REVIEW' and result.review_context['kind'] == 'NUMBERS_DIFFER'
     assert result.review_context['omitted'] == ['20']
-    assert compare_values(values(), row, mode='UNORDERED').review_context['kind'] == 'VALUE_OMITTED'
-    # A different value is still a translation error: 2CH 35:8, 300 rendered as 3000.
-    assert compare_values(values(20, 3000), row, mode='UNORDERED').outcome == 'FAIL'
+    assert compare_values(values(), row, mode='UNORDERED').review_context['kind'] == 'NUMBERS_DIFFER'
+    # A different value in the same unit is a translation error: 2CH 35:8, 600 rendered as 6000.
+    assert compare_values(values(20, 20, 6000), row, mode='UNORDERED',
+                          wip_counts_en=("cubits", "cubits", "talents")).outcome == 'FAIL'

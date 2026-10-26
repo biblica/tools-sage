@@ -59,11 +59,7 @@ REVIEW_KINDS = frozenset({
     "NO_INDEXED_VALUES",
     "PROVISIONAL_INDEX",
     "APPARATUS_VARIANT",
-    "ONE_ONLY_DIFFERENCE",
-    "VALUE_OMITTED",
-    "VALUE_ADDED",
-    "UNIT_CONVERSION",
-    "RESTRUCTURED",
+    "NUMBERS_DIFFER",
     "WRONG_ASSOCIATION",  # on NIV-only or mixed groups (BLOCKING only under OL authority)
 })
 # FAIL kinds: a value differs from the source, a number sits on the wrong item, a numeral is
@@ -207,113 +203,40 @@ def _edge_case_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...],
     return bool(extra) and not (extra - edge)
 
 
-def _one_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
-    """Whether the WIP differs from the source only by added or missing values of 1."""
-    difference = (Counter(wip) - Counter(expected)) + (Counter(expected) - Counter(wip))
-    return bool(difference) and set(difference) == {Fraction(1)}
-
-
-def _omission_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
-    """Whether every WIP value is in the source and the WIP only leaves some source values out."""
-    return not (Counter(wip) - Counter(expected)) and bool(Counter(expected) - Counter(wip))
-
-
-def _addition_only(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...]) -> bool:
-    """Whether the WIP keeps every source value and only adds numbers the source does not state."""
-    return not (Counter(expected) - Counter(wip)) and bool(Counter(wip) - Counter(expected))
-
-
 def _words(text: str) -> set[str]:
     """Lowercased content words of an English gloss, plural -s removed ("talents" -> "talent")."""
     from .association import _tokens
     return _tokens(text.replace(".", " "))
 
 
-def _restructured(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...], rows: Sequence[ReferenceRow],
-                  wip_counts_en: Sequence[str]) -> list[dict[str, str]]:
-    """How the WIP states the source's quantities in another construction; [] unless a pattern explains it all.
+def _unit_state(wip: Tuple[Fraction, ...], missing: Counter, extra: Counter, rows: Sequence[ReferenceRow],
+                wip_counts_en: Sequence[str]) -> tuple[str, list[dict[str, str]]]:
+    """Compare the unit each differing WIP value counts with the unit the source value counts.
 
-    Two deterministic patterns from the release gate (2026-10-20, both judges: same quantities):
-    REPEAT_STATED_ONCE -- a repeated source number stated fewer times but still stated, and an
-    implied singular made explicit as "one" for an item no missing number counts (EZK 45:23 "the
-    seven days ... seven days" stated once, and "a male goat" as "one goat"). A "one" whose gloss
-    shares a word with a missing item ("one goat" for "seven goats") stays a FAIL.
-    PAIR_AS_TWO -- "the one [pillar] ... the second" stated as "the two" (2KI 25:17): one "one"
-    becomes one "two" and the source names a "second" that the convention does not count (a
-    counted "second year" is a date, so that "two" stays a FAIL).
-    """
-    missing = Counter(expected) - Counter(wip)
-    extra = Counter(wip) - Counter(expected)
-    if not missing or not extra:
-        return []
-    one = Fraction(1)
-    if set(extra) == {one} and all(value in wip for value in missing) and len(wip_counts_en) == len(wip):
-        counted = set().union(*(_words(str(item.get("REFERENT") or "")) | _words(str(item.get("UNIT") or ""))
-                                for row in rows for item in row.ol_items if Fraction(item["VALUE"]) in missing))
-        glosses = [gloss for value, gloss in zip(wip, wip_counts_en) if value == one]
-        if counted and all(gloss and not (_words(gloss) & counted) for gloss in glosses):
-            return [{"pattern": "REPEAT_STATED_ONCE",
-                     "omitted": [str(value) for value in missing.elements()],
-                     "made_explicit": [gloss for gloss in glosses if gloss]}]
-    two = Fraction(2)
-    if (missing == Counter({one: 1}) and extra == Counter({two: 1}) and two not in expected
-            and "second" in _words(" ".join(row.bsb_text for row in rows))):
-        return [{"pattern": "PAIR_AS_TWO"}]
-    return []
-
-
-def _unit_conversions(wip: Tuple[Fraction, ...], expected: Tuple[Fraction, ...], rows: Sequence[ReferenceRow],
-                      wip_kinds: Sequence[str], wip_counts_en: Sequence[str]) -> list[dict[str, str]]:
-    """Source values the WIP states in another unit, each with the WIP value; [] unless that explains it all.
-
-    Two deterministic patterns, as the NVI and NIV render them: an hour of the day as clock time
-    (the 11th hour is 5 in the afternoon: ``(hour + 6) mod 12``), and a measure restated in a
-    different unit with one scale factor for every value (5 and 2 talents as 5,000 and 2,000 coins).
-    A WIP "one" left over may be the stated "a day's wage" or "to another, one [talent]".
+    For the report only; it never changes an outcome. No conversion and no explanation: SAME when every pair of differing values
+    shares a word with its source item's unit or referent, DIFFERS when a pair shares none, and
+    NOT_DETERMINED when either side has no unit (the extraction gloss or the index item is empty).
     """
     items = [item for row in rows for item in row.ol_items]
-    missing = Counter(expected) - Counter(wip)
-    extra = Counter(wip) - Counter(expected)
-    if not missing or not extra:
-        return []
-    kinds = dict(zip(wip, wip_kinds)) if len(wip_kinds) == len(wip) else {}
-    glosses = dict(zip(wip, wip_counts_en)) if len(wip_counts_en) == len(wip) else {}
-    def unit(value: Fraction) -> dict[str, str] | None:
-        """The OL item that carries this value, with its unit and role."""
-        return next((item for item in items if Fraction(item["VALUE"]) == value), None)
-    conversions: list[dict[str, str]] = []
-    for value in list(missing.elements()):
-        item = unit(value)
-        if item is None or item.get("KIND") != "ORDINAL" or "hour" not in _words(item.get("UNIT", "")):
-            continue
-        clock = Fraction((int(value) + 6) % 12 or 12) if value.denominator == 1 and 1 <= value <= 12 else None
-        if clock is not None and extra[clock] and kinds.get(clock) != "ORDINAL":
-            conversions.append({"ol_value": str(value), "ol_unit": "hour of the day", "wip_value": str(clock),
-                                "conversion": "HOUR_TO_CLOCK"})
-            missing[value] -= 1
-            extra[clock] -= 1
-    measures = [value for value in (+missing).elements()
-                if (unit(value) or {}).get("ROLE") == "MEASURE" and (unit(value) or {}).get("UNIT")]
-    if measures and len(measures) == sum((+missing).values()):
-        factor = max(extra.elements()) / max(measures)
-        scaled = [value * factor for value in measures]
-        # Every unit a source value carries: one value may measure different things (2CH 2:10, 20,000
-        # cors of wheat and 20,000 baths of oil), and a WIP that keeps any of them did not convert.
-        source_units = set().union(*(_words(str(item.get("UNIT") or "")) for item in items
-                                     if Fraction(item["VALUE"]) in set(measures)))
-        changed = all(glosses.get(value) and not (_words(glosses[value]) & source_units) for value in scaled)
-        if factor != 1 and changed and not Counter(scaled) - extra:
-            for value, converted in zip(measures, scaled):
-                conversions.append({"ol_value": str(value), "ol_unit": unit(value)["UNIT"].replace(".", " "),
-                                    "wip_value": str(converted), "wip_unit": glosses[converted],
-                                    "conversion": "UNIT_SCALED"})
-                missing[value] -= 1
-                extra[converted] -= 1
-            if extra[factor] and glosses.get(factor) and not (_words(glosses[factor]) & source_units):
-                extra[factor] -= 1  # "and to another, one [talent]" restated as 1,000 coins
-    if +missing or set((+extra).elements()) - {Fraction(1)}:
-        return []
-    return conversions
+    glosses: dict[Fraction, str] = {}
+    if len(wip_counts_en) == len(wip):
+        for value, gloss in zip(wip, wip_counts_en):
+            glosses.setdefault(value, gloss)
+    pairs: list[dict[str, str]] = []
+    state = "SAME"
+    for source_value, wip_value in zip(sorted(missing.elements()), sorted(extra.elements())):
+        source_words = set().union(*(_words(str(item.get("UNIT") or "")) | _words(str(item.get("REFERENT") or ""))
+                                     for item in items if Fraction(item["VALUE"]) == source_value))
+        wip_unit = glosses.get(wip_value, "")
+        if not source_words or not _words(wip_unit):
+            pair_state = "NOT_DETERMINED"
+        else:
+            pair_state = "SAME" if source_words & _words(wip_unit) else "DIFFERS"
+        pairs.append({"source_value": str(source_value), "source_unit": " ".join(sorted(source_words)),
+                      "wip_value": str(wip_value), "wip_unit": wip_unit, "state": pair_state})
+        if pair_state == "DIFFERS" or (pair_state == "NOT_DETERMINED" and state == "SAME"):
+            state = pair_state
+    return state, pairs
 
 
 def _source_referents(rows: Sequence[ReferenceRow], expected: Tuple[Fraction, ...]) -> tuple[list, list]:
@@ -403,45 +326,29 @@ def compare_group(
     if Counter(niv) != Counter(expected) and Counter(wip_values) == Counter(niv):
         # Follows the NIV where it differs from the original language (decision D1): review.
         return _review("MATCHES_SECONDARY_AUTHORITY", mode, wip_values, expected, authority, evidence)
-    conversions = _unit_conversions(wip_values, expected, rows, wip_kinds, wip_counts_en)
-    if conversions:
-        # Release gate 2026-10-20: the NVI states hours as clock time and talents as coins, as the
-        # NIV does. A faithful conversion is a consistency and style question, not a wrong number.
-        return _review("UNIT_CONVERSION", mode, wip_values, expected, authority, evidence,
-                       conversions=conversions)
     if any(row.metadata.get("OL_REVIEW_STATUS") == "PROVISIONAL" for row in rows):
         # The index value here is rebuilt but not yet reviewed: report, never FAIL.
         return _review("PROVISIONAL_INDEX", mode, wip_values, expected, authority, evidence)
     if _edge_case_only(wip_values, expected, wip_kinds):
         return _review("CONVENTION_EDGE_CASE", mode, wip_values, expected, authority, evidence,
                        wip_kinds=list(wip_kinds))
-    if _one_only(wip_values, expected):
-        # Release gate 2026-10-18: "one" is where languages differ most (an implied singular made
-        # explicit, "year-old" read as 1); both judges called every such FAIL a false alarm.
-        return _review("ONE_ONLY_DIFFERENCE", mode, wip_values, expected, authority, evidence)
-    if _omission_only(wip_values, expected):
-        # Release gate 2026-10-18: a WIP that states a repeated number once ("twenty cubits long and
-        # wide") or folds it into an idiom is a style choice to confirm; every measured genuine FAIL
-        # was a different value, never a pure omission. PO decision 2026-10-18: review, not BLOCKING.
-        return _review("VALUE_OMITTED", mode, wip_values, expected, authority, evidence,
-                       omitted=[str(value) for value in (Counter(expected) - Counter(wip_values)).elements()])
-    if _addition_only(wip_values, expected):
-        # REV 11:4 "these two witnesses": a number made explicit from context. PO decision 2026-10-20:
-        # an added number is always review, never BLOCKING.
-        return _review("VALUE_ADDED", mode, wip_values, expected, authority, evidence,
-                       added=[str(value) for value in (Counter(wip_values) - Counter(expected)).elements()])
-    restructured = _restructured(wip_values, expected, rows, wip_counts_en)
-    if restructured:
-        # Release gate 2026-10-20: the same quantities in another construction are a consistency
-        # question, like an omission or an explicit "one" on its own.
-        return _review("RESTRUCTURED", mode, wip_values, expected, authority, evidence,
-                       restructured=restructured)
     if any(row.metadata.get("TC_STATUS") == "VARIANT_ATTESTED" for row in rows):
         # The apparatus records a number variant here: the WIP may follow another witness. Review.
         return _review("APPARATUS_VARIANT", mode, wip_values, expected, authority, evidence)
+    missing = Counter(expected) - Counter(wip_values)
+    extra = Counter(wip_values) - Counter(expected)
+    if not (missing and extra):
+        # Numbers left out or added, nothing substituted (a repeated number stated once, an explicit
+        # "one", a number made explicit): report the difference, never analyse it (PO decision 2026-10-26).
+        return _review("NUMBERS_DIFFER", mode, wip_values, expected, authority, evidence,
+                       omitted=[str(value) for value in missing.elements()],
+                       added=[str(value) for value in extra.elements()])
+    # A value is substituted: the numbers do not correspond. Whether the unit it counts differs is
+    # reported beside it, never a reason to soften the finding (PO decision 2026-10-26).
+    state, units = _unit_state(wip_values, missing, extra, rows, wip_counts_en)
     # Matches neither the original language nor the NIV: a wrong number (likely mistyped or misread).
     return ComparisonResult("FAIL", mode, wip_values, expected, authority,
-                            {"kind": "VALUE_DIFFERENCE", **evidence})
+                            {"kind": "VALUE_DIFFERENCE", "unit_state": state, "units": units, **evidence})
 
 
 def compare_values(

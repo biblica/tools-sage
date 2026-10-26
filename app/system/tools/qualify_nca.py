@@ -573,8 +573,13 @@ def planted_rows(rows: Sequence[object]) -> list[object] | None:
         if row.ol_values:
             values = list(row.ol_values)
             values[-1] = values[-1] + 1
+            items = [dict(item) for item in row.ol_items]
+            for item in reversed(items):  # the item that carried the changed value keeps its unit and referent
+                if Fraction(item["VALUE"]) == row.ol_values[-1]:
+                    item["VALUE"] = str(values[-1])
+                    break
             changed = replace(row, ol_values=tuple(values), niv_values=tuple(values),
-                              ol_normalizations=())
+                              ol_normalizations=(), ol_items=tuple(items), niv_items=())
             return [*rows[:position], changed, *rows[position + 1:]]
     return None
 

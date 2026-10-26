@@ -242,5 +242,5 @@ def evaluate(inputs: object, *, model_tasks: object, phase_store: PhaseStore, ru
                   'missing_owner_ids': [x.target.unit_id for x in inputs.projected_units if x.target.unit_id not in by_owner],
                   'numeric_comparison_mode': mode},
         content_advisories=list(inputs.content_advisories),
-        number_style=analyze_style(groups, inputs.style_profile))
+        number_style=analyze_style(groups, inputs.style_profile, inputs.policy['wip']['language']))
     return NumbersResult(tuple(groups), findings, coverage, summary, metrics)

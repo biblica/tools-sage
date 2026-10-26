@@ -9,6 +9,34 @@ Entries `IMP-20260914-001` through `IMP-20261011-001` were logged retrospectivel
 git history on the non-release `0.02a3` branch, where `VERSION` remains `0.02b1`. Their verification
 lines record the suites re-run on 2026-10-13 against `6bce03f`.
 
+### IMP-20261026-001 — NCA reports numeric mismatches and units; it no longer explains or harmonizes them
+
+- **Version:** `0.02a3` (development branch)
+- **Milestone:** `MS-02A3`
+- **TODO:** none (PO direction 2026-10-26: "if the units used differ from the indexed sources, report it; do not analyse or harmonize; that is not the NCA purpose")
+- **Implemented:**
+  - `numbers/compare.py`: removed the explain-the-difference machinery (`_unit_conversions`, `_restructured`,
+    `_one_only`, `_omission_only`, `_addition_only`). Review kinds `UNIT_CONVERSION`, `RESTRUCTURED`,
+    `VALUE_OMITTED`, `VALUE_ADDED` and `ONE_ONLY_DIFFERENCE` are replaced by one: `NUMBERS_DIFFER`
+    (numbers left out or added, nothing substituted; names both lists).
+  - A substituted value is always a `VALUE_DIFFERENCE` Variance (PO decision 2026-10-26: the numbers must
+    correspond; grammar and wording are RTC/STC). When the unit it counts differs from the source's or is not
+    determined, the report adds both values and units, never converting. No difference stops a Run.
+  - Report templates, cheat sheet, and tests updated. The release gate's
+    planted-error step now moves the unit with the planted value; the rest of the gate (cause taxonomy, text
+    plants) is unchanged and is to be simplified separately.
+  - Measure-system consistency (PO direction 2026-10-26: track consistency deterministically, no extra LLM calls,
+    word lists per language): `numbers/measures.py` holds ancient and modern measure word lists for Ukrainian,
+    Spanish and English and looks up the target-language "what it counts" text the existing extraction call already
+    returns; `numbers/style_report.py` reports the dominant system and every use of the other, with or without a
+    profile, and says "not checked" for a language without a list. No conversion, no model call. On the saved gate
+    data it found one modern use among 39 ancient (REV 16:21, Spanish "casi cuarenta y cinco"). Known gap: a word
+    that is also an ordinary word (Ukrainian "корів", cors or cows) is left out, so some ancient uses stay
+    unclassified.
+- **Verification:** `tests/numbers` and the NCA reporting tests pass (977 passed, 2 skipped on 2026-10-26). Replaying the saved gate data (969 verses, no model calls)
+  before the final revision it moved 12 FAILs to review; the final rule keeps substituted values as Variances.
+- **Not done:** not committed; no live gate run under the new rules.
+
 ### IMP-20261023-001 — Model qualification can actually pass live; administrative-only reasoning never routes (TODO-20261022-018, partial)
 
 - **Version:** `0.02a3` (development branch)

@@ -35,6 +35,28 @@
     SDBH fields).
   - Before building: run a small A/B on OL-triggering fixtures, with and without the annotation, to confirm a
     quality gain. The pinned tables are already cached for NCA (`index_build/macula.py`).
+- [ ] **NCA: replace part of the extraction LLM phase with deterministic code (app side first).** Audited
+  read-only 2026-10-26. The app's only LLM phase is `EXTRACTION` (`numbers/model_tasks.py`); comparison,
+  association and review classes are already local. Digit numerals are already read by code
+  (`numerals.py`) but save nothing in practice: across the five saved gate runs every extracted number had
+  `origin: MODEL`, because Ukrainian and Spanish WIPs spell numbers as words.
+  - Measured on the held-out 2 and 3 data (539 verses with numbers; the sample is stratified toward hard
+    classes, so a real WIP should have more plain cardinals): 413 verses (77%) contain only plain cardinals;
+    kinds 781 cardinal, 135 ordinal, 39 fraction, 14 approximate; surfaces 720 one-word, 148 two-word, 101
+    longer.
+  - Limit: the model also returns what each number counts (target-language gloss and English gloss), and the
+    association check uses that gloss. A number-word reader gives value and span but no gloss, so skipping
+    the model on easy verses needs a gloss-free association step first (for example pairing a number with
+    its noun through the OL alignment). That is a design change, not a switch.
+  - Suggested order: (1) deterministic per-language number-word verifier that runs on every verse and turns
+    any disagreement with the model's values or spans into a review item (no extra calls; also guards
+    recall); start with Ukrainian and Spanish, honouring `COUNTING-CONVENTION.md`; (2) replay the saved gate
+    data and measure agreement on plain cardinals; (3) only if agreement is very high, design the gloss-free
+    association and let code settle those verses; this is a new system under test and must be re-qualified.
+  - Gate side (separate, later): a deterministic text-plant planter and fewer judge calls on agreed verses.
+    Keep the gate's number reader a separate implementation from the app's so it stays independent, and
+    keep a seeded random sample judged so recall is not biased toward the system under test. The gate
+    changes as the app code is refined, so do the app side first.
 
 ## Future TUI work (`MS-FUTURE-TUI`, deferred)
 

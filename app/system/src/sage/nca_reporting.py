@@ -497,7 +497,7 @@ _ACTION_TEXT = {
     "report.nca.text_notes": "Text-critical notes",
     "report.nca.evidence_heading": "{label} evidence",
     "report.nca.closing_limitation": "Limitations",
-    "report.nca.issue.VALUE_DIFFERENCE": "The translation has {wip}; the {authority} has {expected}.",
+    "report.nca.issue.VALUE_DIFFERENCE": "The translation has {wip}; the {authority} has {expected}.{unit_note}",
     "report.nca.issue.WRONG_ASSOCIATION":
         "The numbers match the source, but they are attached to different items: {wip_pairs} in the "
         "translation, {source_pairs} in the source.",
@@ -515,36 +515,15 @@ _ACTION_TEXT = {
         "variant here.",
     "report.nca.action.APPARATUS_VARIANT":
         "{ref}: Check consistency: the translation follows a variant reading ({wip}); the original-language text has {expected}. Footnote the reading followed.",
-    "report.nca.issue.ONE_ONLY_DIFFERENCE":
-        "The translation has {wip} and the {authority} has {expected}; they differ only by the number one.",
-    "report.nca.action.ONE_ONLY_DIFFERENCE":
-        "{ref}: Check consistency: the translation differs from the source only by the number one (\"one talent\" for \"a talent\", or a repeated \"one\" left out).",
-    "report.nca.issue.VALUE_OMITTED":
-        "The translation has {wip}; the {authority} has {expected}. The translation leaves out {omitted} and adds "
-        "no other number.",
-    "report.nca.action.VALUE_OMITTED":
-        "{ref}: Check consistency: {omitted} left out (a repeated number stated once, an idiom, \"each\" or \"both\").",
-    "report.nca.issue.VALUE_ADDED":
-        "The translation has {wip}; the {authority} has {expected}. The translation adds {added} and keeps every "
-        "source number.",
-    "report.nca.action.VALUE_ADDED":
-        "{ref}: Check consistency: {added} added (a number made explicit from the context, such as \"these two witnesses\").",
-    "report.nca.issue.RESTRUCTURED":
-        "The translation has {wip}; the {authority} has {expected}. The translation states the same quantities in "
-        "another construction: {restructured}.",
-    "report.nca.action.RESTRUCTURED":
-        "{ref}: Check consistency: {restructured}.",
-    "report.nca.restructured.REPEAT_STATED_ONCE":
-        "the repeated {omitted} stated once, and \"one\" made explicit for {made_explicit}",
-    "report.nca.restructured.PAIR_AS_TWO": "\"one ... the second\" stated as two",
-    "report.nca.issue.UNIT_CONVERSION":
-        "The translation states the source value in another unit: {conversions}.",
-    "report.nca.action.UNIT_CONVERSION":
-        "{ref}: Check consistency: {checks}.",
-    "report.nca.check.HOUR_TO_CLOCK": "hour of the day converted to clock time",
-    "report.nca.check.UNIT_SCALED": "{ol_unit} converted to modern measures",
-    "report.nca.conversion.HOUR_TO_CLOCK": "hour {ol_value} of the day (original language) as {wip_value} o'clock",
-    "report.nca.conversion.UNIT_SCALED": "{ol_value} {ol_unit} (original language) as {wip_value} {wip_unit}",
+    "report.nca.issue.NUMBERS_DIFFER":
+        "The translation has {wip}; the {authority} has {expected}.{omitted_part}{added_part}",
+    "report.nca.action.NUMBERS_DIFFER":
+        "{ref}: Check consistency: the numbers differ from the source ({wip} against {expected}).",
+    "report.nca.omitted_part": " Not in the translation: {omitted}.",
+    "report.nca.added_part": " Not in the source: {added}.",
+    "report.nca.unit_note": " Units differ or are not determined: {unit_pairs}.",
+    "report.nca.unit_pair": "source {source_value} {source_unit}; translation {wip_value} {wip_unit}",
+    "report.nca.unit_pair.NOT_DETERMINED": " (unit not determined)",
     "report.nca.apparatus_heading": "Apparatus evidence",
     "report.nca.attribution": "Sources and attribution",
     "report.nca.no_apparatus": "No apparatus entry; registered by SAGE guidance only.",
@@ -558,7 +537,7 @@ _ACTION_TEXT = {
         "{ref}: the numbers appear in a different order than the source; each is attached to the right item "
         "({pairs}).",
     "report.nca.action.VALUE_DIFFERENCE":
-        "{ref}: Correct the numbers: the translation has {wip}; the original-language text has {expected}.",
+        "{ref}: Correct the numbers: the translation has {wip}; the original-language text has {expected}.{unit_note}",
     "report.nca.source_reads": 'For reference, the source reads: "{source}"',
     "report.nca.bsb_reads": 'For reference, the BSB reads: "{source}" (also see the NIV: {niv})',
     "report.nca.also_see_niv": "Also see — NIV (other reference)",
@@ -698,23 +677,17 @@ def _finding_text(finding: Mapping[str, object], group: Mapping[str, object], te
             wip_pairs=", ".join(f"{p.get('wip_counts') or '?'} {p.get('wip_value')}" for p in pairs) or wip,
             source_pairs=", ".join(f"{item.get('referent') or '?'} {item.get('value')}"
                                    for item in context.get("source_items") or ()) or expected)
-    if kind == "VALUE_OMITTED":
-        values.update(omitted=_list(context.get("omitted"), text))
-    if kind == "VALUE_ADDED":
-        values.update(added=_list(context.get("added"), text))
-    if kind == "RESTRUCTURED":
-        values.update(restructured="; ".join(
-            text("report.nca.restructured." + str(item.get("pattern"))).format(
-                omitted=_list(item.get("omitted"), text),
-                made_explicit=", ".join(str(gloss) for gloss in item.get("made_explicit") or ()) or "an item")
-            for item in context.get("restructured") or () if isinstance(item, Mapping)) or wip)
-    if kind == "UNIT_CONVERSION":
-        conversions = [item for item in context.get("conversions") or () if isinstance(item, Mapping)]
+    if kind == "NUMBERS_DIFFER":
+        omitted, added = context.get("omitted") or (), context.get("added") or ()
         values.update(
-            conversions="; ".join(text("report.nca.conversion." + str(item.get("conversion"))).format(
-                **{"wip_unit": "", **item}).strip() for item in conversions) or wip,
-            checks="; ".join(dict.fromkeys(text("report.nca.check." + str(item.get("conversion"))).format(**item)
-                                           for item in conversions)) or "unit converted to modern measures")
+            omitted_part=text("report.nca.omitted_part").format(omitted=_list(omitted, text)) if omitted else "",
+            added_part=text("report.nca.added_part").format(added=_list(added, text)) if added else "")
+    values["unit_note"] = ""
+    if kind == "VALUE_DIFFERENCE" and context.get("unit_state") not in (None, "SAME"):
+        values["unit_note"] = text("report.nca.unit_note").format(unit_pairs="; ".join(
+            text("report.nca.unit_pair").format(**{"source_unit": "", "wip_unit": "", **item}).strip()
+            + (text("report.nca.unit_pair.NOT_DETERMINED") if item.get("state") == "NOT_DETERMINED" else "")
+            for item in context.get("units") or () if isinstance(item, Mapping)) or wip)
     if kind in {"MALFORMED_NUMERAL", "NUMBER_NOT_IN_SOURCE"}:
         values.update(numerals=", ".join(str(item) for item in context.get("numerals") or ()) or wip)
     if kind == "CONVENTION_EDGE_CASE":
