@@ -21,7 +21,7 @@ def test_resource_report_names_projects_and_authorities_without_mutation(
     store = JobStore(root, root / "ecosystem.yml")
     rtc = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),

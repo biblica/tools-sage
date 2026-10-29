@@ -14,8 +14,11 @@ from sage.workflow_identity import canonical_analysis_job_id, runtime_workflow_i
 
 def test_analysis_job_identity_uses_snapshot_date_and_internal_adapter() -> None:
     """Wrong workflow prefixes, execution dates, or legacy routing break Job identity."""
-    assert canonical_analysis_job_id("rtc", "ukrNPUv1", "20260901") == (
-        "RTC-ukrNPUv1_20260901"
+    assert canonical_analysis_job_id("rtc", "ukrNPUv1", "20260901", "usNIV") == (
+        "RTC-ukrNPUv1-usNIV_20260901"
+    )
+    assert canonical_analysis_job_id("rtc", "ukrNPUv1", "20260901", "usNASB") == (
+        "RTC-ukrNPUv1-usNASB_20260901"
     )
     assert canonical_analysis_job_id("stc", "ukrNPUv1", "20260901") == (
         "STC-ukrNPUv1_20260901"
@@ -29,6 +32,7 @@ def test_analysis_job_identity_uses_snapshot_date_and_internal_adapter() -> None
     (
         ("saw", "ukrNPUv1", "20260901"),
         ("rtc", "bad/project", "20260901"),
+        ("rtc", "ukrNPUv1", "20260901"),
         ("stc", "ukrNPUv1", "2026-09-01"),
     ),
 )

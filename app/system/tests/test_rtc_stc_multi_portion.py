@@ -169,7 +169,7 @@ def test_multi_portion_rtc_run_reviews_exactly_the_selected_chapters(package_roo
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC multi-portion",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,

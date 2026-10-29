@@ -5777,10 +5777,10 @@ class SageControlCenter:
                 self.show_error(exc)
                 self.io.pause()
                 return None
-            job_id = canonical_analysis_job_id(
-                tool,
-                output.project_id,
-                imported_at.strftime("%Y%m%d"),
+            job_id = (
+                ""
+                if tool == "rtc"
+                else canonical_analysis_job_id(tool, output.project_id, imported_at.strftime("%Y%m%d"))
             )
             bindings = {"wip": output.project_id}
             source = None
@@ -5801,6 +5801,9 @@ class SageControlCenter:
                         )
                     )
                 bindings["reference"] = source.project_id
+                job_id = canonical_analysis_job_id(
+                    tool, output.project_id, imported_at.strftime("%Y%m%d"), source.project_id
+                )
                 name = f"{output.project_id} compared with {source.project_id}"
             else:
                 name = f"{output.project_id} compared with GRK/HEB"

@@ -45,7 +45,7 @@ def test_rtc_header_names_reference_and_snapshot(make_workspace) -> None:
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),
@@ -91,7 +91,7 @@ def test_primary_rtc_plan_resolves_its_rtc_job_container(make_workspace) -> None
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),

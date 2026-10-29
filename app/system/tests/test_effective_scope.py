@@ -164,7 +164,7 @@ def test_rtc_run_reviews_the_rest_and_reports_the_left_out_chapter(package_root:
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC effective scope",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,

@@ -184,7 +184,7 @@ def test_rtc_job_setup_uses_and_reports_each_project_import_date(
     created = center.create_job_wizard("rtc")
 
     assert created is not None, output.getvalue()
-    assert created.job_id == "RTC-usWIP_20260829"
+    assert created.job_id == "RTC-usWIP-usNIVv2_20260829"
     assert created.wip_snapshot is not None
     assert created.wip_snapshot["snapshot_date"] == "20260829"
     rendered = output.getvalue()
@@ -473,7 +473,7 @@ def test_snapshot_refresh_retains_the_wip_project_import_date(make_workspace) ->
 @pytest.mark.parametrize(
     ("tool", "job_id", "bindings"),
     (
-        ("rtc", "RTC-usWIP_20260829", {"wip": "usWIP", "reference": "usNIVv2"}),
+        ("rtc", "RTC-usWIP-usNIVv2_20260829", {"wip": "usWIP", "reference": "usNIVv2"}),
         ("stc", "STC-usWIP_20260829", {"wip": "usWIP"}),
     ),
 )
@@ -650,7 +650,7 @@ def _rtc_run_with_import_dates(root):
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260829",
+        job_id="RTC-usWIP-usNIVv2_20260829",
         display_name="Run status imports",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,
@@ -778,7 +778,7 @@ def test_partial_project_import_and_refresh_preserve_scope_and_identity(make_wor
     assert status["status"] == "ATTENTION"
     assert status["missing_books"] == ["MRK"]
     job = center.store.create_job(
-        tool="rtc", job_id=f"RTC-{created}_{before['imported_date']}",
+        tool="rtc", job_id=f"RTC-{created}-usNIVv2_{before['imported_date']}",
         display_name="Partial import history", bindings={"wip": created, "reference": "usNIVv2"},
     )
     run = center.store.create_run(job, operation="rtc", scope="MAT 1")

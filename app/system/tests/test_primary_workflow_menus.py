@@ -67,7 +67,7 @@ def _fixture_job(center, tool: str) -> Job:
     bindings = {"wip": "usWIP", "reference": "usNIVv2"} if tool == "rtc" else {"wip": "usWIP"}
     job = center.store.create_job(
         tool=tool,
-        job_id=f"{tool.upper()}-usWIP_20260901",
+        job_id=f"{tool.upper()}-usWIP{'-usNIVv2' if tool == 'rtc' else ''}_20260901",
         display_name=f"{tool.upper()} fixture",
         bindings=bindings,
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),

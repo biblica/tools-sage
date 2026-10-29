@@ -437,7 +437,7 @@ def _active_rtc_job(center) -> None:
     """Create one active RTC Job so the RTC home renders instead of redirecting to Add new."""
     from datetime import datetime, timezone
     job = center.store.create_job(
-        tool="rtc", job_id="RTC-usWIP_20260901", display_name="RTC fixture",
+        tool="rtc", job_id="RTC-usWIP-usNIVv2_20260901", display_name="RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),
     )

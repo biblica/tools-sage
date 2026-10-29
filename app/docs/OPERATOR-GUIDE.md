@@ -121,6 +121,7 @@ Reporting language is a separate authority. Every Job owns one required primary 
 RTC and STC Job IDs seal the WIP Project's recorded **Imported to SAGE** date, not the time the Job was created, for example `RTC-ukrNPUv1_20260901` and
 `STC-ukrNPUv1_20260901`. Job setup reports the import date of every candidate and selected Project. A legacy Project record without valid import metadata must be removed and re-added before RTC/STC setup; SAGE does not invent a date. Repeated analysis of that snapshot uses serial-only Run IDs such as
 `RTC-ukrNPUv1_20260901-001` and `-002`; the execution date does not replace the snapshot date.
+An RTC Job ID also names its REFERENCE, `RTC-<WIP>-<REFERENCE>_<date>`, so one WIP can be compared against several references on the same day (for example `RTC-usWIP-usNIV_20261029` and `RTC-usWIP-usNASB_20261029`). Alpha RTC Jobs created before this change keep their old ID.
 Paratext remains the authority, while the report records which static imported USJ snapshot was analyzed.
 
 Finalized Run findings remain as governed Job data. SAGE publishes one bundle per Book/chapter at

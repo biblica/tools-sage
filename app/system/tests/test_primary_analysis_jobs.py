@@ -32,7 +32,7 @@ def test_run_creation_validates_before_persistence_and_saves_canonical_scope(mak
     if tool == 'bic':
         job = next(job for job in store.bootstrap_default_jobs() if job.tool == 'bic')
     else:
-        job = store.create_job(tool=tool, job_id=f'{tool.upper()}-usWIP_20260901',
+        job = store.create_job(tool=tool, job_id=f"{tool.upper()}-usWIP{'-usNIVv2' if tool == 'rtc' else ''}_20260901",
             display_name='Scope fixture', imported_at=IMPORT_TIME,
             bindings={'wip': 'usWIP', **({'reference': 'usNIVv2'} if tool == 'rtc' else {})})
     for invalid in ['', 'MAT 3-1', 'MAT 1; MRK 1']:
@@ -76,7 +76,7 @@ def test_rtc_and_stc_use_independent_bindings(make_workspace) -> None:
 
     rtc = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,
@@ -145,7 +145,7 @@ def test_rtc_rejects_self_comparison_and_stc_rejects_reference(make_workspace) -
     with pytest.raises(ValidationError, match="different"):
         store.create_job(
             tool="rtc",
-            job_id="RTC-usWIP_20260901",
+            job_id="RTC-usWIP-usWIP_20260901",
             display_name="bad",
             bindings={"wip": "usWIP", "reference": "usWIP"},
             imported_at=IMPORT_TIME,
@@ -165,7 +165,7 @@ def test_rtc_rejects_self_comparison_and_stc_rejects_reference(make_workspace) -
     (
         (
             "rtc",
-            "RTC-usWIP_20260901",
+            "RTC-usWIP-usNIVv2_20260901",
             {"wip": "usWIP", "reference": "usNIVv2"},
             {"wip": "usWIP", "reference": "usNIRVv2"},
         ),
@@ -213,7 +213,7 @@ def test_delete_analysis_job_removes_all_owned_work_and_optionally_reports(
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="Disposable RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,
@@ -286,7 +286,7 @@ def test_same_day_refresh_replaces_job_snapshot_but_not_sealed_run(make_workspac
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC refresh fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,
@@ -422,7 +422,7 @@ def test_primary_rtc_task_and_composite_plan_keep_canonical_identity(
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="Canonical RTC fixture",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=IMPORT_TIME,
@@ -529,7 +529,7 @@ def test_role_neutral_partial_project_can_create_present_book_rtc_task(package_r
         profile["permissions"]["may_write_projects"] = []
         profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
     store = JobStore(root, root / "ecosystem.yml")
-    job = store.create_job(tool="rtc", job_id="RTC-usNIRVv2_20260901", display_name="Partial draft", bindings={"wip": "usNIRVv2", "reference": "usNIVv2"})
+    job = store.create_job(tool="rtc", job_id="RTC-usNIRVv2-usNIVv2_20260901", display_name="Partial draft", bindings={"wip": "usNIRVv2", "reference": "usNIVv2"})
     assert job.wip_snapshot["project_status"] == "READY_WITH_WARNINGS"
     assert job.wip_snapshot["books"] == ["MAT"]
     assert any(row["code"] == "PROJECT_BOOK_MISSING" for row in job.wip_snapshot["warnings"])

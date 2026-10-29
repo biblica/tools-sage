@@ -103,8 +103,13 @@ def analysis_reason_code(code: str, operation: str) -> str:
     return value
 
 
-def canonical_analysis_job_id(tool: str, project_id: str, snapshot_date: str) -> str:
-    """Build ``RTC/STC-<Project>_<YYYYMMDD>`` from the WIP import snapshot."""
+def canonical_analysis_job_id(
+    tool: str,
+    project_id: str,
+    snapshot_date: str,
+    reference: str | None = None,
+) -> str:
+    """Build ``RTC-<WIP>-<REF>_<YYYYMMDD>`` or ``STC-<WIP>_<YYYYMMDD>`` from the WIP import snapshot."""
     workflow = str(tool).strip().lower()
     if workflow not in ANALYSIS_WORKFLOWS:
         raise ValidationError(
@@ -119,6 +124,13 @@ def canonical_analysis_job_id(tool: str, project_id: str, snapshot_date: str) ->
             code="INVALID_WIP_SNAPSHOT_DATE",
             next_action="Use the WIP import date in YYYYMMDD form.",
         )
+    if workflow == "rtc":
+        if not reference:
+            raise ValidationError(
+                "RTC Job identity requires the bound REFERENCE Project",
+                code="INVALID_JOB_PROJECT_ID",
+            )
+        return f"RTC-{project}-{validate_project_code(reference)}_{date}"
     return f"{workflow.upper()}-{project}_{date}"
 
 

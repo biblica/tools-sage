@@ -165,7 +165,7 @@ def test_each_planner_built_plan_stale_cause_is_reported(package_root, make_work
     store = JobStore(root, root / "ecosystem.yml")
     job = store.create_job(
         tool="rtc",
-        job_id="RTC-usWIP_20260901",
+        job_id="RTC-usWIP-usNIVv2_20260901",
         display_name="RTC stale plan",
         bindings={"wip": "usWIP", "reference": "usNIVv2"},
         imported_at=datetime(2026, 9, 1, 9, 0, tzinfo=timezone.utc),

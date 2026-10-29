@@ -59,7 +59,7 @@ RUN_COMPLETED_STATUSES = frozenset(
 RUN_CLOSED_STATUSES = RUN_COMPLETED_STATUSES | {"ARCHIVED", "ABANDONED"}
 _JOB_ID_RE = re.compile(
     r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
-    r"|(?:RTC|STC|NCA)-[A-Za-z0-9][A-Za-z0-9._-]{0,63}_[0-9]{8})$"
+    r"|(?:RTC|STC|NCA)-[A-Za-z0-9][A-Za-z0-9._-]{0,130}_[0-9]{8})$"
 )
 _NCA_CHECK_NAMES = {
     "number_accuracy",
@@ -547,8 +547,13 @@ class JobStore:
             expected_job_id = (
                 canonical_nca_job_id(bindings["wip"], snapshot_date)
                 if job_tool == "nca"
-                else canonical_analysis_job_id(job_tool, bindings["wip"], snapshot_date)
+                else canonical_analysis_job_id(
+                    job_tool, bindings["wip"], snapshot_date, bindings.get("reference")
+                )
             )
+            if job_tool == "rtc" and manifest_job_id == f"RTC-{bindings['wip']}_{snapshot_date}":
+                # Alpha RTC Job created before the REFERENCE joined the name: kept, not migrated.
+                expected_job_id = manifest_job_id
             snapshot_receipt_path = path.parent / "snapshot" / "SNAPSHOT.json"
             if (
                 not snapshot_receipt_path.is_file()
@@ -936,7 +941,9 @@ class JobStore:
             expected_id = (
                 canonical_nca_job_id(bindings["wip"], snapshot_date)
                 if normalized_tool == "nca"
-                else canonical_analysis_job_id(normalized_tool, bindings["wip"], snapshot_date)
+                else canonical_analysis_job_id(
+                    normalized_tool, bindings["wip"], snapshot_date, bindings.get("reference")
+                )
             )
         else:
             expected_id = default_job_name(
@@ -1264,7 +1271,9 @@ class JobStore:
         next_job_id = (
             canonical_nca_job_id(current.bindings["wip"], snapshot_date)
             if current.tool == "nca"
-            else canonical_analysis_job_id(current.tool, current.bindings["wip"], snapshot_date)
+            else canonical_analysis_job_id(
+                current.tool, current.bindings["wip"], snapshot_date, current.bindings.get("reference")
+            )
         )
         lock_path = current.controller_root / "locks" / "snapshot-refresh.lock"
         with WorkspaceLock(lock_path, f"{current.tool.upper()}_SNAPSHOT_REFRESH"):
