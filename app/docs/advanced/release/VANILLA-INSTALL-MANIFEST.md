@@ -978,10 +978,17 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc`
 - `system/src/sage/pcc/__init__.py`
 - `system/src/sage/pcc/contracts.py`
+- `system/src/sage/pcc/discovery.py`
 - `system/src/sage/pcc/ids.py`
+- `system/src/sage/pcc/index.py`
 - `system/src/sage/pcc/journal.py`
 - `system/src/sage/pcc/jsonl.py`
+- `system/src/sage/pcc/phrases.py`
 - `system/src/sage/pcc/run.py`
+- `system/src/sage/pcc/segment.py`
+- `system/src/sage/pcc/source_text.py`
+- `system/src/sage/pcc/traits.py`
+- `system/src/sage/pcc/trie.py`
 - `system/src/sage/pcc_menu.py`
 - `system/src/sage/plan_continuation.py`
 - `system/src/sage/platform_commands.py`
@@ -1171,6 +1178,9 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc/fixtures/handover/synthetic/source.jsonl`
 - `system/tests/pcc/fixtures/handover/synthetic/target.jsonl`
 - `system/tests/pcc/test_pcc_p1.py`
+- `system/tests/pcc/test_pcc_p2.py`
+- `system/tests/pcc/test_pcc_p3.py`
+- `system/tests/pcc/test_pcc_p3_index.py`
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`
 - `system/tests/test_bic4_contract_and_vocabulary.py`
@@ -1308,6 +1318,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_numbers_index.py`
 - `system/tools/build_ol_analysis.py`
+- `system/tools/build_phrase_index.py`
 - `system/tools/build_release.py`
 - `system/tools/calibrate_token_estimator.py`
 - `system/tools/clone_and_install.cmd`

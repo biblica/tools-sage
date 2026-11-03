@@ -20,7 +20,8 @@ PREFIX_MAX = 4
 MIN_STEM = 3
 MIN_AFFIX_SUPPORT = 5   # distinct stems that alternate with this ending
 MAX_AFFIXES = 12
-CASED_SHARE = 0.05      # share of letters that change under casefold before the text counts as cased
+UPPER_SHARE = 0.005     # cased text has some capitals ...
+LOWER_SHARE = 0.1       # ... and mostly lowercase letters (a bare capital initial is about 3% of letters)
 UNSPACED_SHARE = 0.5
 APOSTROPHE_INSIDE_SHARE = 0.8  # share of uses with a letter on both sides before it counts as a letter
 APOSTROPHE_MIN_INSIDE = 5
@@ -115,7 +116,7 @@ def measure_traits(texts: Iterable[str]) -> WipTraits:
     letters: Counter[str] = Counter()
     scripts: Counter[str] = Counter()
     punctuation: Counter[str] = Counter()
-    changes_case = unspaced = 0
+    upper = lower = unspaced = 0
     for text in sample:
         for char in text:
             if char.isalpha():
@@ -123,13 +124,15 @@ def measure_traits(texts: Iterable[str]) -> WipTraits:
                 scripts[_script(char)] += 1
                 if is_unspaced_char(char):
                     unspaced += 1
-                if char.casefold() != char:
-                    changes_case += 1
+                if char.isupper():
+                    upper += 1
+                elif char.islower():
+                    lower += 1
             elif not char.isspace() and not char.isdigit() and not unicodedata.category(char).startswith("M"):
                 punctuation[char] += 1
     total = sum(letters.values())
     is_unspaced = total > 0 and unspaced / total > UNSPACED_SHARE
-    cased = total > 0 and changes_case / total >= CASED_SHARE
+    cased = total > 0 and upper / total >= UPPER_SHARE and lower / total >= LOWER_SHARE
     marks = _apostrophe_letters(sample)
     vocab: Counter[str] = Counter()
     word_count = 0

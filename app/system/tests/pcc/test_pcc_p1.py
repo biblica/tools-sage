@@ -300,25 +300,44 @@ def _run(store: JobStore, job, operation: str = "terms"):
     return config, run
 
 
-def test_terms_run_seals_inputs_and_reports_nothing_assessed(make_workspace) -> None:
-    """Verify that terms run seals inputs and reports nothing assessed."""
+def test_terms_run_seals_inputs_and_discovers_without_assessing_senses(make_workspace) -> None:
+    """Verify that a terms Run seals inputs, writes discovery outputs and claims no sense assessment."""
     store, _ = _store(make_workspace)
     job = store.create_job(tool="pcc", job_id="", display_name="x", bindings={"source": "usNIVv2"},
                            defaults=pcc_default_settings("sw"))
+    (job.root / "input").mkdir(parents=True, exist_ok=True)
+    (job.root / "input" / "phrases.txt").write_text("zzqx never occurs\n!!!\n", encoding="utf-8")
     config, run = _run(store, job)
     snapshot = load_run_snapshot(run.root)
     assert snapshot["source"]["project_id"] == "usNIVv2" and snapshot["target"] is None
     assert snapshot["source_authority"] == "SINGLE_SOURCE"
     summary = execute_pcc_run(store, config, job, run)
-    assert summary["evaluated_occurrences"] == 0 and summary["limitations"]
+    assert summary["evaluated_occurrences"] == 0 and "UNRESOLVED" in summary["limitations"][0]
     output = run.root / "validation" / "pcc"
     read_json(output / "run-manifest.json", kind="run_manifest")
     read_json(output / "summary.json", kind="summary")
     assert read_jsonl(output / "findings.jsonl", kind="finding") == []
+    expressions = read_jsonl(output / "expressions.jsonl", kind="expression")
+    occurrences = read_jsonl(output / "occurrences.jsonl", kind="occurrence")
+    assert summary["eligible_groups"] == len(expressions) and summary["eligible_occurrences"] == len(occurrences)
+    assert read_json(output / "source-traits.json")["units"] > 0
     exceptions = (run.root / "diagnostics" / "EXCEPTION-REPORTS.jsonl").read_text(encoding="utf-8")
-    assert "PCC_ANALYSIS_NOT_IMPLEMENTED" in exceptions and "NOT_ASSESSED" in exceptions
-    finished = store.load_run(job, run.run_id)
-    assert finished.status == "COMPLETE_WITH_EXCEPTIONS"
+    assert "PCC_PHRASE_NOT_IN_SOURCE" in exceptions and "phrases.txt line 1" in exceptions
+    assert "PCC_PHRASE_LINE_INVALID" in exceptions and "phrases.txt line 2" in exceptions
+    assert store.load_run(job, run.run_id).status == "COMPLETE_WITH_EXCEPTIONS"
+
+
+def test_check_run_reports_nothing_assessed(make_workspace) -> None:
+    """Verify that a check Run still states that no analysis exists yet."""
+    store, _ = _store(make_workspace)
+    job = store.create_job(tool="pcc", job_id="", display_name="x",
+                           bindings={"source": "usNIVv2", "wip": "usWIP"},
+                           defaults=pcc_default_settings("en"))
+    config, run = _run(store, job, operation="check")
+    summary = execute_pcc_run(store, config, job, run)
+    assert summary["evaluated_occurrences"] == 0 and summary["limitations"]
+    exceptions = (run.root / "diagnostics" / "EXCEPTION-REPORTS.jsonl").read_text(encoding="utf-8")
+    assert "PCC_ANALYSIS_NOT_IMPLEMENTED" in exceptions
 
 
 def test_run_outputs_are_identical_for_identical_inputs(make_workspace) -> None:

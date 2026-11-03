@@ -18,7 +18,12 @@ from ..hashing import sha256_paths
 from ..registry import EcosystemConfig
 from ..scripture import discover_usfm_files
 from ..vrs import load_project_vrs
+from ..references import parse_scope
 from . import ENGINE_VERSION, OPERATIONS
+from .discovery import Seed, discover
+from .phrases import PHRASES_FILE, read_phrases
+from .source_text import source_units
+from .traits import measure_traits
 from .contracts import SCHEMA_VERSION, validate_record
 from .ids import full_digest
 from .journal import decision_snapshot_sha256, read_journal
@@ -37,6 +42,50 @@ NOT_IMPLEMENTED_LIMITATION = (
     "PCC analysis is not implemented in this build (plan phase P1): no SOURCE expression or "
     "occurrence was assessed. This Run is not a consistency result."
 )
+
+
+TERMS_LIMITATION = (
+    "Terms list discovery only (plan phase P3): expressions and occurrences were located in the SOURCE, "
+    "but no sense or consistency was assessed. Every occurrence sense is UNRESOLVED."
+)
+
+
+def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any], output: Path, run: Any) -> dict[str, int]:
+    """Function A: discover and locate SOURCE expressions, write the machine outputs, report problems."""
+    source = snapshot["source"]
+    units = source_units(config.project(source["project_id"]).path, parse_scope(snapshot["scope"]))
+    traits = measure_traits(unit.text for unit in units)
+    phrases, problems = read_phrases(job.root / "input" / PHRASES_FILE, traits)
+    seeds = [Seed(p.surface, p.tokens, "LOCAL_INPUT", "TERM" if len(p.tokens) == 1 else "FIXED_PHRASE", line=p.line)
+             for p in phrases]
+    settings = snapshot["discovery"]
+    found = discover(
+        units,
+        source_corpus_id=source["project_id"],
+        source_sha256=source["content_sha256"],
+        traits=traits,
+        seeds=seeds,
+        min_occurrences=settings["min_confirmed_same_sense_occurrences"],
+        min_tokens=settings["min_ngram_tokens"],
+        max_tokens=settings["max_ngram_tokens"],
+    )
+    write_jsonl(output / "expressions.jsonl", found.expressions, kind="expression", sort_key="expression_id")
+    write_jsonl(output / "occurrences.jsonl", found.occurrences, kind="occurrence", sort_key="occurrence_id")
+    write_jsonl(output / "expression-stats.jsonl", found.stats)
+    write_json(output / "source-traits.json", {**traits.as_record(), "auto_discovery": found.auto_discovery,
+                                               "units": len(units)})
+    notes = [(f"PCC_PHRASE_NOT_IN_SOURCE", f"{PHRASES_FILE} line {s.line}: '{s.surface}' does not occur in the SOURCE scope; "
+              "kept on the list with zero occurrences.", f"{PHRASES_FILE}:{s.line}") for s in found.unfound]
+    notes += [("PCC_PHRASE_LINE_INVALID", f"{PHRASES_FILE} line {p.line}: {p.reason}; the line was not used.",
+               f"{PHRASES_FILE}:{p.line}") for p in problems]
+    if found.auto_discovery != "RAN":
+        notes.append(("PCC_DISCOVERY_PARTIAL", "The SOURCE script is written without spaces: automatic phrase "
+                      "discovery was skipped; only listed phrases were located.", snapshot["scope"]))
+    for code, message, coordinate in notes:
+        record_exception(run.root, ExceptionRecord(
+            tool="pcc", code=code, message=message, effect=NOT_ASSESSED, run_id=run.run_id, job_id=job.job_id,
+            stage=STAGES[1], coordinates=(coordinate,), severity="WARNING"))
+    return {"expressions": len(found.expressions), "occurrences": len(found.occurrences), "notes": len(notes)}
 
 
 def _utc_now() -> str:
@@ -175,26 +224,36 @@ def execute_pcc_run(store: Any, config: EcosystemConfig, job: Any, run: Any) -> 
         "findings_by_code": {},
         "limitations": [NOT_IMPLEMENTED_LIMITATION],
     }
+    terms = snapshot["operation"] == "terms"
+    counts = _terms_analysis(config, job, snapshot, output, run) if terms else None
+    if counts:
+        summary["eligible_groups"] = counts["expressions"]
+        summary["eligible_occurrences"] = counts["occurrences"]
+        summary["limitations"] = [TERMS_LIMITATION]
     write_json(output / "run-manifest.json", manifest, kind="run_manifest")
     write_jsonl(output / "findings.jsonl", [], kind="finding", sort_key="finding_id")
     write_jsonl(output / "occurrence-audit.jsonl", [], kind="occurrence_audit", sort_key="occurrence_id")
     write_json(output / "summary.json", summary, kind="summary")
-    record_exception(
-        run.root,
-        ExceptionRecord(
-            tool="pcc",
-            code="PCC_ANALYSIS_NOT_IMPLEMENTED",
-            message=NOT_IMPLEMENTED_LIMITATION,
-            effect=NOT_ASSESSED,
-            run_id=run.run_id,
-            job_id=job.job_id,
-            stage=STAGES[1],
-            coordinates=(snapshot["scope"],),
-            severity="WARNING",
-        ),
-    )
-    store._update_run_for_job(
-        job, run, status="COMPLETE_WITH_EXCEPTIONS", current_stage=STAGES[-1], result="DONE",
-        result_reason="PCC_ANALYSIS_NOT_IMPLEMENTED",
-    )
+    if not terms:
+        record_exception(
+            run.root,
+            ExceptionRecord(
+                tool="pcc",
+                code="PCC_ANALYSIS_NOT_IMPLEMENTED",
+                message=NOT_IMPLEMENTED_LIMITATION,
+                effect=NOT_ASSESSED,
+                run_id=run.run_id,
+                job_id=job.job_id,
+                stage=STAGES[1],
+                coordinates=(snapshot["scope"],),
+                severity="WARNING",
+            ),
+        )
+    if terms and not counts["notes"]:
+        store._update_run_for_job(job, run, status="COMPLETE", current_stage=STAGES[-1], result="DONE")
+    else:
+        store._update_run_for_job(
+            job, run, status="COMPLETE_WITH_EXCEPTIONS", current_stage=STAGES[-1], result="DONE",
+            result_reason="PCC_TERMS_NOTES" if terms else "PCC_ANALYSIS_NOT_IMPLEMENTED",
+        )
     return summary

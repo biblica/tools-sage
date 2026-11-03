@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) built. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) and P3a (discovery, index packages, builder tool) built. P3b (BSB package) is open. No consistency analysis exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -351,6 +351,34 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   go into the Run snapshot in P6.
 - Not yet: frequent clitics (§7 L1) and wiring traits into the Run snapshot (P6).
 - Tests: `tests/pcc/test_pcc_p2.py`; P1 + P2 = 52 passed.
+
+### P3a as built (2026-11-03)
+
+- `pcc/discovery.py`: `discover` finds curated, local and automatic expressions and locates every
+  occurrence in the actual SOURCE (`expression` / `occurrence` records, code-point spans reconstruct the
+  raw text). Automatic n-grams (1-6 tokens, in at least 2 distinct verses) are built level-wise inside
+  clause chunks and never cross clause punctuation; the stoplist is measured from the SOURCE (tokens in
+  at least 5% of verses and at least 20 verses). Unspaced SOURCE scripts skip automatic discovery and
+  say so. Curated and local entries are never pruned. Phrases absent from the SOURCE come back as
+  `unfound` (AT30). A nested phrase with the same count as its container is mapped for display dedupe;
+  both stay as evidence. Every occurrence is `UNRESOLVED` with a provisional "unassessed" sense (P4).
+- `pcc/phrases.py`: `input/phrases.txt` parser; blank/`#` lines skipped, a line without letters or a
+  duplicate is a reported problem with its line number.
+- `pcc/source_text.py`: SOURCE verse units from a Project (visible body text only, via `numbers.target`).
+- `pcc/index.py` + `tools/build_phrase_index.py`: package = `MANIFEST.json`, `expressions.jsonl`,
+  `occurrences.jsonl`, `CHECKSUMS.sha256`; `build` refuses a non-empty folder; `verify` checks checksums,
+  contracts and references, and with `--project-path` rebuilds and requires byte-identical files.
+  `curated_seeds` uses only curated entries of a package, PROVISIONAL unless the content hash matches.
+- Run: a `terms` Run now writes `expressions.jsonl`, `occurrences.jsonl`, `expression-stats.jsonl` and
+  `source-traits.json`, reports unfound phrases and bad lines as exceptions, and is `COMPLETE` when
+  nothing needs reporting. `check` is unchanged.
+- Trait fix from P2: `cased` now means some capitals and mostly lowercase letters (the 5% rule missed
+  normal text).
+- Open: a Run does not yet load a pinned index (no pin file exists); a terms Run takes one book scope.
+  **P3b (BSB package):** the BSB text is not in this checkout (it is fetched into the cache by
+  `build_numbers_index.py`), and no curated term/idiom list exists. Needs a PO decision: ship a
+  discovery-only BSB index, or supply a curated list first.
+- Tests: `test_pcc_p3.py`, `test_pcc_p3_index.py`; P1-P3 = 69 passed.
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).
