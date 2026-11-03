@@ -1,0 +1,28 @@
+schema_id: sage-pcc-run-snapshot-1.0
+required: [schema_version, run_id, job_id, operation, scope, source, secondary_source, target, target_language, source_authority, discovery, analysis, decision_snapshot_sha256, engine_version, created_utc]
+controls:
+  schema_version: 1
+  owner: system/src/sage/pcc/contracts.py
+  record_contracts: system/src/sage/pcc/contracts.py::CONTRACTS
+  handover_contracts: externaldata/pcc/SAGE_PCC_Stage1_Claude_Handover.zip contracts/*.schema.json (JSON Schema 2020-12, test-time cross-check only)
+  immutable_run_snapshot: required
+  location: <run>/validation/pcc-run-snapshot.json
+  operation: [terms, check]
+  source_authority: [SINGLE_SOURCE, PRIMARY_CONTROLS]
+  coequal_sources: prohibited_in_stage_1
+  source:
+    fields: [project_id, language_tag, content_sha256, versification_sha256]
+  secondary_source: same_fields_or_null
+  target: same_fields_or_null_for_terms
+  analysis:
+    semantic_assistance: [OFF]
+    reverse_detection: [OFF, REVIEW_PROBABLE_ADDITIONS]
+    audit_level: [SUMMARY, FULL]
+  discovery:
+    min_confirmed_same_sense_occurrences: integer_at_least_2
+    min_ngram_tokens: integer_at_least_1
+    max_ngram_tokens: integer_at_least_min
+  decision_snapshot_sha256: sha256_of_ordered_journal_event_ids
+  stale_inputs_on_execute: PCC_RUN_INPUT_STALE
+  outputs: <run>/validation/pcc/{run-manifest.json, summary.json, findings.jsonl, occurrence-audit.jsonl}
+  decision_journal: <job>/glossary/review-journal.jsonl append_only_hash_chained

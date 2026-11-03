@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/run_manifest.schema.json",
+  "title": "SAGE PCC Stage 1 — run_manifest",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_utc": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brief_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "target_corpus_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reference_index_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "config_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision_snapshot_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "engine_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_review_mode": {
+      "type": "string",
+      "enum": [
+        "OFF",
+        "ADVISORY"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "created_utc",
+    "brief_id",
+    "source_corpus_id",
+    "target_corpus_id",
+    "source_corpus_sha256",
+    "target_corpus_sha256",
+    "reference_index_version",
+    "profile_version",
+    "config_sha256",
+    "decision_snapshot_sha256",
+    "engine_version",
+    "semantic_review_mode"
+  ],
+  "additionalProperties": false
+}

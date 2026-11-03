@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/finding.schema.json",
+  "title": "SAGE PCC Stage 1 \u2014 finding",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "finding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "code": {
+      "type": "string",
+      "enum": [
+        "PC00",
+        "PC01",
+        "PC02",
+        "PC10",
+        "PC11",
+        "PC12",
+        "PC13",
+        "PC20",
+        "PC21",
+        "PC22",
+        "PC23",
+        "PC24",
+        "PC25"
+      ]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "RESOLVED",
+        "OPEN",
+        "IN_REVIEW",
+        "APPROVED_VARIANT",
+        "CONFIRMED_ISSUE",
+        "DISMISSED",
+        "DEFERRED",
+        "STALE"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "INFO",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "is_blocking": {
+      "type": "boolean"
+    },
+    "detection_confidence": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "semantic_confidence": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "group_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "issue_cluster_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_occurrence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "target_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 0
+      },
+      "minItems": 1
+    },
+    "applied_rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "finding_id",
+    "run_id",
+    "code",
+    "review_status",
+    "severity",
+    "is_blocking",
+    "detection_confidence",
+    "semantic_confidence",
+    "group_id",
+    "issue_cluster_id",
+    "source_occurrence_ids",
+    "source_refs",
+    "target_refs",
+    "evidence",
+    "applied_rule_ids",
+    "reason"
+  ],
+  "additionalProperties": false
+}

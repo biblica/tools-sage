@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "index_version": "synthetic-fixture-1.0.0",
+  "index_kind": "PROJECT_SYNTHETIC",
+  "corpora": [
+    {
+      "corpus_id": "SYN-SRC-V1",
+      "edition": "Fictional source fixture v1",
+      "language_tag": "en",
+      "role": "PRIMARY_SOURCE",
+      "content_sha256": "bb4d8903100e964f3b05b8ce225d4c64442339ee433c2eba03357d5f3eaf9341",
+      "versification_id": "western_standard",
+      "license_id": "SYNTHETIC-PUBLIC-DOMAIN",
+      "native_reference_style": "GEN.1.1"
+    },
+    {
+      "corpus_id": "SYN-TGT-V1",
+      "edition": "Fictional target fixture v1",
+      "language_tag": "en",
+      "role": "TARGET",
+      "content_sha256": "bf6112804d156ebf1b36b7d5d71df008e3f8ba8527769da41992a7f9479f669e",
+      "versification_id": "western_standard",
+      "license_id": "SYNTHETIC-PUBLIC-DOMAIN",
+      "native_reference_style": "GEN.1.1"
+    }
+  ],
+  "expression_file": "expressions.example.jsonl",
+  "occurrence_file": "occurrences.example.jsonl",
+  "index_notes": "Fictional texts assigned to valid-format verse IDs; not Bible translation passages.",
+  "expression_sha256": "48d6f12d20cf98053a0ed6f6fb3a11ba57a6b043b1109d75bc71aacb06482c92",
+  "occurrence_sha256": "43f3b71491bae263168b81a8342b69055c79e6e2a5928b59cc9ffce3c11a556a"
+}

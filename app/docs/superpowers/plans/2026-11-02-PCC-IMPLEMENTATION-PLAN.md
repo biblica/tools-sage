@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** plan only, 2026-11-02; PO decisions D1–D6, D10 and D11 recorded the same day (§3). No PCC code exists. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton) built; P1b (menu) next. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -292,6 +292,34 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 | **P8** | Reverse scan + clusters | M6 | AT08, AT09, AT29 |
 | **P9** | Reports in SAGE conventions, `PCC-CHEAT-SHEET.md`, Operator guide, known limitations, third-party notices; full acceptance AT01–AT30 + Function A tests; benchmark on a whole Bible | M7, M8 | Handover acceptance checklist complete or deviations accepted |
 | **P10** (later) | Optional advisory model step with qualification | M6 (assisted) | Qualified route; never approves |
+
+### P1a as built (2026-11-02)
+
+- `sage/pcc/`: `contracts.py` (all handover record contracts restated in the JSON Schema subset they
+  use, plus `job_defaults` and `run_snapshot`; tests cross-check every sample and its mutations
+  against the handover schemas with `jsonschema`); `ids.py` (namespaced SHA-256 IDs, collision
+  guard); `jsonl.py` (strict UTF-8 JSON/JSONL, duplicate keys and NaN rejected, file+line errors,
+  sorted atomic writes); `journal.py` (append-only, hash-chained decision journal at
+  `<job>/glossary/review-journal.jsonl`; edits or reordering fail closed); `run.py` (sealed
+  `validation/pcc-run-snapshot.json`; execution re-checks SOURCE, secondary, WIP and decision hashes
+  and stops on change with `PCC_RUN_INPUT_STALE`; P1 writes schema-valid empty outputs, status
+  `COMPLETE_WITH_EXCEPTIONS` and a `PCC_ANALYSIS_NOT_IMPLEMENTED` / `NOT_ASSESSED` exception report).
+- Job contract: bindings `source` (REFERENCE role, LOCKED), optional `secondary_source`
+  (AUXILIARY_SCRIPTURE), optional `wip`; all distinct. Defaults: immutable `target_language`
+  (must equal the WIP's language), discovery thresholds, analysis flags (`semantic_assistance` only
+  `OFF`). No grammar profile (D11). Job ID `PCC_<SOURCE>-<WIP or target language>`. Operations
+  `terms` and `check`; one open Run per Job; a check needs a WIP.
+- Shared wiring: `workflow_identity`, `jobs`, `registry`, `profiles`, `schema_validation`,
+  `validation`, `app/ecosystem.yml`, `config/workflows/pcc/profile.yml`,
+  `config/schemas/pcc-run-snapshot.schema.yml`, `job.schema.yml`, `workflow-profile.schema.yml`,
+  the vanilla install manifest, and the shared test workspace.
+- Deviations recorded for later phases: a WIP can be bound only at Job creation (Job bindings are
+  immutable in SAGE); attaching one later is a P6 item, and the Job ID would then still name the
+  target language. `OPERATOR_WORKFLOWS` (menus and UI listings) is left for P1b.
+- Tests: `tests/pcc/test_pcc_p1.py`, 41 tests; three deliberate code breaks (validator, journal
+  chain, stale-input guard) were each caught. Full suite: 2370 passed, 2 failed; both failures are
+  local-environment artifacts outside the repo's tracked files (an untracked file in the git-ignored
+  `project-management/private/`, and a `system/tools/__pycache__` from 2026-10-29).
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).

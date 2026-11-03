@@ -23,6 +23,7 @@ controls:
     RTC: RTC_<WIP>-<REFERENCE>
     STC: STC_<WIP>
     NCA: NCA-<WIP>_<YYYYMMDD>
+    PCC: PCC_<SOURCE>-<WIP_or_TARGET_LANGUAGE>
     LEGACY_SAW: SAW_<WIP>-<REFERENCE>
     separators:
     - underscore
@@ -33,6 +34,7 @@ controls:
   - rtc
   - stc
   - nca
+  - pcc
   # Compatibility-only reader for sealed Jobs created before RTC/STC.
   - saw
   status:
@@ -62,6 +64,11 @@ controls:
     nca:
       wip: exactly_one
       reference: prohibited
+    pcc:
+      source: exactly_one
+      secondary_source: zero_or_one
+      wip: zero_or_one
+      distinct_projects: required
   resources:
     nca:
       numbers_package:
@@ -71,6 +78,12 @@ controls:
   profiles:
     nca:
       number_style: exactly_one_compatible_configured_profile
+    pcc: none_language_traits_measured_from_texts
+  defaults:
+    pcc:
+      target_language: exactly_one_canonical_language_tag_immutable
+      discovery: [min_confirmed_same_sense_occurrences, min_ngram_tokens, max_ngram_tokens]
+      analysis: [semantic_assistance, reverse_detection, audit_level]
     legacy_saw:
       wip: exactly_one
       reference: exactly_one

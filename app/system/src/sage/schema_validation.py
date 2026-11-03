@@ -36,6 +36,7 @@ SCHEMA_OWNERS: dict[str, str] = {
     "nca-phase-ledger.schema.yml": "system/src/sage/numbers/replay.py",
     "numbers-reference.schema.yml": "system/src/sage/numbers/reference.py",
     "numbers-result.schema.yml": "system/src/sage/numbers/results.py",
+    "pcc-run-snapshot.schema.yml": "system/src/sage/pcc/contracts.py",
     "number-style-profile.schema.yml": "system/src/sage/numbers/style.py",
     "ol-authority-profile.schema.yml": "system/src/sage/original_language_resources.py",
     "original-language-resources.schema.yml": "system/src/sage/original_language_resources.py",
@@ -323,7 +324,7 @@ def _source_instance_checks(root: Path, schemas: dict[str, dict[str, Any]]) -> l
     errors.extend(_validate_structure_instance(structure_schema, structure, "structure-planning.yml"))
 
     workflow_schema = schemas["workflow-profile.schema.yml"]
-    for workflow in ("bic", "rtc", "stc", "nca", "saw"):
+    for workflow in ("bic", "rtc", "stc", "nca", "pcc", "saw"):
         path = root / f"system/config/workflows/{workflow}/profile.yml"
         errors.extend(_validate_required_shape(workflow_schema, _load_data(path), str(path.relative_to(root))))
 

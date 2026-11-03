@@ -1,0 +1,1 @@
+{"alignment_id": "ALN-SYN-001", "evidence": ["Synthetic alignment for contract testing"], "schema_version": 1, "source_occurrence_id": "OCC-STAND-FIRM-001", "status": "CONFIRMED", "target_corpus_id": "SYN-TGT-V1", "target_spans": [{"body_end": 39, "body_start": 23, "canonical_ref": "GEN.1.1", "target_unit_id": "TGT-U-001", "text_span": "remain steadfast"}]}

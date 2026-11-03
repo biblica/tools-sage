@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "profile_id": "SYN-EN-LP",
+  "profile_version": "1.0.0",
+  "language_tag": "en",
+  "normalization": {
+    "unicode_form": "NFC",
+    "case_mode": "LANGUAGE_AWARE",
+    "strip_diacritics": false,
+    "fold_whitespace": true
+  },
+  "segmentation": {
+    "method": "WHITESPACE_TEST_ONLY",
+    "tokenizer_id": "fixture-only"
+  },
+  "protected_features": [
+    "NEGATION",
+    "POLARITY",
+    "AGENCY",
+    "NUMBER",
+    "PARTICIPANT_ROLES",
+    "MODALITY"
+  ],
+  "capabilities": {
+    "morphology": "NONE",
+    "syntax": "NONE",
+    "semantic_review": "NONE"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/alignment.schema.json",
+  "title": "SAGE PCC Stage 1 — alignment",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "alignment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_occurrence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "PROVISIONAL",
+        "UNRESOLVED"
+      ]
+    },
+    "target_spans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "target_unit_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonical_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "body_start": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "body_end": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text_span": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "target_unit_id",
+          "canonical_ref",
+          "body_start",
+          "body_end",
+          "text_span"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 0
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "alignment_id",
+    "source_occurrence_id",
+    "target_corpus_id",
+    "status",
+    "target_spans"
+  ],
+  "additionalProperties": false
+}

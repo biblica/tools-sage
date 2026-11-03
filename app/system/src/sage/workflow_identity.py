@@ -9,9 +9,9 @@ from .errors import ValidationError
 OPERATOR_WORKFLOWS = ("bic", "rtc", "stc", "nca")
 ANALYSIS_WORKFLOWS = frozenset({"rtc", "stc"})
 SNAPSHOT_WIP_WORKFLOWS = frozenset({"rtc", "stc", "nca"})
-READ_ONLY_SCRIPTURE_WORKFLOWS = frozenset({"rtc", "stc", "nca", "saw"})
+READ_ONLY_SCRIPTURE_WORKFLOWS = frozenset({"rtc", "stc", "nca", "pcc", "saw"})
 LEGACY_ANALYSIS_WORKFLOW = "saw"
-SUPPORTED_JOB_TOOLS = ("bic", "rtc", "stc", "nca", "saw")
+SUPPORTED_JOB_TOOLS = ("bic", "rtc", "stc", "nca", "pcc", "saw")
 
 _PROJECT_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 _SNAPSHOT_DATE_RE = re.compile(r"^[0-9]{8}$")
@@ -32,7 +32,7 @@ def validate_project_code(project_id: str) -> str:
 def runtime_workflow_id(tool: str) -> str:
     """Return the canonical runtime workflow for new work or one legacy Job."""
     value = str(tool).strip().lower()
-    if value in ANALYSIS_WORKFLOWS or value == "nca":
+    if value in ANALYSIS_WORKFLOWS or value in {"nca", "pcc"}:
         return value
     if value in {"bic", LEGACY_ANALYSIS_WORKFLOW}:
         return value
@@ -145,3 +145,14 @@ def canonical_nca_job_id(project_id: str, snapshot_date: str) -> str:
             next_action="Use the WIP import date in YYYYMMDD form.",
         )
     return f"NCA-{project}_{date}"
+
+
+def canonical_pcc_job_id(source_id: str, target: str) -> str:
+    """Build ``PCC_<SOURCE>-<TARGET>`` from the controlling SOURCE and the WIP or target language.
+
+    ``target`` is the bound WIP Project code when the Job has one, otherwise the Job's BCP 47
+    target-language tag (a terms list can start before any translation exists).
+    """
+    source = validate_project_code(source_id)
+    value = validate_project_code(target)
+    return f"PCC_{source}-{value}"

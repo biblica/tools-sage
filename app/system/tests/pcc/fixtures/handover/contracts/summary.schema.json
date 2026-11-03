@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/summary.schema.json",
+  "title": "SAGE PCC Stage 1 — summary",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eligible_groups": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evaluated_groups": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fully_resolved_groups": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "eligible_occurrences": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evaluated_occurrences": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "review_groups": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "blocked_groups": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "findings_by_code": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^PC[0-9]{2}$"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 0
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "source_corpus_id",
+    "target_corpus_id",
+    "eligible_groups",
+    "evaluated_groups",
+    "fully_resolved_groups",
+    "eligible_occurrences",
+    "evaluated_occurrences",
+    "review_groups",
+    "blocked_groups",
+    "findings_by_code",
+    "limitations"
+  ],
+  "additionalProperties": false
+}

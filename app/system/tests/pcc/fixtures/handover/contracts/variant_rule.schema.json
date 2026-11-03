@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/variant_rule.schema.json",
+  "title": "SAGE PCC Stage 1 — variant_rule",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "group_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_language": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_form": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normalized_target_form": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "EXACT",
+        "MORPHOLOGICAL",
+        "SYNTACTIC",
+        "SEMANTIC_VARIANT",
+        "CULTURAL_EQUIVALENT",
+        "DISCOURSE_ADAPTATION"
+      ]
+    },
+    "effect": {
+      "type": "string",
+      "enum": [
+        "ACCEPT",
+        "REJECT",
+        "CONTEXT_ONLY"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "PROPOSED",
+        "APPROVED",
+        "REVOKED"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "OCCURRENCE",
+            "PASSAGE",
+            "SECG",
+            "LANGUAGE_PROFILE",
+            "NORMALIZATION"
+          ]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "level",
+        "identifier"
+      ],
+      "additionalProperties": false
+    },
+    "protected_features": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "approved_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "approved_at_utc": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "rule_id",
+    "group_id",
+    "target_language",
+    "target_form",
+    "normalized_target_form",
+    "type",
+    "effect",
+    "state",
+    "scope",
+    "protected_features",
+    "rationale",
+    "evidence_refs"
+  ],
+  "additionalProperties": false
+}

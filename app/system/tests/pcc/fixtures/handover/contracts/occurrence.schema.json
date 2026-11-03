@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/occurrence.schema.json",
+  "title": "SAGE PCC Stage 1 — occurrence",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "occurrence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expression_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_unit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "native_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "body_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "body_end": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "offset_units": {
+      "const": "UNICODE_CODE_POINT"
+    },
+    "source_text_span": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sense_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sense_state": {
+      "type": "string",
+      "enum": [
+        "CONFIRMED",
+        "PROVISIONAL",
+        "UNRESOLVED"
+      ]
+    },
+    "sense_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 0
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "occurrence_id",
+    "expression_id",
+    "source_corpus_id",
+    "source_corpus_sha256",
+    "source_unit_id",
+    "canonical_ref",
+    "native_refs",
+    "body_start",
+    "body_end",
+    "offset_units",
+    "source_text_span",
+    "sense_id",
+    "sense_state"
+  ],
+  "additionalProperties": false
+}

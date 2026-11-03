@@ -39,6 +39,8 @@ required_bindings:
   - TESTAMENT_APPROPRIATE_PRIMARY_ORIGINAL_LANGUAGE
   nca:
   - WIP
+  pcc:
+  - REFERENCE
   legacy_saw:
   - WIP
   - REFERENCE
@@ -49,6 +51,7 @@ execution_contract:
     rtc: WIP_REFERENCE
     stc: WIP_PRIMARY_ORIGINAL_LANGUAGE
     nca: WIP_NUMBERS_PACKAGE_NUMBER_STYLE
+    pcc: SOURCE_OPTIONAL_SECONDARY_SOURCE_OPTIONAL_WIP
     saw: LEGACY_WIP_REFERENCE
   resource_projection_fields:
     output_project: TARGET_or_WIP
@@ -90,6 +93,12 @@ process_contracts:
   - NUMERIC_EVALUATION
   - COVERAGE_RECONCILIATION
   - DETERMINISTIC_FINALISATION
+  pcc:
+  - DETERMINISTIC_PREFLIGHT
+  - SOURCE_DISCOVERY
+  - CONSISTENCY_EVALUATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
 human_review_attention:
   memory_review: optional_provenance
   grammar_profile_review: nonblocking_attention
@@ -103,6 +112,7 @@ external_access_contract:
   rtc_external_writes: prohibited
   stc_external_writes: prohibited
   nca_external_writes: prohibited
+  pcc_external_writes: prohibited
   legacy_saw_external_writes: prohibited
   bic_target_external_write: optional_SFM_only
   all_external_vrs_writes: prohibited
@@ -136,6 +146,9 @@ optional_bindings:
   stc:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one
+  pcc:
+    AUXILIARY_SCRIPTURE: zero_or_one
+    WIP: zero_or_one
   legacy_saw:
     ORIGINAL_LANGUAGE_GREEK: zero_or_one
     ORIGINAL_LANGUAGE_HEBREW: zero_or_one

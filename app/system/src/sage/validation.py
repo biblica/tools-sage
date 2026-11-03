@@ -97,6 +97,8 @@ REQUIRED_PACKAGE_PATHS = {
     "system/config/schemas/model-qualification-seeds.schema.yml",
     "system/config/schemas/skill-evaluation-contracts.schema.yml",
     "system/config/schemas/nca-extraction.schema.yml",
+    "system/config/schemas/pcc-run-snapshot.schema.yml",
+    "system/config/workflows/pcc/profile.yml",
     "system/config/schemas/bic-translation-challenges.schema.yml",
     "system/src/sage/semantic/__init__.py",
     "system/src/sage/semantic/authority_registry.py",

@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/config.schema.json",
+  "title": "SAGE PCC Stage 1 — config",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brief_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_authority": {
+      "type": "object",
+      "properties": {
+        "primary_corpus_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secondary_corpus_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "policy": {
+          "type": "string",
+          "enum": [
+            "PRIMARY_CONTROLS",
+            "SINGLE_SOURCE",
+            "UNRESOLVED_COEQUAL"
+          ]
+        }
+      },
+      "required": [
+        "primary_corpus_id",
+        "secondary_corpus_ids",
+        "policy"
+      ],
+      "additionalProperties": false
+    },
+    "target_corpus_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "comparison_scope": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "CORPUS",
+            "BOOK",
+            "SECTION"
+          ]
+        },
+        "books": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "section_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "level",
+        "books"
+      ],
+      "additionalProperties": false
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "min_confirmed_same_sense_occurrences": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "min_ngram_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_ngram_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "exclude_non_scripture_body": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "min_confirmed_same_sense_occurrences",
+        "min_ngram_tokens",
+        "max_ngram_tokens",
+        "exclude_non_scripture_body"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "reference_manifest_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phrase_input_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language_profile_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "project_state_dir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output_dir": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "reference_manifest_path",
+        "phrase_input_path",
+        "language_profile_path",
+        "project_state_dir",
+        "output_dir"
+      ],
+      "additionalProperties": false
+    },
+    "analysis": {
+      "type": "object",
+      "properties": {
+        "semantic_assistance": {
+          "type": "string",
+          "enum": [
+            "OFF",
+            "ADVISORY"
+          ]
+        },
+        "reverse_detection": {
+          "type": "string",
+          "enum": [
+            "OFF",
+            "REVIEW_PROBABLE_ADDITIONS"
+          ]
+        },
+        "audit_level": {
+          "type": "string",
+          "enum": [
+            "SUMMARY",
+            "FULL"
+          ]
+        }
+      },
+      "required": [
+        "semantic_assistance",
+        "reverse_detection",
+        "audit_level"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "brief_id",
+    "source_authority",
+    "target_corpus_id",
+    "comparison_scope",
+    "discovery",
+    "resources",
+    "analysis"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/language_profile.schema.json",
+  "title": "SAGE PCC Stage 1 — language_profile",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language_tag": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normalization": {
+      "type": "object",
+      "properties": {
+        "unicode_form": {
+          "const": "NFC"
+        },
+        "case_mode": {
+          "type": "string",
+          "enum": [
+            "PRESERVE",
+            "LANGUAGE_AWARE"
+          ]
+        },
+        "strip_diacritics": {
+          "type": "boolean"
+        },
+        "fold_whitespace": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "unicode_form",
+        "case_mode",
+        "strip_diacritics",
+        "fold_whitespace"
+      ],
+      "additionalProperties": false
+    },
+    "segmentation": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "WHITESPACE_TEST_ONLY",
+            "SAGE_EXISTING_TOKENIZER",
+            "LANGUAGE_SPECIFIC"
+          ]
+        },
+        "tokenizer_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "additionalProperties": false
+    },
+    "protected_features": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "NEGATION",
+          "POLARITY",
+          "AGENCY",
+          "NUMBER",
+          "MODALITY",
+          "PARTICIPANT_ROLES",
+          "REFERENCE",
+          "POSSESSION",
+          "ASPECT"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "morphology": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "RULES",
+            "ANALYZER"
+          ]
+        },
+        "syntax": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "RULES",
+            "PARSER"
+          ]
+        },
+        "semantic_review": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "EXISTING_SAGE_ADAPTER"
+          ]
+        }
+      },
+      "required": [
+        "morphology",
+        "syntax",
+        "semantic_review"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_version",
+    "language_tag",
+    "normalization",
+    "segmentation",
+    "protected_features",
+    "capabilities"
+  ],
+  "additionalProperties": false
+}

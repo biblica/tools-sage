@@ -196,6 +196,7 @@ def execution_route_from_receipt(
         if receipt.get("selection_mode") not in {
             "PROVISIONAL_PROVIDER_DEFAULT",
             "PROVISIONAL_OPERATOR_PREFERENCE",
+            "USER_PROVISIONAL_OVERRIDE",
         }:
             raise ValidationError(
                 "Provisional execution receipt selection mode is invalid",

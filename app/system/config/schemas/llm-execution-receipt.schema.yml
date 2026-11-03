@@ -44,6 +44,7 @@ constraints:
   provisional_qualification_evidence: prohibited
   provisional_selection_modes:
     - PROVISIONAL_PROVIDER_DEFAULT
+    - USER_PROVISIONAL_OVERRIDE
   provider_identity: provider_advertised
   provider_api_keys: PROHIBITED
   sage_workspace_exposed_as_provider_cwd: false

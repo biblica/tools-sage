@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/occurrence_audit.schema.json",
+  "title": "PCC source occurrence audit",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "occurrence_id": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "disposition": {
+      "enum": [
+        "EVALUATED",
+        "REVIEW",
+        "INFORMATIONAL",
+        "BLOCKED"
+      ]
+    },
+    "result_code": {
+      "enum": [
+        "PC00",
+        "PC01",
+        "PC02",
+        "PC10",
+        "PC11",
+        "PC12",
+        "PC13",
+        "PC20",
+        "PC21",
+        "PC22",
+        "PC23",
+        "PC24",
+        "PC25"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "occurrence_id",
+    "group_id",
+    "disposition",
+    "result_code",
+    "reason"
+  ],
+  "additionalProperties": false
+}

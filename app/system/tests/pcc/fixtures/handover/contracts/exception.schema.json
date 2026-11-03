@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/exception.schema.json",
+  "title": "SAGE PCC Stage 1 — exception",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "exception_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "MORPHOLOGICAL",
+        "SYNTACTIC",
+        "SEMANTIC_VARIANT",
+        "CULTURAL_EQUIVALENT",
+        "DISCOURSE_ADAPTATION",
+        "ALIGNMENT_CORRECTION",
+        "SENSE_RECLASSIFICATION",
+        "FALSE_POSITIVE"
+      ]
+    },
+    "effect": {
+      "type": "string",
+      "enum": [
+        "ACCEPT",
+        "REJECT",
+        "CONTEXT_ONLY"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "PROPOSED",
+        "APPROVED",
+        "REVOKED"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "OCCURRENCE",
+            "PASSAGE",
+            "SECG",
+            "LANGUAGE_PROFILE",
+            "NORMALIZATION"
+          ]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "level",
+        "identifier"
+      ],
+      "additionalProperties": false
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "source_corpus_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "target_corpus_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "source_corpus_sha256",
+        "target_corpus_sha256",
+        "profile_version",
+        "policy_version"
+      ],
+      "additionalProperties": false
+    },
+    "reviewer_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewed_at_utc": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "exception_id",
+    "kind",
+    "effect",
+    "state",
+    "scope",
+    "reason",
+    "subject_ids",
+    "dependencies"
+  ],
+  "additionalProperties": false
+}

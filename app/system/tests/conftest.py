@@ -429,6 +429,31 @@ def make_workspace(tmp_path: Path):
         write_yaml(root / "system" / "config" / "workflows" / "rtc" / "profile.yml", rtc_profile)
         write_yaml(root / "system" / "config" / "workflows" / "stc" / "profile.yml", stc_profile)
         write_yaml(root / "system" / "config" / "workflows" / "nca" / "profile.yml", nca_profile)
+        pcc_profile = {
+            "workflow": {
+                "id": "pcc",
+                "name": "Phrase Consistency Checker",
+                "purpose": "Read-only fixture PCC workflow.",
+                "qualification_status": qualification_status,
+                "baseline_version": "0.02a3",
+                "execution_model": "SAGE_GOVERNED_TASK_V1",
+            },
+            "bindings": {"REFERENCE": "usNIVv2"},
+            "evidence_policies": {},
+            "permissions": {"may_write_projects": []},
+            "process": {
+                "stages": [
+                    "DETERMINISTIC_PREFLIGHT",
+                    "SOURCE_DISCOVERY",
+                    "CONSISTENCY_EVALUATION",
+                    "COVERAGE_RECONCILIATION",
+                    "DETERMINISTIC_FINALISATION",
+                ],
+                "rules": ["Fixture PCC read-only contract."],
+            },
+            "qualification_gates": ["fixture_gate"],
+        }
+        write_yaml(root / "system" / "config" / "workflows" / "pcc" / "profile.yml", pcc_profile)
         write_yaml(root / "system" / "config" / "workflows" / "saw" / "profile.yml", saw_profile)
 
         settings = {
@@ -501,6 +526,13 @@ def make_workspace(tmp_path: Path):
                     "lock_root": "@system/workflows/nca/locks",
                     "transaction_root": "@system/workflows/nca/transactions",
                     "output_root": "@system/workflows/nca/output",
+                },
+                "pcc": {
+                    "profile": "system/config/workflows/pcc/profile.yml",
+                    "state_root": "@system/workflows/pcc/state",
+                    "lock_root": "@system/workflows/pcc/locks",
+                    "transaction_root": "@system/workflows/pcc/transactions",
+                    "output_root": "@system/workflows/pcc/output",
                 },
                 "saw": {
                     "profile": "system/config/workflows/saw/profile.yml",

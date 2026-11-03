@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-SYN-001",
+  "source_corpus_id": "SYN-SRC-V1",
+  "target_corpus_id": "SYN-TGT-V1",
+  "eligible_groups": 3,
+  "evaluated_groups": 1,
+  "fully_resolved_groups": 0,
+  "eligible_occurrences": 7,
+  "evaluated_occurrences": 3,
+  "review_groups": 2,
+  "blocked_groups": 0,
+  "findings_by_code": {
+    "PC10": 1,
+    "PC12": 1
+  },
+  "limitations": [
+    "Illustrative partial run; counts are demonstration only, not produced by a real checker."
+  ]
+}

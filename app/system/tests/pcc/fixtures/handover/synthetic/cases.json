@@ -1,0 +1,44 @@
+{
+  "fixture_type": "FICTIONAL_SCRIPTURE_REFERENCED_TEST_DATA",
+  "warning": "This data is fabricated, not a biblical translation. Expectations require sense assignments and reverse glossary evidence; do not treat as automatic AI judgments.",
+  "scenarios": [
+    {
+      "id": "syn-S1",
+      "references": [
+        "GEN.1.1",
+        "GEN.1.2",
+        "GEN.1.3"
+      ],
+      "source_expression": "stand firm",
+      "sense_id": "SENSE-STEADFAST",
+      "expected": "PC10 for 3rd occurrence until variant approved"
+    },
+    {
+      "id": "syn-S2",
+      "references": [
+        "GEN.1.4",
+        "GEN.1.5",
+        "GEN.1.6"
+      ],
+      "source_expression": "light",
+      "expected": "weight sense and illumination sense remain in separate groups; only illumination sense reaches frequency 2"
+    },
+    {
+      "id": "syn-S3",
+      "references": [
+        "GEN.1.6"
+      ],
+      "target_phrase": "covenant",
+      "expected": "PC12 review candidate only when reverse glossary enables term and context does not support it"
+    },
+    {
+      "id": "syn-S4",
+      "references": [
+        "GEN.1.7",
+        "GEN.1.8"
+      ],
+      "source_expression": "keep the promise",
+      "expected": "PC02 if TARGET form identical but semantic equivalence not independently validated"
+    }
+  ]
+}

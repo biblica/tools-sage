@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/review_event.schema.json",
+  "title": "SAGE PCC Stage 1 — review_event",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "time_utc": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "PROPOSE",
+        "APPROVE",
+        "REJECT",
+        "CONTEXT_ONLY",
+        "REVOKE",
+        "RECLASSIFY_SENSE",
+        "CORRECT_ALIGNMENT"
+      ]
+    },
+    "subject_type": {
+      "type": "string",
+      "enum": [
+        "VARIANT_RULE",
+        "EXCEPTION",
+        "OCCURRENCE",
+        "ALIGNMENT",
+        "FINDING"
+      ]
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "before_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "after_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "brief_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_corpus_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "OCCURRENCE",
+            "PASSAGE",
+            "SECG",
+            "LANGUAGE_PROFILE",
+            "NORMALIZATION"
+          ]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "level",
+        "identifier"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "time_utc",
+    "actor_id",
+    "operation",
+    "subject_type",
+    "subject_id",
+    "rationale",
+    "before_hash",
+    "after_hash",
+    "evidence_refs",
+    "brief_id",
+    "source_corpus_sha256",
+    "scope"
+  ],
+  "additionalProperties": false
+}

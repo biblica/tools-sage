@@ -44,11 +44,12 @@ from .workflow_identity import (
     SUPPORTED_JOB_TOOLS,
     canonical_analysis_job_id,
     canonical_nca_job_id,
+    canonical_pcc_job_id,
     runtime_workflow_id,
 )
 
 # Current runtime workflows plus the read-only legacy analysis adapter.
-TOOL_IDS = ("bic", "rtc", "stc", "nca", "saw")
+TOOL_IDS = ("bic", "rtc", "stc", "nca", "pcc", "saw")
 PERSISTED_JOB_TOOLS = SUPPORTED_JOB_TOOLS
 JOB_SCHEMA_VERSION = "1.0"
 RUN_SCHEMA_VERSION = "1.0"
@@ -58,7 +59,7 @@ RUN_COMPLETED_STATUSES = frozenset(
 )
 RUN_CLOSED_STATUSES = RUN_COMPLETED_STATUSES | {"ARCHIVED", "ABANDONED"}
 _JOB_ID_RE = re.compile(
-    r"^(?:(?:BIC|SAW)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
+    r"^(?:(?:BIC|SAW|PCC)_[A-Za-z0-9][A-Za-z0-9._-]{1,190}"
     r"|(?:RTC|STC|NCA)-[A-Za-z0-9][A-Za-z0-9._-]{0,130}_[0-9]{8})$"
 )
 _NCA_CHECK_NAMES = {
@@ -79,6 +80,70 @@ def _validate_nca_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
     if not any(checks.values()):
         raise ValidationError("At least one NCA Job check default must be enabled", code="NCA_CHECK_POLICY_ALL_OFF")
     return {"checks": {name: checks[name] for name in sorted(checks)}}
+
+
+PCC_DEFAULT_DISCOVERY = {
+    "min_confirmed_same_sense_occurrences": 2,
+    "min_ngram_tokens": 1,
+    "max_ngram_tokens": 6,
+}
+PCC_DEFAULT_ANALYSIS = {
+    "semantic_assistance": "OFF",
+    "reverse_detection": "REVIEW_PROBABLE_ADDITIONS",
+    "audit_level": "FULL",
+}
+PCC_RUN_OPERATIONS = frozenset({"terms", "check"})
+
+
+def pcc_default_settings(target_language: str) -> dict[str, Any]:
+    """Return the standard PCC Job defaults for one target language."""
+    return {
+        "target_language": target_language,
+        "discovery": dict(PCC_DEFAULT_DISCOVERY),
+        "analysis": dict(PCC_DEFAULT_ANALYSIS),
+    }
+
+
+def _validate_pcc_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
+    """Require the exact PCC Job defaults contract with a canonical target-language tag."""
+    from .pcc.contracts import contract_errors
+
+    errors = contract_errors("job_defaults", dict(value))
+    if errors:
+        raise ValidationError(
+            f"PCC Job defaults are invalid: {errors[0]}",
+            code="PCC_JOB_DEFAULTS_INVALID",
+            details={"errors": errors},
+        )
+    discovery = dict(value["discovery"])
+    if discovery["min_ngram_tokens"] > discovery["max_ngram_tokens"]:
+        raise ValidationError(
+            "PCC Job defaults: min_ngram_tokens exceeds max_ngram_tokens",
+            code="PCC_JOB_DEFAULTS_INVALID",
+        )
+    return {
+        "target_language": canonical_language_tag(str(value["target_language"]), "PCC target_language"),
+        "discovery": discovery,
+        "analysis": dict(value["analysis"]),
+    }
+
+
+def _validate_pcc_roles(job_id: str, bindings: Mapping[str, str]) -> None:
+    """Reject one Project bound to two PCC roles (SOURCE, secondary SOURCE, WIP)."""
+    bound = [bindings[key] for key in ("source", "secondary_source", "wip") if bindings.get(key)]
+    if len(set(bound)) != len(bound):
+        raise ValidationError(
+            f"PCC Job {job_id} binds one Project to more than one role",
+            code="PROJECT_ROLE_CONFLICT",
+            next_action="Choose different Projects for the SOURCE, the secondary SOURCE and the WIP.",
+            details={"bindings": dict(bindings)},
+        )
+
+
+def _pcc_job_identity(bindings: Mapping[str, str], defaults: Mapping[str, Any]) -> str:
+    """Return the canonical PCC Job ID: the WIP when bound, otherwise the target language."""
+    target = bindings.get("wip") or str(defaults.get("target_language") or "")
+    return canonical_pcc_job_id(bindings["source"], target)
 
 
 @dataclass(frozen=True)
@@ -126,13 +191,15 @@ class Job:
     @property
     def output_project(self) -> str:
         """Manage `output project` for Job-scoped state and storage."""
+        if self.tool == "pcc":
+            return self.bindings.get("wip") or self.bindings["source"]
         key = "generated_target" if self.tool == "bic" else "wip"
         return self.bindings[key]
 
     @property
     def contemporary_source(self) -> str | None:
         """Return the comparison Project when this workflow has one."""
-        key = "content_source" if self.tool == "bic" else "reference"
+        key = {"bic": "content_source", "pcc": "source"}.get(self.tool, "reference")
         return self.bindings.get(key)
 
     @property
@@ -270,6 +337,7 @@ def _binding_contract(tool: str) -> tuple[set[str], set[str]]:
         "rtc": ({"wip", "reference"}, set()),
         "stc": ({"wip"}, set()),
         "nca": ({"wip"}, set()),
+        "pcc": ({"source"}, {"secondary_source", "wip"}),
     }
     try:
         required, optional = contracts[tool]
@@ -513,6 +581,11 @@ class JobStore:
                 raise ConfigurationError(
                     "BIC Job requires exactly_one SOURCE, DONOR, and TARGET; the three bindings must be distinct"
                 )
+        elif job_tool == "pcc":
+            try:
+                _validate_pcc_roles(manifest_job_id, bindings)
+            except ValidationError as exc:
+                raise ConfigurationError(exc.message, code=exc.code, details=exc.details) from exc
         elif job_tool in {"saw", "rtc"}:
             try:
                 _validate_analysis_role_separation(manifest_job_id, bindings)
@@ -579,6 +652,16 @@ class JobStore:
                         raise ConfigurationError(
                             f"Job {manifest_job_id} WIP snapshot receipt mismatch: {field}"
                         )
+        elif job_tool == "pcc":
+            raw_defaults = raw.get("defaults")
+            try:
+                expected_job_id = _pcc_job_identity(
+                    bindings, raw_defaults if isinstance(raw_defaults, Mapping) else {}
+                )
+            except ValidationError as exc:
+                raise ConfigurationError(
+                    f"Job {manifest_job_id} has an invalid PCC identity: {exc.message}", code=exc.code
+                ) from exc
         else:
             expected_job_id = default_job_name(
                 job_tool,
@@ -619,6 +702,11 @@ class JobStore:
                 defaults = _validate_nca_defaults(defaults)
             except ValidationError as exc:
                 raise ConfigurationError(exc.message, code=exc.code) from exc
+        elif job_tool == "pcc":
+            try:
+                defaults = _validate_pcc_defaults(defaults)
+            except ValidationError as exc:
+                raise ConfigurationError(exc.message, code=exc.code, details=exc.details) from exc
         try:
             progress_quantifier = validate_job_progress_policy(
                 require_mapping(raw.get("progress_quantifier", {}), "job progress_quantifier")
@@ -710,6 +798,12 @@ class JobStore:
                 ("content_source", "SOURCE"),
                 ("lexical_donor", "DONOR"),
                 ("generated_target", "TARGET"),
+            )
+        elif tool == "pcc":
+            ordinary_roles = tuple(
+                (key, role)
+                for key, role in (("source", "SOURCE"), ("secondary_source", "SECONDARY SOURCE"), ("wip", "WIP"))
+                if key in bindings
             )
         elif tool in {"saw", "rtc"}:
             ordinary_roles = (("wip", "WIP"), ("reference", "REFERENCE"))
@@ -852,6 +946,22 @@ class JobStore:
                 "target_grammar": resolve_profile(wip, "WIP", "target_grammar"),
                 "reference_grammar": resolve_profile(reference, "REFERENCE", "reference_grammar"),
             }
+        elif tool == "pcc":
+            if supplied:
+                raise ValidationError(
+                    f"Job {job_id} has unsupported profile bindings: PCC needs no grammar profile",
+                    code="PROJECT_BINDING_MISMATCH",
+                )
+            for key, role in (("source", "REFERENCE"), ("secondary_source", "AUXILIARY_SCRIPTURE")):
+                resource = optional_bound(key, role)
+                if resource is not None and resource.content_state != "LOCKED":
+                    raise ValidationError(
+                        f"PCC SOURCE resource {resource.project_id} must be LOCKED",
+                        code="PROJECT_BINDING_MISMATCH",
+                    )
+            optional_bound("wip", "WIP")
+            # Language traits are measured from the texts (plan §7), so no grammar profile is bound.
+            expected_profiles = {}
         elif tool == "nca":
             wip = bound("wip", "WIP")
             # Inventory state is role-neutral; runtime settings assign UNDER_REVIEW
@@ -945,6 +1055,9 @@ class JobStore:
                     normalized_tool, bindings["wip"], snapshot_date, bindings.get("reference")
                 )
             )
+        elif normalized_tool == "pcc":
+            defaults = _validate_pcc_defaults(dict(defaults or {}))
+            expected_id = _pcc_job_identity(bindings, defaults)
         else:
             expected_id = default_job_name(
                 normalized_tool,
@@ -969,6 +1082,8 @@ class JobStore:
                 )
         elif normalized_tool in {"saw", "rtc"}:
             _validate_analysis_role_separation(normalized_id, bindings)
+        elif normalized_tool == "pcc":
+            _validate_pcc_roles(normalized_id, bindings)
         canonical_resources = {str(key): dict(value) for key, value in (resources or {}).items()}
         if normalized_tool == "nca":
             if set(canonical_resources) != {"numbers_package"}:
@@ -1001,8 +1116,12 @@ class JobStore:
         canonical_defaults = (
             _validate_nca_defaults(dict(defaults or {}))
             if normalized_tool == "nca"
+            else _validate_pcc_defaults(dict(defaults or {}))
+            if normalized_tool == "pcc"
             else dict(defaults or {})
         )
+        if normalized_tool == "pcc" and bindings.get("wip"):
+            self._require_pcc_target_language(bindings["wip"], canonical_defaults["target_language"])
         system_default = load_ecosystem(self.settings_path).human_output.operator_language
         legacy_default = dict(defaults or {}).get("report_language")
         requested_primary = primary_report_language or legacy_default or system_default
@@ -1096,6 +1215,17 @@ class JobStore:
                 shutil.rmtree(controller_root)
             raise
 
+    def _require_pcc_target_language(self, wip_id: str, target_language: str) -> None:
+        """Reject a PCC WIP whose language differs from the Job's target language."""
+        wip = load_ecosystem(self.settings_path).project(wip_id)
+        if canonical_language_tag(wip.language_code, "PCC WIP language") != target_language:
+            raise ValidationError(
+                f"PCC WIP {wip_id} is in {wip.language_code}, not the Job target language {target_language}",
+                code="PCC_TARGET_LANGUAGE_MISMATCH",
+                next_action="Use the WIP's own language as the PCC target language.",
+                details={"wip": wip_id, "wip_language": wip.language_code, "target_language": target_language},
+            )
+
     def revise_job(
         self,
         project: Job,
@@ -1172,8 +1302,16 @@ class JobStore:
             raw["defaults"] = (
                 _validate_nca_defaults(defaults)
                 if project.tool == "nca"
+                else _validate_pcc_defaults(defaults)
+                if project.tool == "pcc"
                 else dict(defaults)
             )
+            if project.tool == "pcc" and raw["defaults"]["target_language"] != project.defaults["target_language"]:
+                raise ValidationError(
+                    "The PCC target language is part of the Job identity and cannot change",
+                    code="PCC_TARGET_LANGUAGE_IMMUTABLE",
+                    next_action="Create a new PCC Job for a different target language.",
+                )
         if reporting is not None:
             unsupported_reporting = sorted(set(reporting) - {"primary_language", "secondary_language"})
             if unsupported_reporting:
@@ -1517,6 +1655,15 @@ class JobStore:
                 f"- Configured Hebrew resource: `{bindings.get('original_language_hebrew') or 'NOT_CONFIGURED'}`",
                 f"- Selected WIP grammar profile: `{profiles.get('target_grammar') or 'NOT_CONFIGURED'}`",
             ])
+        elif str(payload["tool"]).lower() == "pcc":
+            defaults = dict(payload.get("defaults", {}))
+            lines.extend([
+                f"- SOURCE (controls) — one bound resource: `{bindings['source']}`",
+                f"- Secondary SOURCE (evidence only): `{bindings.get('secondary_source') or 'NOT_CONFIGURED'}`",
+                f"- WIP: `{bindings.get('wip') or 'NOT_CONFIGURED (terms list only)'}`",
+                f"- Target language: `{defaults.get('target_language') or 'NOT_CONFIGURED'}`",
+                "- Decision journal: `glossary/review-journal.jsonl` (append-only)",
+            ])
         elif str(payload["tool"]).lower() == "nca":
             package = dict(payload.get("resources", {})).get("numbers_package", {})
             lines.extend([
@@ -1574,6 +1721,12 @@ class JobStore:
                 "WIP": project.bindings["wip"],
                 "REFERENCE": project.bindings["reference"],
             }
+        elif project.tool == "pcc":
+            role_bindings = {"REFERENCE": project.bindings["source"]}
+            if project.bindings.get("secondary_source"):
+                role_bindings["AUXILIARY_SCRIPTURE"] = project.bindings["secondary_source"]
+            if project.bindings.get("wip"):
+                role_bindings["WIP"] = project.bindings["wip"]
         else:
             role_bindings = {"WIP": project.bindings["wip"]}
         if project.tool in ANALYSIS_WORKFLOWS:
@@ -1628,7 +1781,7 @@ class JobStore:
         if project.tool == "bic":
             grammar_variants[project.bindings["content_source"]] = project.profiles["source_grammar"].split("/", 1)[-1]
             grammar_variants[project.bindings["generated_target"]] = project.profiles["target_grammar"].split("/", 1)[-1]
-        elif project.tool != "nca":
+        elif project.tool not in {"nca", "pcc"}:
             grammar_variants[project.bindings["wip"]] = project.profiles["target_grammar"].split("/", 1)[-1]
         for resource_id, value in registered.items():
             item = dict(require_mapping(value, f"projects.{resource_id}"))
@@ -1722,7 +1875,9 @@ class JobStore:
         # Operator language is only the creation default for new Jobs; interface language
         # and optional downstream secondary rendering remain independent.
         reporting_project_id = (
-            project.bindings.get("generated_target") if project.tool == "bic" else project.bindings.get("wip")
+            project.bindings.get("generated_target") if project.tool == "bic"
+            else project.output_project if project.tool == "pcc"
+            else project.bindings.get("wip")
         )
         human = dict(require_mapping(raw.get("human_output", {}), "human_output"))
         primary = project.primary_report_language
@@ -1851,6 +2006,7 @@ class JobStore:
         replace_active_run_id: str | None = None,
     ) -> Run:
         """Create one deterministic Run and make it current for the selected Job."""
+        # Each tool accepts only its own operations; NCA and PCC also require a sealing initializer.
         normalized_operation = operation.strip().lower()
         expected_operation = {"rtc": "rtc", "stc": "stc", "nca": "numbers"}.get(project.tool)
         if expected_operation and normalized_operation != expected_operation:
@@ -1858,10 +2014,20 @@ class JobStore:
                 f"{project.tool.upper()} Job can create only {expected_operation.upper()} Runs",
                 code="JOB_OPERATION_MISMATCH",
             )
+        if project.tool == "pcc" and normalized_operation not in PCC_RUN_OPERATIONS:
+            raise ValidationError(
+                "PCC Job can create only TERMS or CHECK Runs",
+                code="JOB_OPERATION_MISMATCH",
+            )
         if project.tool == "nca" and initialize_run is None:
             raise ValidationError(
                 "NCA Run creation requires its atomic policy initializer",
                 code="NCA_RUN_SNAPSHOT_REQUIRED",
+            )
+        if project.tool == "pcc" and initialize_run is None:
+            raise ValidationError(
+                "PCC Run creation requires its sealed snapshot initializer",
+                code="PCC_RUN_SNAPSHOT_REQUIRED",
             )
 
         canonical_scope = validate_scripture_scope(
@@ -1869,6 +2035,14 @@ class JobStore:
         ).label()
         lock_path = project.controller_root / "locks" / "run-create.lock"
         with WorkspaceLock(lock_path, f"{project.tool.upper()}_RUN_CREATE"):
+            if project.tool == "pcc":
+                active = self.active_run(project)
+                if active is not None and active.status not in RUN_CLOSED_STATUSES:
+                    raise ValidationError(
+                        f"PCC Job already has an active Run: {active.run_id}",
+                        code="PCC_RUN_ALREADY_ACTIVE",
+                        next_action="Continue or abandon the active Run before starting another.",
+                    )
             if project.tool == "nca":
                 active = self.active_run(project)
                 if active is not None and active.run_id != replace_active_run_id:
@@ -1973,6 +2147,22 @@ class JobStore:
             return restart_nca_run(
                 load_ecosystem(self.settings_path), job=project, run=run
             )
+        if project.tool == "pcc":
+            from .pcc.run import run_initializer
+
+            if run.status in RUN_CLOSED_STATUSES:
+                raise ValidationError(
+                    f"Cannot restart a {run.status.lower()} Run; start a new Run instead"
+                )
+            self.update_run(run, status="ABANDONED", current_stage="ABANDONED")
+            config = load_ecosystem(self.ensure_runtime_files(project))
+            replacement = self.create_run(
+                project,
+                operation=run.operation,
+                scope=run.scope,
+                initialize_run=run_initializer(config, project, operation=run.operation, scope=run.scope),
+            )
+            return replacement
         if run.status in RUN_CLOSED_STATUSES:
             raise ValidationError(
                 f"Cannot restart a {run.status.lower()} Run; start a new task instead"

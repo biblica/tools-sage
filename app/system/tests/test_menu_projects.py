@@ -263,8 +263,8 @@ def test_bic_and_saw_active_jobs_are_independent(make_workspace) -> None:
     store.set_active_job("bic", None)
     after = store.active_jobs()
 
-    assert before == {"bic": bic.job_id, "rtc": None, "stc": None, "nca": None, "saw": saw.job_id}
-    assert after == {"bic": None, "rtc": None, "stc": None, "nca": None, "saw": saw.job_id}
+    assert before == {"bic": bic.job_id, "rtc": None, "stc": None, "nca": None, "pcc": None, "saw": saw.job_id}
+    assert after == {"bic": None, "rtc": None, "stc": None, "nca": None, "pcc": None, "saw": saw.job_id}
 
 
 def test_runtime_roots_are_job_scoped(make_workspace) -> None:

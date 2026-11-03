@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sage-pcc/stage1/corpus_manifest.schema.json",
+  "title": "SAGE PCC Stage 1 \u2014 corpus_manifest",
+  "description": "Handover example; adapt to existing SAGE conventions while retaining semantics.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "index_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "index_kind": {
+      "type": "string",
+      "enum": [
+        "AUTHORIZED_REFERENCE",
+        "PROJECT_SYNTHETIC"
+      ]
+    },
+    "corpora": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "corpus_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "edition": {
+            "type": "string",
+            "minLength": 1
+          },
+          "language_tag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PRIMARY_SOURCE",
+              "SECONDARY_SOURCE",
+              "TARGET"
+            ]
+          },
+          "content_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "versification_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "license_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "native_reference_style": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "corpus_id",
+          "edition",
+          "language_tag",
+          "role",
+          "content_sha256",
+          "versification_id",
+          "license_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "expression_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurrence_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "index_notes": {
+      "type": "string",
+      "minLength": 0
+    },
+    "expression_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "occurrence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "index_version",
+    "index_kind",
+    "corpora",
+    "expression_file",
+    "occurrence_file",
+    "expression_sha256",
+    "occurrence_sha256"
+  ],
+  "additionalProperties": false
+}

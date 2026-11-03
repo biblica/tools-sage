@@ -1,0 +1,31 @@
+workflow:
+  id: pcc
+  name: Phrase Consistency Checker
+  purpose: Build a SOURCE terms list for the translation team and check the WIP's consistency against the team's glossary, without writing Scripture.
+  qualification_status: IN_PROGRESS
+  baseline_version: 0.02a3
+  execution_model: SAGE_GOVERNED_TASK_V1
+bindings: {}
+evidence_policies: {}
+permissions:
+  may_write_projects: []
+process:
+  stages:
+  - DETERMINISTIC_PREFLIGHT
+  - SOURCE_DISCOVERY
+  - CONSISTENCY_EVALUATION
+  - COVERAGE_RECONCILIATION
+  - DETERMINISTIC_FINALISATION
+  rules:
+  - Read the bound SOURCE, optional secondary SOURCE and optional WIP read-only; never write Scripture.
+  - A consistency obligation needs the same normalized controlling SOURCE wording and the same confirmed sense, with at least two confirmed occurrences.
+  - OL (MACULA CC BY lemma data) is sense evidence only, never authority; UBS fields are never read.
+  - No LLM or TARGET-language resource on the deterministic path; language traits are measured from the texts.
+  - Decisions live only in the Job's append-only journal; no model approves a rule.
+  - Preserve insufficient evidence and incomplete coverage; never manufacture an all-clear.
+qualification_gates:
+- sealed_run_inputs_and_read_only_execution
+- deterministic_ids_and_outputs
+- append_only_decision_journal
+- synthetic_golden_fixtures_at01_to_at30
+- planted_error_recall_including_low_resource_languages

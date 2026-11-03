@@ -32,6 +32,8 @@ REQUIRED_LANGUAGE_PROFILE_ROLES = {
     "rtc": {"WIP"},
     "stc": {"WIP"},
     "nca": set(),
+    # PCC measures language traits from the texts themselves (plan §7); no grammar profile.
+    "pcc": set(),
     "saw": {"WIP"},
 }
 
@@ -63,6 +65,13 @@ EXPECTED_PROCESS_STAGES = {
         "DETERMINISTIC_PREFLIGHT",
         "MODEL_INTERPRETATION",
         "NUMERIC_EVALUATION",
+        "COVERAGE_RECONCILIATION",
+        "DETERMINISTIC_FINALISATION",
+    ],
+    "pcc": [
+        "DETERMINISTIC_PREFLIGHT",
+        "SOURCE_DISCOVERY",
+        "CONSISTENCY_EVALUATION",
         "COVERAGE_RECONCILIATION",
         "DETERMINISTIC_FINALISATION",
     ],
@@ -199,9 +208,13 @@ def _parse_bindings(
         "rtc": {"WIP", "REFERENCE"},
         "stc": {"WIP"},
         "nca": {"WIP"},
+        "pcc": {"REFERENCE"},
         "saw": {"WIP"} if runtime_tool == "stc" else {"WIP", "REFERENCE"},
     }[workflow_id]
     optional_roles = {"ORIGINAL_LANGUAGE_GREEK", "ORIGINAL_LANGUAGE_HEBREW"}
+    if workflow_id == "pcc":
+        # PCC SOURCE is REFERENCE; the secondary SOURCE and the WIP are both optional.
+        optional_roles = {"AUXILIARY_SCRIPTURE", "WIP"}
     allowed_roles = required_roles | optional_roles
     missing_roles = sorted(required_roles - set(bindings))
     extra_roles = sorted(set(bindings) - allowed_roles)
@@ -348,7 +361,7 @@ def load_workflow_profile(config: EcosystemConfig, workflow: WorkflowSpec) -> Wo
             f"{workflow.workflow_id}.permissions.may_write_projects must be a list"
         )
     may_write_projects = tuple(item.strip() for item in writable)
-    if workflow.workflow_id in {"rtc", "stc", "nca", "saw"} and may_write_projects:
+    if workflow.workflow_id in {"rtc", "stc", "nca", "pcc", "saw"} and may_write_projects:
         identity = (
             "Legacy analysis"
             if workflow.workflow_id == "saw"

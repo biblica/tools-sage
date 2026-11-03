@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "project_id": "SYN-PCC-PROJECT",
+  "brief_id": "SYN-BRIEF",
+  "source_authority": {
+    "primary_corpus_id": "SYN-SRC-V1",
+    "secondary_corpus_ids": [],
+    "policy": "SINGLE_SOURCE"
+  },
+  "target_corpus_id": "SYN-TGT-V1",
+  "comparison_scope": {
+    "level": "CORPUS",
+    "books": [
+      "GEN"
+    ]
+  },
+  "discovery": {
+    "min_confirmed_same_sense_occurrences": 2,
+    "min_ngram_tokens": 1,
+    "max_ngram_tokens": 6,
+    "exclude_non_scripture_body": true
+  },
+  "resources": {
+    "reference_manifest_path": "resources/phrase-indexes/manifest.json",
+    "phrase_input_path": "input/phrases.txt",
+    "language_profile_path": "resources/language-profiles/en.json",
+    "project_state_dir": "data/phrase-check",
+    "output_dir": "output/phrase-check"
+  },
+  "analysis": {
+    "semantic_assistance": "OFF",
+    "reverse_detection": "REVIEW_PROBABLE_ADDITIONS",
+    "audit_level": "FULL"
+  }
+}
