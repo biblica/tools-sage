@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton) and P1b (menu) built. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) built. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -332,6 +332,25 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 - Not yet: the terms-list sub-option (P5), PCC in the Reports home and UI service views, report
   languages, and the operator guide entry.
 - Tests: `tests/pcc/test_pcc_menu.py`; existing menu-numbering tests updated.
+
+### P2 as built (2026-11-03)
+
+- `pcc/segment.py`: `tokenize` returns `Token(text, norm, start, end)` with code-point offsets into the
+  text as given, so `text[start:end] == token.text` always holds. `norm` is NFC, casefolded only when the
+  measured `cased` trait is true. Diacritics are never stripped. Apostrophe-like code points count as
+  letters only when passed in as measured `letter_marks`. Unspaced scripts get one token per character
+  cluster and must be reported `PARTIAL`.
+- `pcc/trie.py`: `TokenTrie` (standard library); `find_all` returns every match, nested and overlapping
+  (AT21), with several payloads per key.
+- `pcc/traits.py`: `measure_traits` measures script, unspaced, cased, letter/punctuation inventory,
+  apostrophe letters (inside a word in at least 80% of uses and at least 5 times) and learned
+  suffixes/prefixes (endings alternating across at least 5 shared stems). It never consults a language
+  code. `capability_matrix` gives `SUPPORTED`/`PARTIAL`/`UNAVAILABLE`; negation and orthographic
+  equivalence turn on only from team-declared facts (P5).
+- Decision: no PCC capability block was added to the grammar profiles; traits are measured per Run and
+  go into the Run snapshot in P6.
+- Not yet: frequent clitics (§7 L1) and wiring traits into the Run snapshot (P6).
+- Tests: `tests/pcc/test_pcc_p2.py`; P1 + P2 = 52 passed.
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).
