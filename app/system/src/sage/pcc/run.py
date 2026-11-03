@@ -92,6 +92,7 @@ def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any],
         sensed = assign_senses(
             expressions, occurrences, ol, scope_policy_sha256=scope_policy,
             min_support=settings["min_confirmed_same_sense_occurrences"],
+            unit_lengths={u.unit_id: len(u.text) for u in units},
         )
         expressions, occurrences, groups, unresolved = sensed.expressions, sensed.occurrences, sensed.groups, sensed.unresolved
     write_jsonl(output / "expressions.jsonl", expressions, kind="expression", sort_key="expression_id")

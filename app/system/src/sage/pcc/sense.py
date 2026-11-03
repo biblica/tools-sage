@@ -13,6 +13,9 @@ present in the verses where the expression occurs, beyond chance:
   none or more than one chosen lemma is present, when the lemma is flagged polysemous, or when the verse
   has no original-language data. Unresolved is never collapsed into the majority sense.
 
+With ``unit_lengths`` the lemma must also lie within ``window`` (relative verse position) of the
+occurrence, else the occurrence is ``UNRESOLVED`` (``OUT_OF_POSITION``).
+
 A curated expression keeps its curated senses: one curated sense confirms every occurrence, several leave
 them unresolved for the team (P5). Verse-level evidence only; word-position alignment is a later step.
 """
@@ -28,6 +31,9 @@ from typing import Any
 from .ids import IdRegistry, group_id
 
 RULE = "SENSE-OL-LEMMA"
+# An occurrence is tied to a lemma only when that lemma sits within this share of the verse of it
+# (relative position). Measured against the BSB tables: higher precision, lower coverage (see the plan).
+DEFAULT_WINDOW = 0.25
 
 
 @dataclass(frozen=True)
@@ -60,6 +66,8 @@ def assign_senses(
     min_cover: float = 0.15,
     min_precision: float = 0.2,
     polysemous: Collection[str] = (),
+    unit_lengths: Mapping[str, int] | None = None,
+    window: float | None = DEFAULT_WINDOW,
 ) -> SenseResult:
     """Return copies of the records with sense evidence applied, plus groups and unresolved summaries."""
     exprs = [copy.deepcopy(dict(e)) for e in expressions]
@@ -123,6 +131,16 @@ def assign_senses(
                 reasons["NO_OL_ALIGNMENT"] += 1
                 continue
             present = [k for k in chosen if k in keys[unit]]
+            if window is not None and unit_lengths and len(present) >= 1 and unit_lengths.get(unit):
+                middle = (occ["body_start"] + occ["body_end"]) / 2 / unit_lengths[unit]
+                size = len(ol_by_unit[unit])
+                near = [k for k in present if any(abs((i + 0.5) / size - middle) <= window
+                                                  for i, item in enumerate(ol_by_unit[unit]) if item.key == k)]
+                if not near:
+                    occ["sense_evidence"] = ["OUT_OF_POSITION"]
+                    reasons["OUT_OF_POSITION"] += 1
+                    continue
+                present = near
             if len(present) == 1 and present[0] not in flagged:
                 key = present[0]
                 occ.update(sense_id=sense_ids[key], sense_state="CONFIRMED",

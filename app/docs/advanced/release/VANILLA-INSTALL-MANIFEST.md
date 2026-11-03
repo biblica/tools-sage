@@ -1329,6 +1329,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/clone_and_install.sh`
 - `system/tools/deep_audit.py`
 - `system/tools/evaluate_name_alignment.py`
+- `system/tools/evaluate_pcc_senses.py`
 - `system/tools/hardening.py`
 - `system/tools/qualify_nca.py`
 - `system/tools/reset_project_state.py`

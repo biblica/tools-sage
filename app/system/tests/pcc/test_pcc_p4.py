@@ -110,3 +110,17 @@ def test_deterministic_and_inputs_not_mutated():
     b = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64)
     assert a.occurrences == b.occurrences and a.groups == b.groups
     assert found.occurrences == before
+
+
+def test_position_window_marks_far_lemma_out_of_position():
+    near = OlItem("G1", "near", "1", "x")
+    filler = [OlItem(f"G{n}", f"f{n}", str(n), "") for n in range(100, 109)]
+    rows = [("light yoke here", [near] + filler), ("light yoke there", [near] + filler),
+            ("far light", [near] + filler)]
+    found, ol = _setup(rows)
+    lengths = {u: len(r[0]) for u, r in zip(ol, rows)}
+    result = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64,
+                           unit_lengths=lengths, window=0.15)
+    states = {o["canonical_ref"]: o["sense_state"] for o in _occ(result, _by_form(result)["light"])}
+    assert states["MAT 1:1"] == "CONFIRMED" and states["MAT 1:3"] == "UNRESOLVED"
+    assert _occ(result, _by_form(result)["light"])[2]["sense_evidence"] == ["OUT_OF_POSITION"]

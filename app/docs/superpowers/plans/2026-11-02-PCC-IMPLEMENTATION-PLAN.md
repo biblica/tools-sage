@@ -411,6 +411,33 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   `localdata/.system/cache/witnesses/engbsb` (not committed).
 - Tests: `test_pcc_p4.py`; P1-P4 = 77 passed.
 
+### P4 evaluation against the BSB tables (2026-11-03)
+
+- `bsb_tables.xlsx` (bereanbible.com, public domain; SHA-256 `4763b1fa…cf3d`, 754,647 word rows) gives
+  the BSB English each Hebrew/Greek word is rendered by. It is tagged data, so it measures sense
+  evidence without hand labelling (§9). It stays in the local cache
+  `localdata/.system/cache/witnesses/bsb-tables`; `tools/evaluate_pcc_senses.py` reads it and prints counts only.
+- Result (BSB as SOURCE, `CONFIRMED` lemma against the table's Strong's number for the same words):
+
+| Scope | Window | Precision of CONFIRMED | Confirmed share |
+|---|---|---|---|
+| JHN + ROM | none (verse only) | 73.9% | 56.1% |
+| JHN + ROM | 0.25 (default) | 79.4% | 51.6% |
+| JHN + ROM | 0.15 | 81.6% | 45.8% |
+| GEN + PSA | none | 63.1% | 48.3% |
+| GEN + PSA | 0.25 | 68.6% | 42.7% |
+
+- Errors are mostly closed-class words (`may`, `your`, `these`, `had`), where verse-level evidence cannot
+  say which Greek or Hebrew word was rendered. The relative-position window (`DEFAULT_WINDOW = 0.25`,
+  `OUT_OF_POSITION` when no chosen lemma is near) is now the Run default: an unresolved occurrence costs
+  a team look, a wrong `CONFIRMED` costs a wrong obligation. Hebrew is weaker (word order, prefixed
+  segments; the table counts the Strong's of the whole word row).
+- Senses stay `PROVISIONAL` and the team confirms them in P5. No release bar is set yet; next step to
+  raise precision is learned word alignment (IBM Model 1 per plan A3) and a lexical-word filter, and the
+  tool is the gate to measure it.
+- The table is **not** shipped and not used at run time (it only helps a BSB SOURCE; the main SOURCE is
+  NIV). It is evaluation data.
+
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 
