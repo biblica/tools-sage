@@ -848,6 +848,10 @@ class SageControlCenter:
             bindings = validate_nca_job_prerequisites(load_ecosystem(self.store.settings_path), project)
             return {'state': 'READY', 'workflow': 'nca', 'reference_qualification': bindings.bundle.qualification_status,
                     'number_style': bindings.style.selector if bindings.style else None}
+        if project.tool == "pcc":
+            # PCC is local and deterministic: no controller workspace, only the Job's runtime settings.
+            self.store.ensure_runtime_files(project)
+            return {"state": "READY", "workflow": "pcc"}
         settings = self.store.ensure_runtime_files(project)
         config = load_ecosystem(settings)
         state = read_state(ecosystem_state_path(config.runtime_state_root))
@@ -2425,7 +2429,8 @@ class SageControlCenter:
                 elif choice == "3": self.analysis_menu("rtc")
                 elif choice == "4": self.analysis_menu("stc")
                 elif choice == "5": self.nca_menu()
-                elif choice == "6":
+                elif choice == "6": self.pcc_menu()
+                elif choice == "7":
                     destination = self.system_configuration_menu()
                     if destination == "EXIT":
                         self.store.record_cue("SAGE_EXITED")
@@ -2597,6 +2602,11 @@ class SageControlCenter:
         from .job_menus import job_home
         job_home(self, "nca")
 
+    def pcc_menu(self) -> None:
+        """Open the Phrase Consistency Checker home."""
+        from .pcc_menu import pcc_home
+        pcc_home(self)
+
     def nca_job_menu(self, project: Job) -> None:
         """Open one NCA Job without using an RTC/STC fallback."""
         from .job_menus import open_job
@@ -2614,6 +2624,7 @@ class SageControlCenter:
         self.io.write(f"RTC active Job: {self._job_summary('rtc')}")
         self.io.write(f"STC active Job: {self._job_summary('stc')}")
         self.io.write(f"NCA active Job: {self._job_summary('nca')}")
+        self.io.write(f"PCC active Job: {self._job_summary('pcc')}")
         if self._last_run_is_resumable():
             self.io.write(f"Unfinished Run: {self._last_run_summary()}")
         return self.io.choose(
@@ -2624,10 +2635,11 @@ class SageControlCenter:
                 ("3", "Reference Text Comparison (RTC)"),
                 ("4", "Source Text Correspondence (STC)"),
                 ("5", "Number Consistency & Accuracy (NCA)"),
-                ("6", "SAGE Maintenance"),
+                ("6", "Phrase Consistency Checker (PCC)"),
+                ("7", "SAGE Maintenance"),
                 ("X", "Exit SAGE"),
             ),
-            blank_before=("2", "6"),
+            blank_before=("2", "7"),
         )
 
     def resume_or_start_task(self) -> None:
@@ -4038,6 +4050,9 @@ class SageControlCenter:
             if project.tool == 'nca':
                 from .nca_menu import continue_run as _continue_nca
                 run = _continue_nca(self, project, run)
+            elif project.tool == "pcc":
+                from .pcc_menu import continue_run as _continue_pcc
+                run = _continue_pcc(self, project, run)
             elif project.tool == "bic":
                 run = self._continue_bic(project, run)
             else:
@@ -5710,6 +5725,9 @@ class SageControlCenter:
         if tool == 'nca':
             from .nca_menu import create_job
             return create_job(self)
+        if tool == 'pcc':
+            from .pcc_menu import create_job as create_pcc_job
+            return create_pcc_job(self)
         if tool == "bic":
             source = self.choose_or_add_resource("CHOOSE BIC <SOURCE>", "CONTENT_SOURCE")
             if not source: return

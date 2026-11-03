@@ -99,31 +99,33 @@ def test_nca_reinitialization_uses_own_resource_contract(make_workspace, monkeyp
     assert center.ensure_initialized(job, force=True)['state'] == 'READY'
 
 
-def test_main_menu_places_nca_at_five_and_maintenance_at_six(make_workspace):
+def test_main_menu_places_nca_at_five_pcc_at_six_and_maintenance_at_seven(make_workspace):
     """Existing workflow keys remain stable while NCA occupies its approved slot."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     center, output = _center(root, 'c')
     assert center.main_menu() == 'X'
     text = output.getvalue()
     assert '5. Number Consistency & Accuracy (NCA)' in text
-    assert '6. SAGE Maintenance' in text
+    assert '6. Phrase Consistency Checker (PCC)' in text
+    assert '7. SAGE Maintenance' in text
     assert 'NCA active Job:' in text
     assert '4. Source Text Correspondence (STC)' in text
 
 
-def test_main_menu_dispatches_five_and_six_to_correct_workflows(make_workspace, monkeypatch):
+def test_main_menu_dispatches_five_six_and_seven_to_correct_workflows(make_workspace, monkeypatch):
     """Displayed numbering and executed menu destinations agree."""
     root = make_workspace(configured=True, qualification_status='VALIDATED')
     center, output = _center(root)
-    choices = iter(('5', '6', 'X'))
+    choices = iter(('5', '6', '7', 'X'))
     calls = []
     monkeypatch.setattr(center, 'main_menu', lambda: next(choices))
     monkeypatch.setattr(center, '_setup_model_probe', lambda *args, **kwargs: {'ready': True})
     monkeypatch.setattr(center, '_render_startup_report', lambda *args: None)
     monkeypatch.setattr(center, 'nca_menu', lambda: calls.append('nca'), raising=False)
+    monkeypatch.setattr(center, 'pcc_menu', lambda: calls.append('pcc'))
     monkeypatch.setattr(center, 'system_configuration_menu', lambda: calls.append('maintenance'))
     assert center.run() == 0
-    assert calls == ['nca', 'maintenance']
+    assert calls == ['nca', 'pcc', 'maintenance']
 
 
 def test_each_check_toggles_independently_and_saved_defaults_restore(make_workspace):

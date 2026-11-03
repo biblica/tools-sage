@@ -72,7 +72,7 @@ def test_menu_is_a_canonical_cli_domain() -> None:
             and isinstance(item.elts[1].value, str)
         ]
         normalized_labels = [
-            label.replace(" (BIC)", "").replace(" (RTC)", "").replace(" (STC)", "").replace(" (NCA)", "")
+            label.replace(" (BIC)", "").replace(" (RTC)", "").replace(" (STC)", "").replace(" (NCA)", "").replace(" (PCC)", "")
             for label in labels
         ]
         assert all("(" not in label and ")" not in label for label in normalized_labels)
@@ -952,9 +952,9 @@ def test_main_menu_separates_scripture_project_management_from_workflows(make_wo
     assert "1. Manage SAGE Scripture PROJECTS" in rendered
     assert "Manage SAGE Scripture PROJECTS\n\n  2. Bible Index & Context (BIC)" in rendered
     assert "3. Reference Text Comparison (RTC)" in rendered
-    assert "5. Number Consistency & Accuracy (NCA)\n\n  6. SAGE Maintenance" in rendered
+    assert "5. Number Consistency & Accuracy (NCA)\n  6. Phrase Consistency Checker (PCC)\n\n  7. SAGE Maintenance" in rendered
     assert "\n  3. SAW\n" not in rendered
-    assert "6. SAGE Maintenance" in rendered
+    assert "7. SAGE Maintenance" in rendered
     assert "4. Reports" not in rendered
     assert "6. Recovery" not in rendered
     assert "Scripture Projects >>" not in rendered

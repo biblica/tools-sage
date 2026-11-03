@@ -3778,6 +3778,14 @@
       "fr": "Taille des unités de travail",
       "ru": "Размер рабочей единицы",
       "pt-BR": "Tamanho da unidade de trabalho"
+    },
+    "menu.pcc": {
+      "en-US": "Phrase Consistency Checker (PCC)",
+      "en-GB": "Phrase Consistency Checker (PCC)",
+      "id": "Pemeriksa Konsistensi Frasa (PCC)",
+      "fr": "Vérificateur de cohérence des expressions (PCC)",
+      "ru": "Проверка согласованности фраз (PCC)",
+      "pt-BR": "Verificador de consistência de expressões (PCC)"
     }
   }
 }

@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton) built; P1b (menu) next. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton) and P1b (menu) built. No analysis code exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -315,11 +315,23 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   the vanilla install manifest, and the shared test workspace.
 - Deviations recorded for later phases: a WIP can be bound only at Job creation (Job bindings are
   immutable in SAGE); attaching one later is a P6 item, and the Job ID would then still name the
-  target language. `OPERATOR_WORKFLOWS` (menus and UI listings) is left for P1b.
+  target language. `OPERATOR_WORKFLOWS` (UI listings, reports home) is deliberately still left out; see P1b.
 - Tests: `tests/pcc/test_pcc_p1.py`, 41 tests; three deliberate code breaks (validator, journal
   chain, stale-input guard) were each caught. Full suite: 2370 passed, 2 failed; both failures are
   local-environment artifacts outside the repo's tracked files (an untracked file in the git-ignored
   `project-management/private/`, and a `system/tools/__pycache__` from 2026-10-29).
+
+### P1b as built (2026-11-03)
+
+- Main Menu: **6. Phrase Consistency Checker (PCC)**, **7. SAGE Maintenance** (moved from 6); the menu
+  also shows `PCC active Job`. `sage/pcc_menu.py` holds the PCC home (add/open/set active), the Job
+  wizard (SOURCE, optional secondary SOURCE, optional WIP, or a target-language tag for a terms-only
+  Job), the Job menu (Build SOURCE terms list / Check WIP against the glossary / Manage) and the
+  Run adapter that seals the snapshot and calls `execute_pcc_run`.
+- `ensure_initialized` skips the controller workspace for PCC (local, deterministic).
+- Not yet: the terms-list sub-option (P5), PCC in the Reports home and UI service views, report
+  languages, and the operator guide entry.
+- Tests: `tests/pcc/test_pcc_menu.py`; existing menu-numbering tests updated.
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).

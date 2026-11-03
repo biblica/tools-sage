@@ -982,6 +982,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/journal.py`
 - `system/src/sage/pcc/jsonl.py`
 - `system/src/sage/pcc/run.py`
+- `system/src/sage/pcc_menu.py`
 - `system/src/sage/plan_continuation.py`
 - `system/src/sage/platform_commands.py`
 - `system/src/sage/portability.py`
@@ -1133,6 +1134,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_witnesses.py`
 - `system/tests/pcc`
 - `system/tests/pcc/__init__.py`
+- `system/tests/pcc/test_pcc_menu.py`
 - `system/tests/pcc/fixtures`
 - `system/tests/pcc/fixtures/handover`
 - `system/tests/pcc/fixtures/handover/contracts`
