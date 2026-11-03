@@ -12,16 +12,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from ..errors import ValidationError
+from ..errors import SageError, ValidationError
 from ..exception_reports import NOT_ASSESSED, ExceptionRecord, record_exception
 from ..hashing import sha256_paths
 from ..registry import EcosystemConfig
 from ..scripture import discover_usfm_files
+from ..ol_analysis import load_ol_analysis
 from ..vrs import load_project_vrs
 from ..references import parse_scope
 from . import ENGINE_VERSION, OPERATIONS
 from .discovery import Seed, discover
 from .phrases import PHRASES_FILE, read_phrases
+from .ol_evidence import ol_items_for_units
+from .sense import assign_senses
 from .source_text import source_units
 from .traits import measure_traits
 from .contracts import SCHEMA_VERSION, validate_record
@@ -45,8 +48,9 @@ NOT_IMPLEMENTED_LIMITATION = (
 
 
 TERMS_LIMITATION = (
-    "Terms list discovery only (plan phase P3): expressions and occurrences were located in the SOURCE, "
-    "but no sense or consistency was assessed. Every occurrence sense is UNRESOLVED."
+    "Terms list with sense evidence (plan phase P4): expressions were located in the SOURCE and senses "
+    "suggested from original-language lemmas (evidence, not authority). Unresolved occurrences are listed; "
+    "no consistency was assessed."
 )
 
 
@@ -69,8 +73,31 @@ def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any],
         min_tokens=settings["min_ngram_tokens"],
         max_tokens=settings["max_ngram_tokens"],
     )
-    write_jsonl(output / "expressions.jsonl", found.expressions, kind="expression", sort_key="expression_id")
-    write_jsonl(output / "occurrences.jsonl", found.occurrences, kind="occurrence", sort_key="occurrence_id")
+    expressions, occurrences = found.expressions, found.occurrences
+    groups: list[dict[str, Any]] = []
+    unresolved: list[dict[str, Any]] = []
+    sense_note: tuple[str, str, str] | None = None
+    try:
+        analysis = load_ol_analysis(config.root)
+    except (SageError, OSError, ValueError, KeyError) as exc:
+        analysis, sense_note = None, ("PCC_SENSE_NOT_ASSESSED", f"Original-language package unavailable: {exc}", snapshot["scope"])
+    if analysis is None and sense_note is None:
+        sense_note = ("PCC_SENSE_NOT_ASSESSED", "SAGE has no original-language analysis package; senses were not assessed.", snapshot["scope"])
+    if analysis is not None:
+        project = config.project(source["project_id"])
+        ol = ol_items_for_units(units, analysis, load_project_vrs(config, project))
+        if not ol:
+            sense_note = ("PCC_SENSE_NOT_ASSESSED", "No original-language words map to this SOURCE scope; senses were not assessed.", snapshot["scope"])
+        scope_policy = full_digest({"scope": snapshot["scope"], "discovery": settings, "source": source["content_sha256"]})
+        sensed = assign_senses(
+            expressions, occurrences, ol, scope_policy_sha256=scope_policy,
+            min_support=settings["min_confirmed_same_sense_occurrences"],
+        )
+        expressions, occurrences, groups, unresolved = sensed.expressions, sensed.occurrences, sensed.groups, sensed.unresolved
+    write_jsonl(output / "expressions.jsonl", expressions, kind="expression", sort_key="expression_id")
+    write_jsonl(output / "occurrences.jsonl", occurrences, kind="occurrence", sort_key="occurrence_id")
+    write_jsonl(output / "groups.jsonl", groups, sort_key="group_id")
+    write_jsonl(output / "sense-unresolved.jsonl", unresolved, sort_key="expression_id")
     write_jsonl(output / "expression-stats.jsonl", found.stats)
     write_json(output / "source-traits.json", {**traits.as_record(), "auto_discovery": found.auto_discovery,
                                                "units": len(units)})
@@ -78,6 +105,8 @@ def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any],
               "kept on the list with zero occurrences.", f"{PHRASES_FILE}:{s.line}") for s in found.unfound]
     notes += [("PCC_PHRASE_LINE_INVALID", f"{PHRASES_FILE} line {p.line}: {p.reason}; the line was not used.",
                f"{PHRASES_FILE}:{p.line}") for p in problems]
+    if sense_note:
+        notes.append(sense_note)
     if found.auto_discovery != "RAN":
         notes.append(("PCC_DISCOVERY_PARTIAL", "The SOURCE script is written without spaces: automatic phrase "
                       "discovery was skipped; only listed phrases were located.", snapshot["scope"]))
@@ -85,7 +114,7 @@ def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any],
         record_exception(run.root, ExceptionRecord(
             tool="pcc", code=code, message=message, effect=NOT_ASSESSED, run_id=run.run_id, job_id=job.job_id,
             stage=STAGES[1], coordinates=(coordinate,), severity="WARNING"))
-    return {"expressions": len(found.expressions), "occurrences": len(found.occurrences), "notes": len(notes)}
+    return {"expressions": len(expressions), "occurrences": len(occurrences), "notes": len(notes), "groups": len(groups)}
 
 
 def _utc_now() -> str:

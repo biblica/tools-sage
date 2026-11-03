@@ -25,7 +25,7 @@ from .segment import Token, tokenize
 from .traits import WipTraits
 from .trie import TokenTrie
 
-STOP_SHARE = 0.05       # a token in this share of verses (and at least STOP_MIN verses) is a stop word
+STOP_SHARE = 0.15       # a token in this share of verses (and at least STOP_MIN verses) is a stop word
 STOP_MIN_VERSES = 20
 MIN_UNIGRAM_LETTERS = 3
 ORIGIN_RANK = {"LOCAL_INPUT": 0, "AUTHORIZED_REFERENCE": 1, "SOURCE_DISCOVERY": 2}

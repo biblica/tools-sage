@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) and P3a (discovery, index packages, builder tool) built. P3b (BSB package) is open. No consistency analysis exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -379,6 +379,37 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   `build_numbers_index.py`), and no curated term/idiom list exists. Needs a PO decision: ship a
   discovery-only BSB index, or supply a curated list first.
 - Tests: `test_pcc_p3.py`, `test_pcc_p3_index.py`; P1-P3 = 69 passed.
+
+### P4 as built (2026-11-03)
+
+- `pcc/sense.py` (`assign_senses`): original-language lemmas as evidence only (D2, D3: lemma, Strong's
+  number and gloss; no restricted fields). A lemma is a candidate for an expression when it is in at least
+  2 of the expression's verses, in at least 15% of them, and the expression is in at least 20% of the
+  lemma's own verses (so function words fail). Candidates are chosen greedily by coverage; each chosen
+  lemma is one `PROVISIONAL` sense keyed by the expression and lemma (`SENSE-OL-LEMMA`), so divergent
+  lemmas split into separate groups. An occurrence is `CONFIRMED` for the one chosen lemma in its verse;
+  none, several, a polysemous-flagged lemma, or no OL data give `UNRESOLVED` with the reason (`PC20`).
+  Curated senses are kept: one confirms all occurrences, several wait for the team (P5).
+- `pcc/ol_evidence.py`: maps SOURCE verses through the project VRS to canonical (`org`) numbering and
+  reads the shipped MACULA package (`SAGE_OL_ANALYSIS_2026-10-15`); no raw MACULA fetch is needed.
+- Run: a `terms` Run also writes `groups.jsonl` (ELIGIBLE at 2+ confirmed verses, else INFORMATIONAL, AT16)
+  and `sense-unresolved.jsonl`; without the OL package it reports `PCC_SENSE_NOT_ASSESSED`.
+- `source_text` and `tools/build_phrase_index.py` also read a plain folder of `*.usfm` files (eBible layout).
+- Stoplist threshold raised to 15% of verses, because 5% removed content words (`world`) in a single book.
+  Frequent content words and names (God, the Lord) are still skipped in a single-book scope; list them in
+  `phrases.txt`.
+- Real-data check (BSB as SOURCE, MACULA lemmas): JHN 878 units, 12,284 occurrences, 6,835 confirmed
+  (`world` -> κόσμος, `eternal life` -> αἰώνιος); PSA 2,524 units mapped across the Hebrew numbering;
+  `salvation` split into two Hebrew lemmas. Whole BSB discovery: 39 s, 102,496 expressions,
+  800,723 occurrences. BSB's own `\w strong=` tags were not used.
+- Limits: verse-level evidence only (word position is not used); apostrophe-s stays inside the token
+  (`Lord’s` is not `Lord`), by SRC07 a separate group.
+- **P3b decision (made while measuring):** a whole-BSB discovery index is **458 MB** (occurrences
+  alone 420 MB) and a Run recomputes it in under a minute, so it must not ship in the public repo. Ship
+  only a compact curated-entries package when a curated list exists; otherwise nothing. The eBible BSB
+  (`engbsb_usfm.zip`, SHA-256 `75ca91d5…fbc4`) is now in the local cache
+  `localdata/.system/cache/witnesses/engbsb` (not committed).
+- Tests: `test_pcc_p4.py`; P1-P4 = 77 passed.
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).

@@ -28,12 +28,11 @@ from sage.pcc.index import EXPRESSIONS, MANIFEST, OCCURRENCES, build_index, cura
 from sage.pcc.jsonl import read_jsonl  # noqa: E402
 from sage.pcc.segment import tokenize  # noqa: E402
 from sage.pcc.traits import measure_traits  # noqa: E402
-from sage.pcc.source_text import source_units_for_project  # noqa: E402
-from sage.scripture import discover_usfm_files  # noqa: E402
+from sage.pcc.source_text import _book_files, source_units_for_project  # noqa: E402
 
 
 def _units(path: Path) -> tuple[list[SourceUnit], str]:
-    files = discover_usfm_files(path)
+    files = _book_files(path)
     if not files:
         raise SystemExit(f"No Scripture files in {path}")
     return source_units_for_project(path), sha256_paths(files, relative_to=path)

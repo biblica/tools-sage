@@ -312,7 +312,7 @@ def test_terms_run_seals_inputs_and_discovers_without_assessing_senses(make_work
     assert snapshot["source"]["project_id"] == "usNIVv2" and snapshot["target"] is None
     assert snapshot["source_authority"] == "SINGLE_SOURCE"
     summary = execute_pcc_run(store, config, job, run)
-    assert summary["evaluated_occurrences"] == 0 and "UNRESOLVED" in summary["limitations"][0]
+    assert summary["evaluated_occurrences"] == 0 and "sense evidence" in summary["limitations"][0]
     output = run.root / "validation" / "pcc"
     read_json(output / "run-manifest.json", kind="run_manifest")
     read_json(output / "summary.json", kind="summary")
@@ -323,6 +323,7 @@ def test_terms_run_seals_inputs_and_discovers_without_assessing_senses(make_work
     assert read_json(output / "source-traits.json")["units"] > 0
     exceptions = (run.root / "diagnostics" / "EXCEPTION-REPORTS.jsonl").read_text(encoding="utf-8")
     assert "PCC_PHRASE_NOT_IN_SOURCE" in exceptions and "phrases.txt line 1" in exceptions
+    assert "PCC_SENSE_NOT_ASSESSED" in exceptions or (output / "groups.jsonl").is_file()
     assert "PCC_PHRASE_LINE_INVALID" in exceptions and "phrases.txt line 2" in exceptions
     assert store.load_run(job, run.run_id).status == "COMPLETE_WITH_EXCEPTIONS"
 
