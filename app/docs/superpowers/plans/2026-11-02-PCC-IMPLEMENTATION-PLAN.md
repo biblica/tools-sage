@@ -462,7 +462,14 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   review proposed renderings).
 - Not yet: reclassifying senses from the sheet (`RECLASSIFY_SENSE`), revoking a rule from the menu, rules
   used by a Run (P6/P7).
-- Tests: `test_pcc_p5.py`; P1-P5 = 90 passed.
+- P5 additions (2026-11-04): terms lists show key phrases only (`curate_rows`: empty and nested rows folded,
+  routine wording left out and summarised at the end of the report); Paratext `BiblicalTerms.xml` lemmas are
+  always listed as `KEY_TERM`; `pcc/transfer.py` exports/imports a checksummed JSON terms bundle between Jobs
+  (renderings arrive as PROPOSED, same target language only) and imports Operator lists (CSV/TSV/TXT/XLSX);
+  `pcc/overlay.py` keeps Operator verdicts on core lists (OL senses, key terms, index entries) as a local
+  overlay in `localdata/inputs/pcc/core-overlay.jsonl`, shared by all Jobs, never editing shipped packages.
+  The phrase index is not yet loaded by a Run, so INDEX_ENTRY verdicts are honoured by `curated_seeds` only.
+- Tests: `test_pcc_p5.py`; P1-P5 = 92 passed.
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).

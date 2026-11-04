@@ -72,8 +72,21 @@ def normalize_rendering(text: str) -> str:
 # --- terms list -----------------------------------------------------------------------------------
 
 
-def terms_rows(output: Path) -> list[dict[str, Any]]:
-    """Return one row per expression and sense from a ``terms`` Run's output folder, in a stable order."""
+UNASSESSED_LABEL = "unassessed wording"
+UNRESOLVED_LABEL = "Meaning not identified: the original text did not settle which sense this is; you decide"
+KEY_TERMS_FILE = "key-terms.json"
+FALLBACK_MIN_TOKENS = 2     # no sense evidence anywhere: keep only multi-word wording ...
+FALLBACK_MIN_VERSES = 3     # ... recurring in at least this many verses
+
+
+def terms_rows(output: Path, *, curate: bool = True, summary: dict[str, Any] | None = None,
+               key_terms: Mapping[str, str] | None = None,
+               verdicts: Mapping[tuple[str, str], str] | None = None) -> list[dict[str, Any]]:
+    """Return the terms-list rows of a ``terms`` Run's output folder, in a stable order.
+
+    With ``curate`` (the default) the list holds key phrases only: see ``curate_rows``. ``summary``, when
+    given, is filled with what was left out so the report can say so at its end.
+    """
     expressions = read_jsonl(output / "expressions.jsonl", kind="expression")
     occurrences = read_jsonl(output / "occurrences.jsonl", kind="occurrence")
     groups_path = output / "groups.jsonl"
@@ -96,8 +109,72 @@ def terms_rows(output: Path) -> list[dict[str, Any]]:
             rows.append(_row(expr, None, unresolved, None))
         elif not expr["senses"]:
             rows.append(_row(expr, None, [], None))
+    if curate:
+        rows, left_out = curate_rows(rows, key_terms or {}, verdicts or {})
+        if summary is not None:
+            summary.update(left_out)
     rows.sort(key=lambda r: (r["category"], r["normalized"], r["sense"], r["entry_id"]))
     return rows
+
+
+def _contains(longer: Sequence[str], shorter: Sequence[str]) -> bool:
+    """True when ``shorter`` is a contiguous run of tokens inside the longer sequence."""
+    n = len(shorter)
+    return any(list(longer[i:i + n]) == list(shorter) for i in range(len(longer) - n + 1))
+
+
+def curate_rows(rows: Sequence[dict[str, Any]], key_terms: Mapping[str, str] = {},
+                verdicts: Mapping[tuple[str, str], str] = {}) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Reduce raw rows to key phrases; return (rows, what was left out).
+
+    1. Rows with no occurrences are dropped (an empty sense is not something to translate).
+    2. A row whose wording sits inside a longer row with the same sense and exactly the same verses is
+       dropped: the longer phrase already carries it.
+    Key terms (original-language lemma on the Paratext Biblical Terms list) are never folded or dropped.
+    3. Wording the tool only found by counting (not curated, not on the team's phrases.txt) stays only
+       when original-language evidence gave it a sense. If no row anywhere has such evidence (no phrase
+       index for this SOURCE), a stricter count rule applies instead: multi-word and in several verses.
+    """
+    rejected = 0
+    reviewed: list[dict[str, Any]] = []
+    for row in rows:
+        verdict = verdicts.get(("OL_SENSE", f"{row['normalized']}|{row['lemma']}")) if row["lemma"] else None
+        if verdict == "REJECT":
+            rejected += 1
+            continue
+        row["reviewed"] = verdict == "ACCEPT"
+        row["key_term"] = row["lemma"] in key_terms and verdicts.get(("KEY_TERM", row["lemma"])) != "REJECT"
+        if row["key_term"]:
+            row["category"] = "KEY_TERM"
+        reviewed.append(row)
+    rows = reviewed
+    empty = [r for r in rows if not r["occurrences"]]
+    live = [r for r in rows if r["occurrences"]]
+    tokens = {r["entry_id"]: r["normalized"].split() for r in live}
+    kept: list[dict[str, Any]] = []
+    nested = 0
+    for row in live:
+        mine = tokens[row["entry_id"]]
+        if not (row["key_term"] or row["reviewed"]) and any(len(tokens[o["entry_id"]]) > len(mine) and o["sense"] == row["sense"] and o["refs"] == row["refs"]
+               and _contains(tokens[o["entry_id"]], mine) for o in live):
+            nested += 1
+        else:
+            kept.append(row)
+    has_evidence = lambda r: bool(r["sense_id"]) and r["sense"] != UNASSESSED_LABEL  # noqa: E731
+    evidence_exists = any(has_evidence(r) for r in live)
+    keep_expr: set[str] = set()
+    for row in live:  # judged before nesting, so an expression whose evidence row was folded stays
+        if row["origin"] != "SOURCE_DISCOVERY" or row["key_term"] or row["reviewed"]:
+            keep_expr.add(row["expression_id"])
+        elif evidence_exists:
+            if has_evidence(row):
+                keep_expr.add(row["expression_id"])
+        elif len(tokens[row["entry_id"]]) >= FALLBACK_MIN_TOKENS and row["verses"] >= FALLBACK_MIN_VERSES:
+            keep_expr.add(row["expression_id"])
+    final = [r for r in kept if r["expression_id"] in keep_expr]
+    routine = len({r["expression_id"] for r in live} - keep_expr)
+    return final, {"empty_rows": len(empty), "nested_rows": nested, "routine_wordings": routine,
+                   "rejected_by_operator": rejected, "evidence_available": evidence_exists}
 
 
 def _row(expr: Mapping[str, Any], sense: Mapping[str, Any] | None, occs: Sequence[Mapping[str, Any]],
@@ -116,9 +193,11 @@ def _row(expr: Mapping[str, Any], sense: Mapping[str, Any] | None, occs: Sequenc
         "expression_id": expr["expression_id"],
         "sense_id": sense_id,
         "category": expr["category"],
+        "origin": expr["origin"],
+        "refs": tuple(refs),
         "wording": expr["source_surface"],
         "normalized": expr["normalized_source_form"],
-        "sense": sense["label"] if sense else "UNRESOLVED (team decides)",
+        "sense": sense["label"] if sense else UNRESOLVED_LABEL,
         "lemma": lemma,
         "occurrences": len(occs),
         "verses": len({o["source_unit_id"] for o in occs}),
@@ -133,7 +212,7 @@ def terms_list_hash(rows: Iterable[Mapping[str, Any]]) -> str:
 
 
 def write_terms_list(rows: Sequence[Mapping[str, Any]], *, job_id: str, run_id: str, target_language: str,
-                     markdown: Path, xlsx: Path) -> str:
+                     markdown: Path, xlsx: Path, summary: Mapping[str, Any] | None = None) -> str:
     """Write ``TERMS-LIST.md`` and ``TERMS-LIST.xlsx``; return the list hash both carry."""
     from openpyxl import Workbook
 
@@ -148,6 +227,15 @@ def write_terms_list(rows: Sequence[Mapping[str, Any]], *, job_id: str, run_id: 
                       "|---|---|---|---|---|---|"]
         lines.append("| " + " | ".join(str(row[k]).replace("|", "\\|") for k in
                                        ("wording", "sense", "occurrences", "verses", "books", "examples")) + " |")
+    if summary:
+        lines += ["", "## Left out of this list", "",
+                  f"- {summary.get('nested_rows', 0)} shorter wording(s) already covered by a longer phrase with the same sense and verses.",
+                  f"- {summary.get('rejected_by_operator', 0)} sense(s) you rejected in the core-list review.",
+                  f"- {summary.get('empty_rows', 0)} sense(s) with no occurrence in this SOURCE.",
+                  f"- {summary.get('routine_wordings', 0)} recurring wording(s) that are not key phrases "
+                  + ("(no original-language sense evidence; not on your phrases.txt)." if summary.get("evidence_available", True)
+                     else "(too short or too rare; no original-language evidence was available for this SOURCE)."),
+                  "- Add any wording you want here to `input/phrases.txt` and run the terms list again."]
     atomic_write_text(markdown, "\n".join(lines) + "\n")
     book = Workbook()
     sheet = book.active
@@ -491,3 +579,41 @@ def decide_proposals(job: Any, rule_ids: Iterable[str], *, approve: bool, lock_p
         _append_rule(job, lock_path, source_corpus_sha256, updated, "APPROVE" if approve else "REVOKE", actor, rules)
         changed += 1
     return changed
+
+
+# --- key terms (Paratext Biblical Terms) ----------------------------------------------------------
+
+
+def read_biblical_terms(path: Path) -> dict[str, str]:
+    """Parse a Paratext ``BiblicalTerms.xml`` read-only into {original-language lemma: gloss}."""
+    raw = path.read_bytes()
+    if b"<!ENTITY" in raw or b"<!DOCTYPE" in raw:
+        raise ValidationError(f"{path.name} declares a DTD or entities; SAGE will not parse it.",
+                              code="PCC_PARATEXT_XML_UNSAFE", next_action="Use a plain BiblicalTerms.xml.")
+    try:
+        root = ET.fromstring(raw)
+    except ET.ParseError as exc:
+        raise ValidationError(f"{path.name} is not valid XML: {exc}", code="PCC_PARATEXT_XML_INVALID") from exc
+    terms: dict[str, str] = {}
+    for element in root.iter("Term"):
+        term_id = unicodedata.normalize("NFC", (element.get("Id") or element.findtext("Id") or "").strip())
+        if term_id:
+            terms.setdefault(term_id, (element.findtext("Gloss") or "").strip())
+    if not terms:
+        raise ValidationError(f"{path.name} holds no Term entries.", code="PCC_PARATEXT_XML_EMPTY",
+                              next_action="Choose the BiblicalTerms.xml from the Paratext installation.")
+    return terms
+
+
+def import_key_terms(job_root: Path, path: Path) -> int:
+    """Store the Biblical Terms lemmas for this Job (replaces an earlier import); return the term count."""
+    terms = read_biblical_terms(path)
+    record = {"source": "PARATEXT:BiblicalTerms", "sha256": sha256_file(path), "terms": dict(sorted(terms.items()))}
+    atomic_write_text(journal_path(job_root).parent / KEY_TERMS_FILE, canonical_json(record) + "\n")
+    return len(terms)
+
+
+def current_key_terms(job_root: Path) -> dict[str, str]:
+    """Return the imported key-term lemmas ({} when none were imported)."""
+    path = journal_path(job_root).parent / KEY_TERMS_FILE
+    return dict(read_json(path)["terms"]) if path.is_file() else {}

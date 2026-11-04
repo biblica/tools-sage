@@ -107,17 +107,19 @@ def verify_index(folder: Path) -> dict[str, Any]:
     return manifest
 
 
-def curated_seeds(folder: Path, traits: WipTraits, source_sha256: str) -> tuple[list[Seed], bool]:
+def curated_seeds(folder: Path, traits: WipTraits, source_sha256: str,
+                  rejected: frozenset[str] = frozenset()) -> tuple[list[Seed], bool]:
     """Curated entries of a verified package as seeds, and whether the index matches this SOURCE exactly.
 
     Discovered entries of the package are not seeds (the Run recomputes discovery from the actual
-    SOURCE). Without an exact content match, curated senses are downgraded to PROVISIONAL.
+    SOURCE). Without an exact content match, curated senses are downgraded to PROVISIONAL. ``rejected`` holds
+    normalized forms the Operator rejected in the core-list overlay.
     """
     manifest = verify_index(folder)
     matches = any(c["content_sha256"] == source_sha256 for c in manifest["corpora"])
     seeds: list[Seed] = []
     for expr in read_jsonl(folder / manifest["expression_file"], kind="expression"):
-        if expr["origin"] != "AUTHORIZED_REFERENCE":
+        if expr["origin"] != "AUTHORIZED_REFERENCE" or expr["normalized_source_form"] in rejected:
             continue
         tokens = tuple(t.norm for t in tokenize(
             expr["source_surface"], cased=traits.cased, letter_marks=traits.letter_marks, unspaced=traits.unspaced))

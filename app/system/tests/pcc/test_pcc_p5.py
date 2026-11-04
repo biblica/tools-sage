@@ -38,7 +38,7 @@ def _terms_output(tmp_path: Path) -> Path:
 @pytest.fixture
 def setup(tmp_path):
     """Implement setup."""
-    rows = glossary.terms_rows(_terms_output(tmp_path))
+    rows = glossary.terms_rows(_terms_output(tmp_path), curate=False)
     job = SimpleNamespace(root=tmp_path / "job", job_id="PCC_S-en")
     return job, rows, tmp_path / "lock"
 
@@ -78,7 +78,7 @@ def test_rows_split_senses_and_export_md_and_xlsx(setup, tmp_path):
     sheet = load_workbook(xlsx)[glossary.TERMS_SHEET]
     assert [c.value for c in sheet[1]] == list(glossary.COLUMNS)
     assert "light" in (tmp_path / "t.md").read_text(encoding="utf-8")
-    assert glossary.terms_rows(tmp_path / "out") == rows  # stable order
+    assert glossary.terms_rows(tmp_path / "out", curate=False) == rows  # stable order
 
 
 def test_round_trip_creates_chained_events_and_materialized_rules(setup, tmp_path):
@@ -201,3 +201,96 @@ def test_edited_rule_record_fails_closed(setup, tmp_path):
     with pytest.raises(ValidationError) as caught:
         glossary.current_rules(job.root)
     assert caught.value.code == "PCC_GLOSSARY_RECORD_TAMPERED"
+
+
+def _row(wording, sense, refs, *, origin="SOURCE_DISCOVERY", sense_id="s"):
+    """Build a minimal raw row."""
+    return {"entry_id": f"{wording}|{sense}", "expression_id": wording, "sense_id": sense_id, "category": "COLLOCATION",
+            "origin": origin, "refs": tuple(refs), "wording": wording, "normalized": wording.lower(), "sense": sense,
+            "lemma": "", "occurrences": len(refs), "verses": len(refs), "books": "", "examples": ""}
+
+
+def test_curation_nests_drops_empty_and_keeps_only_key_phrases():
+    """Verify nested, empty and routine rows are left out and counted."""
+    raw = [
+        _row("ada juga", "πίπτω: fell", ["A 1", "A 2"]),
+        _row("ada juga yang jatuh", "πίπτω: fell", ["A 1", "A 2"]),
+        _row("ada juga", "UNRESOLVED", ["B 1", "B 2", "B 3"], sense_id=None),
+        _row("aku mau", "UNRESOLVED", ["C 1", "C 2"], sense_id=None),
+        _row("aku mau", glossary.UNASSESSED_LABEL, []),
+        _row("anak allah", "UNRESOLVED", ["D 1", "D 2"], sense_id=None, origin="LOCAL_INPUT"),
+    ]
+    rows, left_out = glossary.curate_rows(raw)
+    assert {(r["wording"], r["sense"]) for r in rows} == {
+        ("ada juga yang jatuh", "πίπτω: fell"), ("ada juga", "UNRESOLVED"), ("anak allah", "UNRESOLVED")}
+    assert left_out == {"empty_rows": 1, "nested_rows": 1, "routine_wordings": 1,
+                        "rejected_by_operator": 0, "evidence_available": True}
+
+
+def test_curation_without_any_sense_evidence_uses_count_rule():
+    """Verify the fallback keeps only multi-word, several-verse wording."""
+    raw = [_row("a b", "UNRESOLVED", ["X 1", "X 2", "X 3"], sense_id=None), _row("a", "UNRESOLVED", ["X 1", "X 2", "X 3"], sense_id=None),
+           _row("c d", "UNRESOLVED", ["X 1", "X 2"], sense_id=None)]
+    rows, left_out = glossary.curate_rows(raw)
+    assert [r["wording"] for r in rows] == ["a b"] and left_out["evidence_available"] is False
+
+
+def test_key_terms_survive_curation_and_import_from_biblical_terms(tmp_path):
+    """Verify Biblical Terms lemmas are never folded or dropped, and the XML is read safely."""
+    xml = tmp_path / "BiblicalTerms.xml"
+    xml.write_text('<BiblicalTermsList><Term Id="ἁμαρτία"><Gloss>sin</Gloss></Term></BiblicalTermsList>', encoding="utf-8")
+    job_root = tmp_path / "job"
+    assert glossary.import_key_terms(job_root, xml) == 1
+    key = glossary.current_key_terms(job_root)
+    low = _row("sin", "ἁμαρτία: sin", ["A 1"])
+    low["lemma"] = "ἁμαρτία"
+    longer = _row("sin offering", "ἁμαρτία: sin", ["A 1"])
+    rows, _ = glossary.curate_rows([low, longer], key)
+    assert {r["wording"] for r in rows} == {"sin", "sin offering"} and {r["wording"] for r in rows if r["category"] == "KEY_TERM"} == {"sin"}
+    xml.write_text("<!DOCTYPE x><a/>", encoding="utf-8")
+    with pytest.raises(ValidationError):
+        glossary.read_biblical_terms(xml)
+
+
+def test_bundle_round_trip_between_jobs_and_operator_list(setup, tmp_path):
+    """Verify bundle export/import proposes renderings in another Job and operator lists feed phrases and proposals."""
+    from sage.pcc import overlay, transfer
+    job, rows, lock = setup
+    xlsx = _export(rows, tmp_path)
+    _fill(xlsx, {("light", "βάρος"): ("Licht", "", "")})
+    glossary.import_filled_list(job, xlsx, rows, lock_path=lock, source_corpus_sha256=SHA, target_language="en")
+    overlay.record_verdict(tmp_path / "ov", "OL_SENSE", "light|φῶς", "REJECT")
+    bundle = tmp_path / "b.json"
+    counts = transfer.export_bundle(job, rows, source_project="S", source_sha256=SHA, target_language="en",
+                                    verdict_folder=tmp_path / "ov", path=bundle)
+    assert counts["rules"] == 1 and counts["verdicts"] == 1
+    other = SimpleNamespace(root=tmp_path / "other", job_id="PCC_T-en")
+    report = transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
+                                    target_language="en", verdict_folder=tmp_path / "ov2")
+    assert report.imported == 1 and [r["state"] for r in glossary.current_rules(other.root).values()] == ["PROPOSED"]
+    assert (other.root / "input" / "phrases.txt").is_file() and overlay.verdict_map(tmp_path / "ov2")
+    assert transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
+                                  target_language="de", verdict_folder=tmp_path / "ov2").imported == 0
+    bundle.write_text(bundle.read_text(encoding="utf-8").replace("Licht", "Lichtx"), encoding="utf-8")
+    with pytest.raises(ValidationError):
+        transfer.read_bundle(bundle)
+    mine = tmp_path / "mine.csv"
+    mine.write_text("wording,rendering\nlight,Lampe; !Leicht\nnothing here,x\n", encoding="utf-8")
+    third = SimpleNamespace(root=tmp_path / "third", job_id="PCC_U-en")
+    result = transfer.import_operator_list(third, mine, rows, lock_path=tmp_path / "lock3", source_corpus_sha256=SHA,
+                                           target_language="en")
+    assert result.imported >= 2 and any("nothing here" in p for p in result.problems)
+
+
+def test_overlay_reject_hides_sense_and_accept_protects_it(tmp_path):
+    """Verify core-list verdicts are applied on top of the curated rows."""
+    from sage.pcc import overlay
+    a, b = _row("alpha beta", "x: one", ["A 1", "A 2"]), _row("beta", "x: one", ["A 1", "A 2"])
+    a["lemma"] = b["lemma"] = "x"
+    rows, left = glossary.curate_rows([dict(a), dict(b)], {}, {("OL_SENSE", "alpha beta|x"): "REJECT"})
+    assert [r["wording"] for r in rows] == ["beta"] and left["rejected_by_operator"] == 1
+    rows, _ = glossary.curate_rows([dict(a), dict(b)], {}, {("OL_SENSE", "beta|x"): "ACCEPT"})
+    assert {r["wording"] for r in rows} == {"alpha beta", "beta"}
+    overlay.record_verdict(tmp_path, "KEY_TERM", "x", "ACCEPT")
+    overlay.record_verdict(tmp_path, "KEY_TERM", "x", "CLEAR")
+    assert overlay.verdict_map(tmp_path) == {}

@@ -10,7 +10,7 @@ from sage.errors import SageError, ValidationError
 from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
 from pathlib import Path
 
-from sage.pcc import glossary
+from sage.pcc import glossary, overlay, transfer
 from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, run_initializer
 from sage.registry import load_ecosystem
 
@@ -99,13 +99,21 @@ def _start(center, job, operation: str) -> None:
         center.show_error(exc)
 
 
+def _overlay_folder(center) -> Path:
+    """Return the Operator's local PCC data folder (core-list verdicts live here, shared by all Jobs)."""
+    return center.store.storage.inputs_root / "pcc"
+
+
 def _latest_terms(center, job):
-    """Return (snapshot, rows, output folder) of the newest finished terms Run, or None."""
+    """Return (run, snapshot, rows, left-out summary) of the newest finished terms Run, or None."""
     for run in center.store.list_runs(job, include_archived=False):
         if run.operation == "terms" and run.status in {"COMPLETE", "COMPLETE_WITH_EXCEPTIONS"}:
             output = run.root / "validation" / OUTPUT_DIRECTORY
             if (output / "expressions.jsonl").is_file():
-                return run, load_run_snapshot(run.root), glossary.terms_rows(output)
+                summary: dict = {}
+                rows = glossary.terms_rows(output, summary=summary, key_terms=glossary.current_key_terms(job.root),
+                                          verdicts=overlay.verdict_map(_overlay_folder(center)))
+                return run, load_run_snapshot(run.root), rows, summary
     return None
 
 
@@ -138,20 +146,29 @@ def terms_menu(center, job) -> None:
                    f"Glossary rules               {approved} approved, {proposed} waiting for your decision"]
         options = [("1", "Export the terms list (Markdown and XLSX)"), ("2", "Import the filled terms list"),
                    ("3", "Import Paratext TermRenderings (read-only proposals)"),
-                   ("4", "Review proposed renderings"), ("B", "Back")]
+                   ("4", "Review proposed renderings"),
+                   ("5", "Import Paratext Biblical Terms (key theological terms, always listed)"),
+                   ("6", "Export a terms bundle (to use in another WIP)"), ("7", "Import a terms bundle from another WIP"),
+                   ("8", "Import my own terms list (CSV, TXT or XLSX)"), ("9", "Review core lists (senses and key terms)"),
+                   ("B", "Back")]
         choice = center.io.choose(f"PCC terms list {job.job_id}", options, context=tuple(context))
         if choice == "B":
             return
         try:
+            if choice == "5":
+                path = _ask_path(center, "Path of Paratext BiblicalTerms.xml (blank to cancel)")
+                if path:
+                    center.io.write(f"{glossary.import_key_terms(job.root, path)} key terms stored; export the terms list again.")
+                continue
             if latest is None:
                 center.io.write("Build the SOURCE terms list first (a terms Run).")
                 continue
-            run, snapshot, rows = latest
+            run, snapshot, rows, left_out = latest
             if choice == "1":
                 folder = center.store.storage.reports_root / job.job_id
                 digest = glossary.write_terms_list(
                     rows, job_id=job.job_id, run_id=run.run_id, target_language=snapshot["target_language"],
-                    markdown=folder / "TERMS-LIST.md", xlsx=folder / "TERMS-LIST.xlsx")
+                    markdown=folder / "TERMS-LIST.md", xlsx=folder / "TERMS-LIST.xlsx", summary=left_out)
                 center.io.write(f"Terms list {digest[:16]} written to {folder} ({len(rows)} rows).")
             elif choice == "2":
                 path = _ask_path(center, "Path of the filled TERMS-LIST.xlsx (blank to cancel)")
@@ -170,11 +187,85 @@ def terms_menu(center, job) -> None:
                     center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known.")
                     for line in report.problems[:20]:
                         center.io.write(f"- {line}")
+            elif choice == "6":
+                folder = center.store.storage.exports_root / "pcc"
+                target = folder / f"{job.job_id}-terms-bundle.json"
+                counts = transfer.export_bundle(
+                    job, rows, source_project=job.bindings["source"], source_sha256=snapshot["source"]["content_sha256"],
+                    target_language=snapshot["target_language"], verdict_folder=_overlay_folder(center), path=target)
+                center.io.write(f"Bundle written to {target}: {counts['entries']} wordings, {counts['rules']} approved renderings, "
+                                f"{counts['key_terms']} key terms, {counts['verdicts']} review verdicts.")
+            elif choice == "7":
+                path = _ask_path(center, "Path of the terms bundle .json (blank to cancel)")
+                if path:
+                    report = transfer.import_bundle(
+                        job, path, rows, lock_path=_lock(job), source_corpus_sha256=snapshot["source"]["content_sha256"],
+                        target_language=snapshot["target_language"], verdict_folder=_overlay_folder(center))
+                    center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known. Review them under option 4.")
+                    for line in report.problems[:20]:
+                        center.io.write(f"- {line}")
+            elif choice == "8":
+                path = _ask_path(center, "Path of your list: wording[, rendering(s)[, note]] (blank to cancel)")
+                if path:
+                    report = transfer.import_operator_list(
+                        job, path, rows, lock_path=_lock(job), source_corpus_sha256=snapshot["source"]["content_sha256"],
+                        target_language=snapshot["target_language"])
+                    center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known.")
+                    for line in report.problems[:20]:
+                        center.io.write(f"- {line}")
+            elif choice == "9":
+                _review_core(center, job, rows)
             elif choice == "4":
                 _review_proposals(center, job, snapshot["source"]["content_sha256"])
         except SageError as exc:
             center.show_error(exc)
         center.io.pause()
+
+
+def _review_core(center, job, rows) -> None:
+    """Operator review of the core lists: sense evidence (MACULA/OL) and Paratext key terms."""
+    folder = _overlay_folder(center)
+    while True:
+        standing = overlay.verdict_map(folder)
+        senses = [r for r in rows if r["lemma"]]
+        pending = [r for r in senses if ("OL_SENSE", f"{r['normalized']}|{r['lemma']}") not in standing]
+        key_terms = glossary.current_key_terms(job.root)
+        choice = center.io.choose(
+            "Review core lists",
+            (("1", f"Review original-language senses ({len(pending)} not yet reviewed of {len(senses)})"),
+             ("2", f"Review key terms ({len(key_terms)} from Paratext Biblical Terms)"),
+             ("3", f"Show or withdraw my verdicts ({len(standing)})"), ("B", "Back")),
+            context=("Your verdicts are a local overlay on the shipped lists; the lists themselves never change.",))
+        if choice == "B":
+            return
+        if choice == "1":
+            for row in pending:
+                key = f"{row['normalized']}|{row['lemma']}"
+                answer = center.io.choose(f"'{row['wording']}' = {row['sense']}  ({row['verses']} verses, e.g. {row['examples']})",
+                                          (("1", "Accept this sense"), ("2", "Reject (hide it from the list)"),
+                                           ("S", "Skip"), ("B", "Stop")))
+                if answer == "B":
+                    break
+                if answer in {"1", "2"}:
+                    overlay.record_verdict(folder, "OL_SENSE", key, "ACCEPT" if answer == "1" else "REJECT")
+        elif choice == "2":
+            for lemma, gloss in sorted(key_terms.items()):
+                if ("KEY_TERM", lemma) in standing:
+                    continue
+                answer = center.io.choose(f"Key term {lemma}  ({gloss or 'no gloss'})",
+                                          (("1", "Keep as a key term"), ("2", "Not a key term for this work"),
+                                           ("S", "Skip"), ("B", "Stop")))
+                if answer == "B":
+                    break
+                if answer in {"1", "2"}:
+                    overlay.record_verdict(folder, "KEY_TERM", lemma, "ACCEPT" if answer == "1" else "REJECT")
+        elif choice == "3":
+            for (name, key), verdict in sorted(standing.items()):
+                answer = center.io.choose(f"{name}  {key}: {verdict}", (("1", "Withdraw this verdict"), ("S", "Keep"), ("B", "Stop")))
+                if answer == "B":
+                    break
+                if answer == "1":
+                    overlay.record_verdict(folder, name, key, "CLEAR")
 
 
 def _review_proposals(center, job, source_sha: str) -> None:
