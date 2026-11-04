@@ -32,6 +32,7 @@ from sage.pcc.source_text import _book_files, source_units_for_project  # noqa: 
 
 
 def _units(path: Path) -> tuple[list[SourceUnit], str]:
+    """Implement units."""
     files = _book_files(path)
     if not files:
         raise SystemExit(f"No Scripture files in {path}")
@@ -39,6 +40,7 @@ def _units(path: Path) -> tuple[list[SourceUnit], str]:
 
 
 def _curated(path: Path | None, units: list[SourceUnit]) -> list[Seed]:
+    """Implement curated."""
     if path is None:
         return []
     traits = measure_traits(u.text for u in units)
@@ -52,6 +54,7 @@ def _curated(path: Path | None, units: list[SourceUnit]) -> list[Seed]:
 
 
 def cmd_build(args: argparse.Namespace) -> int:
+    """Implement cmd build."""
     units, sha = _units(args.project_path)
     corpus = {"corpus_id": args.corpus_id, "edition": args.edition, "language_tag": args.language,
               "content_sha256": sha, "versification_id": args.versification, "license_id": args.license}
@@ -62,6 +65,7 @@ def cmd_build(args: argparse.Namespace) -> int:
 
 
 def cmd_verify(args: argparse.Namespace) -> int:
+    """Implement cmd verify."""
     manifest = verify_index(args.folder)
     print(f"{args.folder.name}: checksums and contracts OK ({manifest['index_version']})")
     if args.project_path is None:
@@ -86,6 +90,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Implement main."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
     build = sub.add_parser("build")

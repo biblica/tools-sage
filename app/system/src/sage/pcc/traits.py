@@ -52,6 +52,7 @@ class WipTraits:
     prefixes: tuple[Affix, ...] = field(default=())
 
     def as_record(self) -> dict[str, Any]:
+        """Implement as record."""
         return {
             "letters": self.letters, "words": self.words, "script": self.script,
             "unspaced": self.unspaced, "cased": self.cased,
@@ -64,6 +65,7 @@ class WipTraits:
 
 
 def _script(char: str) -> str:
+    """Implement script."""
     return unicodedata.name(char, "UNKNOWN").split(" ")[0]
 
 

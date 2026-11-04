@@ -86,10 +86,12 @@ def _chunks(text: str, tokens: Sequence[Token]) -> list[tuple[int, int]]:
 
 
 def _letters(norm: str) -> int:
+    """Implement letters."""
     return sum(1 for c in norm if c.isalpha())
 
 
 def _category(tokens: tuple[str, ...], origin: str) -> str:
+    """Implement category."""
     if len(tokens) == 1:
         return "TERM"
     return "FIXED_PHRASE" if origin != "SOURCE_DISCOVERY" else "COLLOCATION"

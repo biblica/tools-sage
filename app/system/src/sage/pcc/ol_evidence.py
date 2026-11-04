@@ -16,6 +16,7 @@ from .sense import OlItem
 
 
 def _parse(label: str) -> VerseRef:
+    """Implement parse."""
     book, _, cv = label.partition(" ")
     chapter, _, verse = cv.partition(":")
     return VerseRef(book, int(chapter), int(verse))

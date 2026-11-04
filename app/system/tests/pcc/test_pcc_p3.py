@@ -18,19 +18,23 @@ VERSES = [
 
 
 def _units(texts=VERSES):
+    """Implement units."""
     return [SourceUnit(f"u{i}", f"GEN 1:{i + 1}", (f"GEN 1:{i + 1}",), t) for i, t in enumerate(texts)]
 
 
 def _run(seeds=(), texts=VERSES, **kw):
+    """Implement run."""
     traits = measure_traits(texts)
     return discover(_units(texts), source_corpus_id="SRC", source_sha256=SHA, traits=traits, seeds=seeds, **kw)
 
 
 def _forms(result):
+    """Implement forms."""
     return {e["normalized_source_form"]: e for e in result.expressions}
 
 
 def test_discovers_recurring_phrases_and_validates_records():
+    """Verify that discovers recurring phrases and validates records."""
     result = _run()
     forms = _forms(result)
     assert "stand firm" in forms
@@ -43,6 +47,7 @@ def test_discovers_recurring_phrases_and_validates_records():
 
 
 def test_every_occurrence_reconstructs_raw_text():
+    """Verify that every occurrence reconstructs raw text."""
     result = _run()
     texts = {u.unit_id: u.text for u in _units()}
     assert result.occurrences
@@ -51,10 +56,12 @@ def test_every_occurrence_reconstructs_raw_text():
 
 
 def test_single_occurrence_candidates_are_not_discovered():
+    """Verify that single occurrence candidates are not discovered."""
     assert "quiet" not in _forms(_run())
 
 
 def test_local_phrase_never_pruned_and_unfound_reported():
+    """Verify that local phrase never pruned and unfound reported."""
     seeds = [
         Seed("keep the promise", ("keep", "the", "promise"), "LOCAL_INPUT", line=3),
         Seed("never found here", ("never", "found", "here"), "LOCAL_INPUT", line=7),
@@ -66,6 +73,7 @@ def test_local_phrase_never_pruned_and_unfound_reported():
 
 
 def test_curated_origin_and_senses_kept():
+    """Verify that curated origin and senses kept."""
     sense = {"sense_id": "SENSE-X", "label": "x", "discriminator": "d", "review_state": "CURATED"}
     result = _run([Seed("lamp", ("lamp",), "AUTHORIZED_REFERENCE", "TERM", (sense,))])
     expr = _forms(result)["lamp"]
@@ -73,6 +81,7 @@ def test_curated_origin_and_senses_kept():
 
 
 def test_same_wording_different_nfc_forms_match():
+    """Verify that same wording different nfc forms match."""
     texts = ["café here", "café there"]
     forms = _forms(_run(texts=texts))
     assert forms["café"]["origin"] == "SOURCE_DISCOVERY"
@@ -80,6 +89,7 @@ def test_same_wording_different_nfc_forms_match():
 
 
 def test_nested_phrase_deduped_for_display_but_kept():
+    """Verify that nested phrase deduped for display but kept."""
     result = _run()
     forms = _forms(result)
     assert "stand firm in the faith" in forms
@@ -90,12 +100,14 @@ def test_nested_phrase_deduped_for_display_but_kept():
 
 
 def test_punctuation_blocks_automatic_ngrams():
+    """Verify that punctuation blocks automatic ngrams."""
     texts = ["red, green blue", "red, green blue"]
     forms = _forms(_run(texts=texts))
     assert "green blue" in forms and "red green" not in forms
 
 
 def test_unspaced_source_skips_automatic_discovery():
+    """Verify that unspaced source skips automatic discovery."""
     texts = ["你好世界"] * 3
     result = _run(texts=texts)
     assert result.auto_discovery == "SKIPPED_UNSPACED" and not result.expressions
@@ -104,10 +116,12 @@ def test_unspaced_source_skips_automatic_discovery():
 
 
 def test_deterministic():
+    """Verify that deterministic."""
     assert _run().occurrences == _run().occurrences
 
 
 def test_phrases_file_problems_have_line_numbers():
+    """Verify that phrases file problems have line numbers."""
     traits = measure_traits(VERSES)
     phrases, problems = parse_phrases("# note\n\nStand Firm\n!!!\nstand  firm\nkeep the promise\n", traits)
     assert [(p.line, p.tokens) for p in phrases] == [(3, ("stand", "firm")), (6, ("keep", "the", "promise"))]

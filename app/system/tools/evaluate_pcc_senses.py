@@ -34,6 +34,7 @@ from sage.vrs import parse_vrs_file  # noqa: E402
 
 
 def _digits(value: object) -> str | None:
+    """Implement digits."""
     match = re.match(r"\D*(\d+)", str(value)) if value not in (None, "") else None
     return match.group(1) if match else None
 
@@ -62,6 +63,7 @@ def read_tables(path: Path, books: set[str]) -> dict[tuple[str, int, int], list[
 
 
 def evaluate(tables: Path, bsb: Path, books: list[str], window: float | None) -> Counter:
+    """Implement evaluate."""
     rows = read_tables(tables, set(books))
     analysis = load_ol_analysis(ROOT)
     schema = parse_vrs_file(ROOT / "system/resources/scripture/eng.vrs", schema_id="eng", canonical_id="org")
@@ -106,6 +108,7 @@ def evaluate(tables: Path, bsb: Path, books: list[str], window: float | None) ->
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Implement main."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("books", nargs="+")
     parser.add_argument("--tables", type=Path, required=True)

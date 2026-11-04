@@ -438,6 +438,32 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 - The table is **not** shipped and not used at run time (it only helps a BSB SOURCE; the main SOURCE is
   NIV). It is evaluation data.
 
+### P5 as built (2026-11-03)
+
+- `pcc/glossary.py`: `terms_rows` turns a `terms` Run's outputs into one row per expression and sense
+  (an unresolved remainder gets its own "UNRESOLVED (team decides)" row). `write_terms_list` writes
+  `TERMS-LIST.md` and `TERMS-LIST.xlsx` to `localdata/reports/<job>/`; the workbook has sheets `Terms`
+  (blank *Chosen rendering(s)*, *Scope*, *Notes*), `Language facts` (negation markers, apostrophe,
+  spelling variants, word-break) and `About` (list hash, Job, Run).
+- Import (`import_filled_list`): renderings split on `;` or line breaks; a leading `!` records a rejected
+  rendering; scope is blank (whole group) or `PASSAGE:<reference>`. Each rendering is a `variant_rule`
+  stored by content hash in `glossary/records/` plus a chained `review_event`; `current_rules` rebuilds the
+  rule view from the journal and fails closed (`PCC_GLOSSARY_RECORD_TAMPERED`) on an edited record.
+  A bad row is reported with its sheet row number and the rest still imports; a sheet that answers a
+  different terms list (hash mismatch) imports nothing. Re-importing is idempotent. Removing a rendering
+  from the sheet does not revoke it (revocation is a later menu action).
+- Language facts are validated (one-character apostrophe, `a=b` pairs) and journaled as `FACTS-<lang>`;
+  `current_language_facts` feeds `capability_matrix`. Not yet wired into a Run (P6).
+- Paratext (D10): `read_term_renderings` parses `TermRenderings.xml` read-only (DTD/entities refused);
+  an `Id` matching an entry's OL lemma proposes each rendering as a `PROPOSED` rule, with the file SHA-256
+  as evidence. Leading/trailing `*` affix marks are stripped; other patterns are listed and not used. The
+  Operator approves all, or one by one (`decide_proposals`). Nothing is written back to Paratext.
+- Menu: PCC Job menu gains **Terms list and glossary** (export, import filled list, import Paratext,
+  review proposed renderings).
+- Not yet: reclassifying senses from the sheet (`RECLASSIFY_SENSE`), revoking a rule from the menu, rules
+  used by a Run (P6/P7).
+- Tests: `test_pcc_p5.py`; P1-P5 = 90 passed.
+
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 

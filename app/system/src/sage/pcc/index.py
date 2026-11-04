@@ -31,6 +31,7 @@ PAYLOAD_FILES = (EXPRESSIONS, OCCURRENCES, MANIFEST)
 
 
 def _sha(path: Path) -> str:
+    """Implement sha."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -77,6 +78,7 @@ def build_index(
 def verify_index(folder: Path) -> dict[str, Any]:
     """Re-check checksums, contracts and references; return the manifest. Raises on any mismatch."""
     def bad(reason: str) -> ValidationError:
+        """Implement bad."""
         return ValidationError(f"Phrase index {folder.name} failed verification: {reason}",
                                code="PCC_INDEX_INVALID", details={"folder": str(folder)})
     try:

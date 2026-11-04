@@ -986,6 +986,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/ol_evidence.py`
 - `system/src/sage/pcc/phrases.py`
 - `system/src/sage/pcc/run.py`
+- `system/src/sage/pcc/glossary.py`
 - `system/src/sage/pcc/segment.py`
 - `system/src/sage/pcc/sense.py`
 - `system/src/sage/pcc/source_text.py`
@@ -1184,6 +1185,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc/test_pcc_p3.py`
 - `system/tests/pcc/test_pcc_p3_index.py`
 - `system/tests/pcc/test_pcc_p4.py`
+- `system/tests/pcc/test_pcc_p5.py`
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`
 - `system/tests/test_bic4_contract_and_vocabulary.py`

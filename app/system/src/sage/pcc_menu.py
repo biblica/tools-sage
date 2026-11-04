@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from sage.errors import SageError, ValidationError
 from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
-from sage.pcc.run import execute_pcc_run, run_initializer
+from pathlib import Path
+
+from sage.pcc import glossary
+from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, run_initializer
 from sage.registry import load_ecosystem
 
 TITLE = "PHRASE CONSISTENCY CHECKER (PCC)"
@@ -96,6 +99,107 @@ def _start(center, job, operation: str) -> None:
         center.show_error(exc)
 
 
+def _latest_terms(center, job):
+    """Return (snapshot, rows, output folder) of the newest finished terms Run, or None."""
+    for run in center.store.list_runs(job, include_archived=False):
+        if run.operation == "terms" and run.status in {"COMPLETE", "COMPLETE_WITH_EXCEPTIONS"}:
+            output = run.root / "validation" / OUTPUT_DIRECTORY
+            if (output / "expressions.jsonl").is_file():
+                return run, load_run_snapshot(run.root), glossary.terms_rows(output)
+    return None
+
+
+def _lock(job) -> Path:
+    """Return the Job's journal lock path."""
+    return job.controller_root / "locks" / "pcc-journal.lock"
+
+
+def _ask_path(center, prompt: str) -> Path | None:
+    """Ask for an existing file path; blank cancels."""
+    text = center.io.text(prompt).strip().strip("'\"")
+    if not text:
+        return None
+    path = Path(text).expanduser()
+    if not path.is_file():
+        center.io.write(f"No file at {path}.")
+        return None
+    return path
+
+
+def terms_menu(center, job) -> None:
+    """Terms list sub-option: export, import the filled sheet, Paratext proposals, review proposals."""
+    while True:
+        job = center.store.load_job(job.job_id, tool="pcc")
+        latest = _latest_terms(center, job)
+        rules = glossary.current_rules(job.root)
+        approved = sum(1 for r in rules.values() if r["state"] == "APPROVED")
+        proposed = len(glossary.proposed_rules(job.root))
+        context = [f"Terms list                   {latest[0].run_id if latest else 'none yet: build the SOURCE terms list first'}",
+                   f"Glossary rules               {approved} approved, {proposed} waiting for your decision"]
+        options = [("1", "Export the terms list (Markdown and XLSX)"), ("2", "Import the filled terms list"),
+                   ("3", "Import Paratext TermRenderings (read-only proposals)"),
+                   ("4", "Review proposed renderings"), ("B", "Back")]
+        choice = center.io.choose(f"PCC terms list {job.job_id}", options, context=tuple(context))
+        if choice == "B":
+            return
+        try:
+            if latest is None:
+                center.io.write("Build the SOURCE terms list first (a terms Run).")
+                continue
+            run, snapshot, rows = latest
+            if choice == "1":
+                folder = center.store.storage.reports_root / job.job_id
+                digest = glossary.write_terms_list(
+                    rows, job_id=job.job_id, run_id=run.run_id, target_language=snapshot["target_language"],
+                    markdown=folder / "TERMS-LIST.md", xlsx=folder / "TERMS-LIST.xlsx")
+                center.io.write(f"Terms list {digest[:16]} written to {folder} ({len(rows)} rows).")
+            elif choice == "2":
+                path = _ask_path(center, "Path of the filled TERMS-LIST.xlsx (blank to cancel)")
+                if path:
+                    report = glossary.import_filled_list(
+                        job, path, rows, lock_path=_lock(job), source_corpus_sha256=snapshot["source"]["content_sha256"],
+                        target_language=snapshot["target_language"])
+                    for line in report.as_lines():
+                        center.io.write(line)
+            elif choice == "3":
+                path = _ask_path(center, "Path of Paratext TermRenderings.xml (blank to cancel)")
+                if path:
+                    report = glossary.propose_from_paratext(
+                        job, path, rows, lock_path=_lock(job), source_corpus_sha256=snapshot["source"]["content_sha256"],
+                        target_language=snapshot["target_language"])
+                    center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known.")
+                    for line in report.problems[:20]:
+                        center.io.write(f"- {line}")
+            elif choice == "4":
+                _review_proposals(center, job, snapshot["source"]["content_sha256"])
+        except SageError as exc:
+            center.show_error(exc)
+        center.io.pause()
+
+
+def _review_proposals(center, job, source_sha: str) -> None:
+    """Approve or decline proposed renderings, all at once or one by one."""
+    proposals = glossary.proposed_rules(job.root)
+    if not proposals:
+        center.io.write("Nothing is waiting for a decision.")
+        return
+    mode = center.io.choose(f"{len(proposals)} proposed rendering(s)",
+                            (("1", "Approve all"), ("2", "Decide one by one"), ("B", "Back")))
+    if mode == "1":
+        count = glossary.decide_proposals(job, [r["rule_id"] for r in proposals], approve=True,
+                                          lock_path=_lock(job), source_corpus_sha256=source_sha)
+        center.io.write(f"Approved {count} rendering(s).")
+    elif mode == "2":
+        for rule in proposals:
+            answer = center.io.choose(f"{rule['target_form']}  ({rule['rationale']})",
+                                      (("1", "Approve"), ("2", "Decline"), ("S", "Skip"), ("B", "Stop")))
+            if answer == "B":
+                break
+            if answer in {"1", "2"}:
+                glossary.decide_proposals(job, [rule["rule_id"]], approve=answer == "1",
+                                          lock_path=_lock(job), source_corpus_sha256=source_sha)
+
+
 def open_job(center, job) -> None:
     """Operate one PCC Job: terms list, consistency check, or Job management."""
     while True:
@@ -105,16 +209,19 @@ def open_job(center, job) -> None:
         if run is not None:
             context += ["", f"Active Run                   {run.run_id} ({run.operation}, {run.scope}, {run.status})"]
         if run is not None:
-            options = [("1", f"Continue PCC Run {run.run_id}"), ("2", "Manage PCC JOB"), ("B", "Back")]
+            options = [("1", f"Continue PCC Run {run.run_id}"), ("2", "Terms list and glossary"),
+                       ("3", "Manage PCC JOB"), ("B", "Back")]
         else:
             options = [("1", OPERATION_LABELS["terms"]), ("2", OPERATION_LABELS["check"]),
-                       ("3", "Manage PCC JOB"), ("B", "Back")]
+                       ("3", "Terms list and glossary"), ("4", "Manage PCC JOB"), ("B", "Back")]
         choice = center.io.choose(f"PCC {job.job_id}", options, context=tuple(context))
         if choice == "B":
             return
         if choice == options[-2][0]:
             if _manage(center, job):
                 return
+        elif options[int(choice) - 1][1] == "Terms list and glossary":
+            terms_menu(center, job)
         elif run is not None:
             center.continue_run(job, run)
         else:

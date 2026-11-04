@@ -21,19 +21,23 @@ def _setup(rows):
 
 
 def _assign(rows, **kw):
+    """Implement assign."""
     found, ol = _setup(rows)
     return assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64, **kw)
 
 
 def _by_form(result):
+    """Implement by form."""
     return {e["normalized_source_form"]: e for e in result.expressions}
 
 
 def _occ(result, expr):
+    """Implement occ."""
     return [o for o in result.occurrences if o["expression_id"] == expr["expression_id"]]
 
 
 def test_one_lemma_confirms_one_sense_with_evidence():
+    """Verify that one lemma confirms one sense with evidence."""
     rows = [("a light yoke", [WEIGHT, OTHER]), ("a light load", [WEIGHT]), ("a light burden", [WEIGHT, OTHER])]
     result = _assign(rows)
     expr = _by_form(result)["light"]
@@ -45,6 +49,7 @@ def test_one_lemma_confirms_one_sense_with_evidence():
 
 
 def test_divergent_lemmas_split_into_separate_groups_without_cross_obligation():
+    """Verify that divergent lemmas split into separate groups without cross obligation."""
     rows = [("light weight", [WEIGHT]), ("light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [LAMP])]
     result = _assign(rows)
     expr = _by_form(result)["light"]
@@ -55,6 +60,7 @@ def test_divergent_lemmas_split_into_separate_groups_without_cross_obligation():
 
 
 def test_single_confirmed_occurrence_group_is_informational():
+    """Verify that single confirmed occurrence group is informational."""
     rows = [("light weight", [WEIGHT]), ("light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [OTHER])]
     result = _assign(rows, min_support=2)
     groups = {g["sense_id"]: g for g in result.groups if g["expression_id"] == _by_form(result)["light"]["expression_id"]}
@@ -64,6 +70,7 @@ def test_single_confirmed_occurrence_group_is_informational():
 
 
 def test_ambiguity_and_missing_alignment_stay_unresolved_never_majority():
+    """Verify that ambiguity and missing alignment stay unresolved never majority."""
     rows = [("light weight", [WEIGHT, LAMP]), ("light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [LAMP]),
             ("light road", [WEIGHT])]
     found, ol = _setup(rows)
@@ -76,6 +83,7 @@ def test_ambiguity_and_missing_alignment_stay_unresolved_never_majority():
 
 
 def test_function_lemma_present_everywhere_is_not_evidence():
+    """Verify that function lemma present everywhere is not evidence."""
     everywhere = OlItem("G0", "kai", "0", "and")
     rows = [(f"light verse {i}", [everywhere]) for i in range(3)] + [(f"other text {i}", [everywhere]) for i in range(30)]
     result = _assign(rows)
@@ -84,6 +92,7 @@ def test_function_lemma_present_everywhere_is_not_evidence():
 
 
 def test_polysemous_lemma_is_unresolved():
+    """Verify that polysemous lemma is unresolved."""
     rows = [("spirit one", [WEIGHT]), ("spirit two", [WEIGHT])]
     result = _assign(rows, polysemous={"G1"})
     assert {o["sense_state"] for o in _occ(result, _by_form(result)["spirit"])} == {"UNRESOLVED"}
@@ -91,6 +100,7 @@ def test_polysemous_lemma_is_unresolved():
 
 
 def test_curated_senses_are_kept():
+    """Verify that curated senses are kept."""
     from sage.pcc.discovery import Seed
     sense = {"sense_id": "SENSE-C", "label": "c", "discriminator": "d", "review_state": "CURATED"}
     units = [SourceUnit("u0", "MAT 1:1", ("MAT 1:1",), "the lamp"), SourceUnit("u1", "MAT 1:2", ("MAT 1:2",), "a lamp")]
@@ -103,6 +113,7 @@ def test_curated_senses_are_kept():
 
 
 def test_deterministic_and_inputs_not_mutated():
+    """Verify that deterministic and inputs not mutated."""
     rows = [("light weight", [WEIGHT]), ("light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [LAMP])]
     found, ol = _setup(rows)
     before = [dict(o) for o in found.occurrences]
@@ -113,6 +124,7 @@ def test_deterministic_and_inputs_not_mutated():
 
 
 def test_position_window_marks_far_lemma_out_of_position():
+    """Verify that position window marks far lemma out of position."""
     near = OlItem("G1", "near", "1", "x")
     filler = [OlItem(f"G{n}", f"f{n}", str(n), "") for n in range(100, 109)]
     rows = [("light yoke here", [near] + filler), ("light yoke there", [near] + filler),

@@ -49,6 +49,7 @@ def normalize_token(text: str, *, cased: bool) -> str:
 
 
 def _is_mark(char: str) -> bool:
+    """Implement is mark."""
     return unicodedata.category(char).startswith("M")
 
 

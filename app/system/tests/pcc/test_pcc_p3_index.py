@@ -21,15 +21,18 @@ SENSE = {"sense_id": "SENSE-L", "label": "illumination", "discriminator": "light
 
 
 def _units():
+    """Implement units."""
     return [SourceUnit(f"u{i}", f"GEN 1:{i + 1}", (f"GEN 1:{i + 1}",), t) for i, t in enumerate(TEXTS)]
 
 
 def _build(path: Path):
+    """Implement build."""
     return build_index(path, _units(), index_version="t-1", corpus=CORPUS,
                        curated=[Seed("lamp", ("lamp",), "AUTHORIZED_REFERENCE", "TERM", (SENSE,))])
 
 
 def test_build_is_deterministic_and_verifies(tmp_path):
+    """Verify that build is deterministic and verifies."""
     _build(tmp_path / "a")
     _build(tmp_path / "b")
     for name in ("expressions.jsonl", "occurrences.jsonl", "MANIFEST.json", CHECKSUMS):
@@ -38,6 +41,7 @@ def test_build_is_deterministic_and_verifies(tmp_path):
 
 
 def test_never_overwrites_a_released_index(tmp_path):
+    """Verify that never overwrites a released index."""
     _build(tmp_path / "a")
     with pytest.raises(ValidationError) as info:
         _build(tmp_path / "a")
@@ -45,6 +49,7 @@ def test_never_overwrites_a_released_index(tmp_path):
 
 
 def test_tampering_is_detected(tmp_path):
+    """Verify that tampering is detected."""
     _build(tmp_path / "a")
     path = tmp_path / "a" / EXPRESSIONS
     path.write_text(path.read_text(encoding="utf-8") + "\n", encoding="utf-8")
@@ -54,6 +59,7 @@ def test_tampering_is_detected(tmp_path):
 
 
 def test_curated_seeds_match_or_downgrade(tmp_path):
+    """Verify that curated seeds match or downgrade."""
     _build(tmp_path / "a")
     traits = measure_traits(TEXTS)
     seeds, exact = curated_seeds(tmp_path / "a", traits, SHA)
@@ -63,6 +69,7 @@ def test_curated_seeds_match_or_downgrade(tmp_path):
 
 
 def test_discovered_entries_are_not_runtime_seeds(tmp_path):
+    """Verify that discovered entries are not runtime seeds."""
     _build(tmp_path / "a")
     rows = [json.loads(line) for line in (tmp_path / "a" / EXPRESSIONS).read_text(encoding="utf-8").splitlines()]
     assert {r["origin"] for r in rows} == {"AUTHORIZED_REFERENCE", "SOURCE_DISCOVERY"}

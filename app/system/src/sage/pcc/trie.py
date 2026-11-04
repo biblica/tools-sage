@@ -27,10 +27,12 @@ class TokenTrie:
     """Maps token tuples to one or more payloads."""
 
     def __init__(self) -> None:
+        """Implement init."""
         self._root: dict[object, object] = {}
         self._size = 0
 
     def __len__(self) -> int:
+        """Implement len."""
         return self._size
 
     def add(self, key: Sequence[str], value: object = None) -> None:
@@ -70,6 +72,7 @@ class TokenTrie:
 
     @classmethod
     def from_items(cls, items: Iterable[tuple[Sequence[str], object]]) -> "TokenTrie":
+        """Implement from items."""
         trie = cls()
         for key, value in items:
             trie.add(key, value)
