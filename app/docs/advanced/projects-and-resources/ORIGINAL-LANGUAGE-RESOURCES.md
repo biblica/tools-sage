@@ -84,6 +84,25 @@ The operator can configure Greek or Hebrew separately, validate both, or restore
 
 OL resources are always externally read-only. They never gain BIC TARGET write capability, and Project-code naming never assigns a workflow role. Conditional BIC/RTC/STC OL routing remains governed by the workflow's existing evidence and material-risk rules. Only the two governed bundled directories are permitted to contain Scripture inside a clean SAGE distribution; Job, Project, and operator Scripture remains local workspace data.
 
+## PCC original-language package (MACULA structure, word senses, BSB alignment)
+
+The Phrase Consistency Checker builds its reference lists from original-language concepts. It ships
+package `SAGE_PCC_OL_2026-11-25` under `system/resources/pcc-ol/2026-11-25/`, pinned by
+`system/config/pcc-ol-reference.json` and checked against its checksums whenever it is loaded
+(`sage.pcc.ol_resources.load_pcc_ol`). Every row is keyed by the MACULA word reference used by the analysis
+package below (`GEN 1:1!1`):
+
+| File | Holds | Source |
+|---|---|---|
+| `bsb-alignment.tsv` | For each Hebrew and Greek word: the BSB verse, the position of its English in that verse, the BSB English (`-` when not rendered), punctuation, and how it was paired (blank = by Strong's sequence; `position` = a short equal gap between two paired words) | BSB tables (bereanbible.com, public domain; alignment derived from MACULA). 99.97% of MACULA Hebrew and 99.8% of Greek words are paired; the rest are text differences between the BSB base text and WLC/SBLGNT |
+| `ol-senses.tsv` | Clear word-sense numbers per word segment | MACULA Greek `sources/Clear/wordsense`; MACULA Hebrew `@sensenumber` (CC BY 4.0; not the UBS SDBH senses) |
+| `ol-groups.tsv` | Noun, adjective and prepositional phrase groups of 2 to 6 words: class, rule, role, member words | MACULA syntax trees, `lowfat` XML ([macula-greek](https://github.com/Clear-Bible/macula-greek/) `SBLGNT/lowfat`, [macula-hebrew](https://github.com/Clear-Bible/macula-hebrew/) `WLC/lowfat`) |
+
+The UBS fields in the same MACULA files (`ln`, `domain`, `sdbh`, `lexdomain`, `coredomain`,
+`contextualdomain`) are never read. Rebuild with `system/tools/build_pcc_ol_resources.py fetch`, then
+`build --date YYYY-MM-DD`; `verify` rebuilds and requires byte-identical files. Pins and attribution:
+[Third-Party Notices](THIRD-PARTY-NOTICES.md).
+
 ## Original-language analysis (MACULA)
 
 SAGE also ships a pinned word-level analysis of the Hebrew and Greek text: package

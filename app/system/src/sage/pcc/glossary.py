@@ -127,7 +127,7 @@ def curate_rows(rows: Sequence[dict[str, Any]], key_terms: Mapping[str, str] = {
                 verdicts: Mapping[tuple[str, str], str] = {}) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Reduce raw rows to key phrases; return (rows, what was left out).
 
-    1. Rows with no occurrences are dropped (an empty sense is not something to translate).
+    1. Rows with no occurrences are dropped (an empty sense has nothing to render).
     2. A row whose wording sits inside a longer row with the same sense and exactly the same verses is
        dropped: the longer phrase already carries it.
     Key terms (original-language lemma on the Paratext Biblical Terms list) are never folded or dropped.

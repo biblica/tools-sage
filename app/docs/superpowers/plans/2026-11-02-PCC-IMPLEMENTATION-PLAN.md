@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package) built; P5b–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -59,7 +59,7 @@ correct. This plan keeps four things from ATT:
 |---|---|---|---|
 | D1 | Two functions, terms list + consistency check | — | **DECIDED** (PO 2026-11-02) |
 | D2 | May OL (MACULA) be **sense evidence**? The handover bans OL inside PCC. | **Yes, evidence only, never authority** (deviation from handover invariant 2): same SOURCE wording aligned to one consistent OL lemma confirms the sense under rule `SENSE-OL-LEMMA`; diverging lemmas split the group; ambiguity → `PC20`. Uses only the CC BY 4.0 fields (`lemma`, `strong`, morphology, `subjref`/`participantref`). | **DECIDED** (PO 2026-11-02) |
-| D3 | Restricted MACULA fields (Louw-Nida `ln`/`domain`, SDBH `*domain`), which are real sense IDs | **Never used.** Sense evidence is CC BY lemma data only. Hebrew `sensenumber` (unverified provenance) is excluded too. | **DECIDED** (PO 2026-11-02) |
+| D3 | Restricted MACULA fields (Louw-Nida `ln`/`domain`, SDBH `*domain`), which are real sense IDs | **Never used.** Sense evidence is CC BY data only. **Revised 2026-11-25:** the MACULA licenses (macula-greek `LICENSE.md` item 3, macula-hebrew `LICENSE.md` item 10) state that Clear's word senses (Greek `sources/Clear/wordsense`, Hebrew `@sensenumber`) are distinct from the UBS senses and covered by Biblica's CC BY grant, so they are now **allowed as OL-side sense evidence** (shipped in `SAGE_PCC_OL`). The UBS fields (`ln`, `domain`, `sdbh`, `lexdomain`, `coredomain`, `contextualdomain`) stay never read | **DECIDED** (PO 2026-11-02); provenance correction 2026-11-25 |
 | D4 | Terms-list format for teams | Markdown (read) + XLSX (fill in renderings, re-import with validation and hashing). `openpyxl` is already a runtime dependency, so this is a deviation from the handover's "JSON/JSONL/MD/TXT only" (output format, not storage). | **DECIDED** (PO 2026-11-02) |
 | D5 | Shipped SOURCE phrase indexes | BSB (public domain) ships in `app/system/resources/phrase-index/<date>/`. An NIV index is **built locally only** into `localdata/inputs/resources/phrase-index/<id>` and never committed (public repo; NIV fair-use limit). Other SOURCE editions are built locally the same way. | **DECIDED** (PO 2026-11-02) |
 | D6 | Menu name and placement | Main Menu **#6 "Phrase Consistency Checker (PCC)"** after NCA; SAGE Maintenance moves to #7. The terms list is a sub-option inside PCC. Workflow ID `pcc`. | **DECIDED** (PO 2026-11-02) |
@@ -68,6 +68,22 @@ correct. This plan keeps four things from ATT:
 | D9 | Blocking codes vs "never hard-block" | `PC25` (integrity) may stop a Run. `PC23` marks only its group `NOT_ASSESSED` + exception report. Content problems are never blocking. | Recommended |
 | D10 | Paratext Biblical Terms / TermRenderings interop | **Read-only import in P5.** Existing renderings become *proposed* glossary entries the Operator confirms; SAGE never writes back to Paratext. Biblical Terms are keyed by OL lemma, so mapping them onto PCC SOURCE expressions uses the D2 lemma alignment. | **DECIDED** (PO 2026-11-02) |
 | D11 | Low-resource TARGET languages with minimal LLM data | No LLM or TARGET-language resource on the deterministic path; language traits measured from the WIP; checks qualified per WIP (§7) | **DECIDED** (PO 2026-11-02) |
+| D12 | Where the SOURCE phrase list lives | **A Reference List (RL) is its own versioned, immutable package, built for one REFERENCE edition, independent of any Job** (§5b). Any Operator builds RLs on their own SAGE instance and may export and import them as files. Sharing between Operators happens outside SAGE and SAGE does not manage it. | **DECIDED** (PO 2026-11-25) |
+| D13 | Stable identity of list entries and decisions | Entries are **concepts** (D18). `concept_key` is language-neutral wherever the OL allows:
+
+- `H("OL", lemma key, sense)` for a key-term lemma;
+- `H("BT", term id)` for a Biblical Terms multi-word term;
+- `H("OLSEQ", lemma sequence)` for a seed-list concept;
+- `H(language_tag, normalized wording)` only for a declared phrase with no OL anchor.
+
+Book scope, discovery settings, RL version and reference are **not** in the key, so decisions carry across scopes, RL versions and (through inherited curation) references. SOURCE wordings are realizations under a concept. Glossary rules are keyed by `concept_key`; scope is a rule attribute. This replaces the scope-bound `group_id` of P4. No migration (PCC is alpha; clean instance). | Recommended |
+| D14 | How an RL is built | **Revised 2026-11-25 (§5b.7).** The build is top-down from OL concepts: **align** the reference to the OL word by word → take the concept **inventory** → **realize** each concept occurrence as the aligned reference span → **partition senses** (D19) → **select** recurring ones (D17). Deriving from another RL means **inheriting its curation** (KEEP / DROP, declared phrases, notes) by `concept_key`; no wording pivot is needed. `RELOCATE` remains only for declared phrases without an OL anchor. `MERGE` applies the Operator workbook. Inherited and derived entries are always `PROPOSED`. *Superseded:* SCRATCH via n-gram discovery and the Jaccard `PIVOT` of §5b.3 | Recommended |
+| D15 | Operator editing of an RL | An RL workbook (XLSX), separate from the glossary workbook: export → edit → import creates a **new version** plus a diff report, applied row by row by `concept_key`. The global core-list overlay (`overlay.py`) moves into RL versions. | **DECIDED** (PO 2026-11-25: XLSX import/export) |
+| D17 | What is traced | **Only recurring key terms and concepts. Common words are ignored** (user feedback, 2026-11-25). An entry is traced only when all three hold: **(1) anchor:** its confirmed OL lemma is on a key-term inventory, or the Operator added or kept it (phrases.txt, RL workbook); **(2) recurrence:** at least 3 distinct verses in the reference (RL build setting); **(3) shape:** a multi-word entry must be a semantic identity (D18); nested wordings fold into their concept. Everything else is left out of the list and counted in the "left out" summary. See §5b.5. **Inventory revised 2026-11-25 (§5b.7):** Paratext Biblical Terms when the Operator imports it, otherwise the shipped SAGE **Key Concepts** package (single- and multi-lemma, D18 S4b). The content-word fallback and the frequency ceiling are dropped, because measurement showed neither separates key terms from common words | **DECIDED** in principle (feedback); thresholds recommended |
+| D19 | Senses inside a concept | A concept is partitioned into senses by the **reference's own lexical choice**: the head word of the aligned span. Inflections, and multi-word renderings that share the head, merge. Capitalization counts as a sense feature outside sentence-initial position. Rare wordings go to "other renderings" for the team. The team merges or splits senses in the RL workbook; OL lemma splits (AT03) still apply. This refines the per-concept decision: one decision per concept **sense**. Measured need: NIV renders Ἰουδαῖος as *Jews* (30 verses) and as *Jewish leaders* (11), a deliberate sense distinction | **DECIDED** (PO 2026-11-25) |
+| D20 | BSB tables as first-party data | `bsb_tables.xlsx` derives from MACULA (Biblica-owned, CC BY 4.0) plus BSB (public domain). It becomes a **build-time input**: gold word alignment for a BSB RL and for the Key Concepts package, not only evaluation data. Only the columns needed are read (verse, word orders, Strong's, English); no restricted fields (D3). **SAGE is based on BSB (PO 2026-11-25):** Biblica holds no MACULA alignment of the NIV; the BSB derives from NIV84, so an NIV (or other English) reference is aligned to BSB (same language) and through BSB's gold alignment to the OL, with direct EM alignment as fallback and for other languages. Shipped as `SAGE_PCC_OL_2026-11-25` (P5b-R) | **DECIDED** (PO 2026-11-25) |
+| D18 | What a "phrase" is | **A phrase is a semantic identity (one unit of meaning), never a frequent word combination** (user feedback, 2026-11-25). Frequency n-grams and co-occurrence statistics never create list entries; they only help locate wordings. A multi-word entry is admitted only as: **S1** a curated multi-word key term (Biblical Terms multi-word OL term); **S2** a multi-word SOURCE rendering of **one** OL key-term lemma (e.g. *chief priests* for ἀρχιερεύς), filed as a wording of that key term; **S3** declared by the team or Operator; **S4** (open, PO) an advisory proposal (§5b.6). The list entry becomes the **concept** (key-term lemma + sense, a curated multi-word term, or a declared phrase), and its SOURCE wordings are its realizations | **DECIDED** (PO 2026-11-25): S4 = (b) concept seed list; concept-level grouping accepted |
+| D16 | Job ↔ RL binding | A Job pins one RL version for its SOURCE. A re-pin is explicit, rules carry over by `concept_key`, and missing or changed entries make their rules `STALE`. `phrases.txt` stays Job-local, with *promote to the RL*. The terms bundle narrows to a **glossary bundle** (TARGET renderings only). A Job created without a WIP may attach one WIP once (journaled; the Job ID is unchanged). | Recommended |
 
 ## 4. Repository fit: what exists and what PCC must add
 
@@ -174,6 +190,355 @@ Curated entries keep their curated senses. A team decision (`RECLASSIFY_SENSE`) 
   Job journal, with the actor and evidence.
 - A malformed row is reported with its row number and the reason, and is never silently skipped. The
   rest still imports (never hard-block).
+
+## 5b. Reference lists (D12–D16, review of 2026-11-25)
+
+### 5b.1 Why the list leaves the Job
+
+As built in P3a–P5, the phrase list is rebuilt inside each Job by its `terms` Run, and the Job's
+decisions are tied to that Run's scope. Four defects follow:
+
+- **Decisions don't survive a scope change.** `group_id = H(scope_policy, expression, sense)`, and the
+  scope policy holds the book scope and the discovery settings. Approving a rendering for a phrase in MAT
+  does not carry it to the same phrase in MRK, and neither does changing a threshold.
+- **One REFERENCE, several translations, no reuse.** Every Job on NIV curates the same SOURCE list
+  again.
+- **The overlay has no reference in its keys.** `core-overlay.jsonl` keys verdicts by wording (+ lemma)
+  with no reference ID, so a verdict made on one reference applies to every reference that happens to
+  share the wording.
+- **A single-book scope distorts discovery.** A single book distorts the measured stoplist: frequent
+  content words such as *God* and *Lord* are dropped (P4 note). An RL is built over the whole reference.
+
+### 5b.2 Model
+
+| Layer | Belongs to | Key | Shared |
+|---|---|---|---|
+| **Reference List (RL):** wording, category, senses (OL lemma evidence), key-term flag, status, provenance | one REFERENCE edition | `concept_key` (D13) | every Job on that edition; exportable as a file |
+| **Glossary:** chosen renderings, rule scope, notes, language facts | one Job (one WIP / target language) | `concept_key` + sense (D19) + target language | glossary bundle, arriving as `PROPOSED` |
+
+**Package.** Stored at `localdata/inputs/resources/reference-lists/<rl_id>/<version>/`, using the
+`index.py` package pattern:
+
+- `MANIFEST.json` contains:
+  - `rl_id`, `version` and `title`;
+  - the reference: project, edition, `language_tag`, `content_sha256`, versification, license;
+  - the build: mode, base version, `derived_from` (RL ID and version), engine version and settings;
+  - counts.
+- `entries.jsonl` has one entry per `concept_key` (revised by §5b.7):
+  - OL anchor (lemma(s), Strong's, gloss), category, inventory source;
+  - senses `[{sense_key, label, wordings [{wording, verses}], state}]` (D19);
+  - `status` (ACTIVE / PROPOSED / DROPPED), origin, verse count, three example references, notes.
+- `CHECKSUMS.sha256`.
+
+**Occurrences are not stored.** A Run recomputes them in under a minute. The whole-Bible occurrence
+file is 458 MB (P4).
+
+**Identity across instances.** `rl_id = <slug>-<8 hex of H(instance id, created time)>`. An imported RL
+whose ID and version already exist with different content is stored as a fork (new suffix), never
+overwritten. An import with a checksum mismatch is refused; this is an integrity guard, allowed under
+D9.
+
+**License travels with the RL.** An RL built from, or derived from, NIV carries the NIV license flag. It
+is local-only and never committed, and an export shows a fair-use warning. The workbook carries wordings
+and references only, never verse text. Only a BSB-based RL could ever ship in the repo.
+
+### 5b.3 Deriving an RL from another reference (research, 2026-11-25)
+
+**Method.** Both references are run through the P3a/P4 engine (n-gram discovery + OL lemma senses). For
+each entry `(wording, lemma)` of the base RL, a *pivot* proposes the target-reference entry with the same
+lemma whose confirmed verses best overlap the base entry's verses (Jaccard J). Without hand labelling,
+the deterministic proxy is the **round trip**: derive A → B → A and check whether the original wording
+comes back. *Re-location* is the simple same-language alternative: find the same wording in B and
+check its lemma.
+
+Corpus: JHN + ROM, Biblica projects (local only, counts only). Base: NIV 2011, 1,672 lemma-confirmed
+entries in at least 2 verses.
+
+| Target | Re-located by wording (same lemma) | Pivot proposals | Round trip (top-1) | Restricted pivot¹ yield of single-word pool (339) |
+|---|---|---|---|---|
+| NIV Anglicised (related) | 99% (98%) | 100% | 71%² | 97% |
+| NIrV (related, simplified) | 72% (58%) | 85% | 63% | 74% |
+| BSB (unrelated English) | 85% (74%) | 92% | 64% | 83% |
+| Spanish NVI | 1% | 74% | 53% | 46% |
+| French Semeur | 3% | 77% | 52% | 40% |
+| Swahili Neno (Bantu, prefixing) | 0% | 73% | 52% | 39% |
+| Chinese CCB (unspaced) | 0% | 0%³ | — | 0% |
+
+¹ Single-word entries, at least 5 verses, J ≥ 0.5, round-trip consistent.
+² Top-1 under-states the result: nested phrases with identical verses tie.
+³ Automatic discovery is skipped for unspaced scripts (P3a), so there is nothing to pivot onto.
+
+The public-domain eBible texts (BSB → WEB / LSG / RV1909) gave the same picture: restricted pivot 75% /
+52% / 46%.
+
+**Findings.**
+
+1. **Same-language editions: re-location works.** For a related edition it is near-complete (99%). For
+   an unrelated English text it re-locates 85% of entries, 74% with the same lemma. Entries that are not
+   found, or found with another lemma, are exactly the ones an Operator must look at.
+2. **Cross-language: restricted pivot only.**
+   - **It works for single-word content terms.** A spot check of the round-trip-consistent output looks
+     clean: *father → padre / baba*, *law → ley*, *world → ulimwengu*, *spirit → espíritu*,
+     *scripture → maandiko*. It covers about 40–46% of the frequent single-word terms in Spanish, French
+     and Swahili.
+   - **It does not carry phrases.** A phrase's sense is one anchor lemma, so the pivot finds *some*
+     target phrase containing that lemma, not the corresponding phrase. Matches at J = 1.0 on 2-verse
+     sets are coincidence.
+   - **Top-1 round trip is about 50% for the unrestricted pivot.** That is too noisy for anything but
+     filtered proposals.
+3. **Unspaced scripts** get no pivot until segmentation exists. Only `RELOCATE`, `MERGE` and Operator
+   lists apply.
+4. **Tokenizer issue found in passing:** French elided articles stay attached (*l'écriture*, *d'autres*)
+   because the apostrophe is measured as a letter. The fix is to split a known elision prefix when the
+   remainder is itself a frequent token, measured, not by language code. This is a P5b item.
+
+**Recommendation (D14).** *Superseded by §5b.7:* once concepts are OL-keyed and realized through word
+alignment, every reference is built the same way, and derivation only inherits curation. The table above
+still stands as a measurement of verse-level evidence. The spot-checked examples are informal, not a
+precision measurement.
+
+- `RELOCATE` for related editions in the same language. This is what we have now, made explicit:
+  carry senses, flag lemma changes, report unfound entries.
+- `PIVOT` restricted to single-word, lemma-confirmed entries that pass all four filters: at least 5
+  verses, J ≥ 0.5, round-trip consistency, and one proposal per lemma.
+  - Every derived entry is `PROPOSED` and carries its J and round-trip evidence.
+  - Phrases are not derived. The target reference's own `SCRATCH` discovery supplies its phrases, and
+    the derived anchor terms rank them.
+- `PIVOT` stays a **proposal generator, not a list builder**. Before it is offered by default, measure
+  precision with the two-LLM judge (§9) on gateway languages: Spanish, French, Portuguese. For the
+  Swahili-type set, report yield and round-trip rate only, and say "precision not measured".
+
+### 5b.4 Operator workbook (D15)
+
+- **Sheet `Entries`:**
+  - locked `concept_key`;
+  - wording, category, lemma + gloss, sense label;
+  - verse count, three example references;
+  - **status** (`KEEP` / `DROP` / `NEW`), notes;
+  - provenance (origin, J / round trip for derived entries).
+- **Sheet `About`:** RL ID, base version, hash.
+- **Import** always writes a new version plus `RL-DIFF.md` (added / dropped / changed).
+  - Rows are applied by `concept_key`. A row whose key no longer exists in the base is reported, and the
+    other rows still import (never hard-block).
+  - `NEW` rows without a key are located in the reference text. Zero occurrences is reported and the row
+    is kept (AT30).
+- **Formula injection:** cells starting with `=`, `+`, `-` or `@` are written as text (openpyxl writes
+  a leading `=` as a formula).
+
+### 5b.5 Key terms only (D17, feedback 2026-11-25)
+
+**Feedback.** Common terms must be ignored. Only key terms, meaning recurring or repeated concepts and
+terms, are traced. The P5 list keeps every discovered wording that has OL evidence, so it is dominated
+by function words and everyday vocabulary (*from, because, all, know, come, your*).
+
+**Key-term inventory.**
+
+- **Primary:** Paratext `BiblicalTerms.xml`. The Operator imports it read-only from their Paratext
+  installation (D10); it is never shipped.
+  - It is keyed by Strong's number (zero-padded, sometimes with a suffix letter, e.g. `G0932`,
+    `H0218b`), and every term has a category.
+  - The NIV project's list has 8,640 terms: PN 5,726, RE 885, AT 626, MI 489, FA 310, BE 247,
+    FL 202, RI 154.
+  - Its `References` are **word-level** (`BBBCCCVVVWWWWW`). They can confirm which OL word in a verse is
+    the term: occurrence-level evidence that is better than the P4 position window. This is a P5b-2
+    option.
+- **Fallback** (no Biblical Terms file): ~~MACULA content words minus the most frequent lemmas~~.
+  **Dropped (§5b.7 R5):** the shipped Key Concepts package replaces it.
+
+**Measured (NIV, John + Romans, Biblica project, counts only).** 1,672 lemma-confirmed entries:
+
+| Filter | Entries | Single words | Phrases |
+|---|---|---|---|
+| Lemma on Biblical Terms, at least 2 verses | 634 | 373 | 261 |
+| … at least 3 verses | 322 | 234 | 88 |
+| … at least 5 verses | 158 | 132 | 26 |
+
+**What the filter does.**
+
+- **Removes:** function words and everyday words, as intended.
+- **Keeps:** the expected key terms (*world, law, God, Lord, believe, Spirit, sin, righteousness, glory,
+  truth, faith, grace, eternal life, Son of Man, Holy Spirit, chief priests, high priest, kingdom*) and
+  names.
+- **Three gaps remain:**
+  *(Gaps 1 and 2 are superseded by §5b.7: fragments cannot arise in a top-down build, and the frequency
+  ceiling was measured to be ineffective.)*
+  1. **Phrase fragments survive** (*down from, brother or, lay down, my name*). The shape rule (content
+     token at both ends) plus folding fragments into the longest form removes them. Folding at an
+     overlap of at least 90% of verses replaces today's "exactly the same verses".
+  2. **Some MI lemmas are common speech verbs** (λέγω *say*). The inventory's most frequent lemmas get
+     a ceiling: on the list only if the Operator keeps them. Category switches are an RL build setting,
+     all on by default.
+  3. **Some concepts a team cares about are not on the inventory.** πατήρ (*Father*, in John) is one.
+     The Operator adds them through `phrases.txt` or the RL workbook (`NEW` / `KEEP`), and they then
+     count as anchored.
+
+**Consequences.**
+
+- **RL:** an RL entry's `status` is `ACTIVE` only for anchored, recurring entries. Other entries are not
+  stored. The left-out summary gives counts by reason (common word, below recurrence, fragment).
+- **Check:** Function B (P6) builds groups only from `ACTIVE` RL entries and Operator additions. The
+  reverse scan (P8) only scans renderings of those entries. This also shrinks the review workload.
+- **Pivot:** cross-language derivation (§5b.3) was strong only for single words, which are exactly the
+  key terms, so D14 and D17 fit together.
+
+### 5b.6 Phrases are semantic identities (D18, feedback 2026-11-25)
+
+**Feedback.** "Phrases" must be semantic identities, not word pairs that are commonly combined.
+
+**Statistics cannot decide this (measured).** Adjacent-lemma association in MACULA scores real units
+and plain collocations alike:
+
+| Pair | PMI | Unit of meaning? |
+|---|---|---|
+| *Son of Man* | 4.9 | yes |
+| *kingdom of God* | 4.5 | yes |
+| *Holy Spirit* | 6.0 | yes |
+| *come down + heaven* | 5.6 | no |
+| *raise + dead* | 6.9 | no |
+| *answer + say* | 4.3 | no |
+
+So cohesion, frequency or PMI must never admit a phrase. Meaning has to come from a curated source, the
+OL structure, or a person.
+
+**Sources measured (NIV, John + Romans, counts only):**
+
+- **S1, Biblical Terms multi-word terms.** About 1,860 Greek and 2,100 Hebrew multi-word IDs exist
+  (*Son of Man, Holy Spirit, unclean spirit, outer darkness, tent of meeting, abomination of
+  desolation*), but most are OT names and places.
+  - Only 6 have references in John and Romans. *Son of Man* (J = 1.00) and *Holy Spirit* (J = 0.89)
+    were found exactly in NIV.
+  - *forever* (one NIV word) and *in Christ* need word-level location: the term's word-level references
+    plus alignment, not verse overlap.
+  - Precise, but **narrow**.
+- **S2, one-lemma multi-word renderings.** 18 phrases in at least 3 verses whose content words all
+  render the same lemma: *brothers and sisters* (ἀδελφός), *chief priests* / *high priest* (ἀρχιερεύς),
+  *Jewish leaders* (Ἰουδαῖος), *demon-possessed*, *strips of linen*, *adoption to sonship*, *basis for a
+  charge*, *little while*.
+  - Noise at verse-level evidence: *ancestors ate*, *trying to kill*, *offer yourselves*. P5b-2's
+    word-level evidence (Biblical Terms references, learned alignment) should remove it.
+  - These are wordings of a key term, not separate concepts.
+- **What is not covered:** 158 multi-lemma phrases remain, mixing real concepts (*eternal life*,
+  *kingdom of God*, *in Christ*) with collocations (*down from heaven*, *raised from the dead*). No
+  deterministic test separates them.
+
+**Recommendation.**
+
+1. The list is a list of **concepts**: key-term lemma + sense (D17), S1 terms and S3 declared phrases.
+   S2 wordings sit under their lemma's concept.
+2. **(DECIDED, PO 2026-11-25)** Glossary decisions and consistency obligations are made per **concept**, with the SOURCE wording
+   distribution kept as evidence. *believe / believed / believes* and *brothers / brothers and sisters*
+   are one decision each.
+   - This is a **deviation from handover SRC07** (exact-wording groups), justified by this feedback.
+   - Sense splits (AT03) still apply inside a concept.
+3. The automatic n-gram engine stays only as a **locator** of a concept's SOURCE wordings. It never
+   creates entries.
+4. **S4 (PO decision).** The remaining multi-lemma concepts (*eternal life*, *kingdom of God*) can come
+   from:
+   - **(a)** the team only, through phrases.txt and the RL workbook; or
+   - **(b)** a SAGE-built, OL-keyed **concept seed list**. Candidates are deterministic: OL lemma
+     sequences with at least one key-term lemma, in at least 3 verses. An advisory LLM judges "single
+     unit of meaning?" in the gateway SOURCE language, and the results are PROPOSED only. The list is
+     built once over MACULA + BSB, and could ship publicly: OL keys + CC BY glosses, which would close
+     P3b. Being keyed by OL, it serves every reference and pivots like single key terms.
+
+   **PO decision 2026-11-25: (b)**, with (a) always available. Its precision is measured by two LLM judges (§9), and it
+   never becomes authority.
+
+### 5b.7 Critical review of the builder design (2026-11-25) and the refined builder
+
+A second pass over §5b.1–5b.6, with new measurements. All data is local, counts only. Biblica projects
+come from the local Paratext folder; eBible BSB is used for the alignment check.
+
+**Findings.**
+
+| # | Finding | Evidence | Consequence |
+|---|---|---|---|
+| R1 | **The builder works bottom-up, and that produced both defects the feedback named.** P3a/P4 start from English n-grams and attach lemmas afterwards, so English frequency shapes the list (common words, collocations). D17 and D18 then only filter that output | §5b.5, §5b.6 | Invert it: build **top-down from OL concepts**. The reference text only supplies realizations, and n-gram discovery leaves the builder |
+| R2 | **Concept = lemma merges senses that the reference's translators separated** | NIV John: Ἰουδαῖος → *Jews* (30 verses), *Jewish leaders* (11); πνεῦμα → *Spirit* / *spirit* collapse under casefolding | D19: senses inside a concept come from the reference's lexical choice, with case kept as a feature |
+| R3 | **Verse-level lemma evidence pollutes concepts.** Under concept grouping every stray wording becomes a false realization, and then a false `PC10` | NIV John + Romans: πνεῦμα → *through* (4), *whom* (3); σάρξ → *according* (4), *eats* (2); νόμος → *from* (4); ψυχή → *lay down*, *down my* | **Word alignment is a prerequisite (P5b-0)**, not a later precision step |
+| R4 | **Word alignment is feasible for Greek and weak for Hebrew as prototyped.** IBM Model 1 + position prior, trained on the NT (7,936 verses) and on the OT (22,965), checked against eBible BSB word-level Strong's tags, content words only (9,430 Greek / 55,413 Hebrew tokens). Greek gets close to a usable bar; Hebrew needs MACULA's prefix/suffix segments as separate tokens (the prototype collapsed them), and must be re-measured | See the alignment results table below | Gate: Greek ≥ 90% precision at ≥ 70% coverage; Hebrew bar set after the segment fix. Measured with the BSB tables (D20) |
+| R5 | **The content-word fallback inventory does not work.** Key-ness is not frequency or POS. The Biblical Terms list is itself a reference, not truth: it keeps λέγω *say* and lacks πατήρ *father* and υἱός *son* (but has *Son of Man*) | MACULA noun/verb/adj over lemmas in ≥ 3 verses covers 99% of Biblical Terms lemmas, but only 42% (JHN+ROM) / 31% (GEN+PSA) of its selection is on Biblical Terms. A ceiling on the 50/100/200 most frequent lemmas leaves that share unchanged (42% → 42%) and only cuts recall (97% → 76%) | The shipped default inventory is the **Key Concepts** package (D18 S4b extended to single lemmas), LLM-judged once and **measured against Biblical Terms locally** (tagged reference data, no hand labelling). The frequency ceiling is dropped |
+| R6 | **The Jaccard pivot and round trip are unnecessary.** With OL-keyed concepts and alignment, every reference is built the same way. Derivation only needs to carry curation. The "looks clean" pivot samples were an informal spot check, not a measurement | §5b.3 | D14 revised; P5b-5 shrinks to curation inheritance + `RELOCATE` for unanchored phrases |
+| R7 | **The seed-list candidate rule is too broad and too order-bound** | 7,203 Greek and 28,931 Hebrew lemma pairs (gap ≤ 2) occur in ≥ 3 verses before any filter. *ζωὴ αἰώνιος* also appears as *αἰώνιος ζωή* | Candidates: unordered lemma sets in a short window, at least one noun, and a translation signal from the gold BSB alignment (BSB renders the set as one contiguous unit in most occurrences). The LLM still decides. Count and budget the LLM calls before running. Option: add MACULA word-group (syntax) IDs to the OL package for principled phrase candidates |
+| R8 | **Some claims are unverified or untested** | — | Biblical Terms word-level reference numbering ↔ MACULA word IDs: not checked. D17's threshold of 3 verses: measured on two books, not the whole reference. Hebrew: untested for D17 and D18. Biblical Terms license: Operator-supplied, read-only, used only locally; it never filters or enters a shipped package (it may *measure* the Key Concepts package locally) |
+| R9 | **Casefolding loses reference-side sense signals** | P2 `norm` casefolds cased scripts. NIV *Spirit* / *spirit*; *LORD* marked with `\nd` in USFM | Keep case (outside sentence start) and `\nd` as features for D19. *LORD* vs *Lord* is separated anyway by the OL key (YHWH vs adonai) |
+| R10 | **Builder quality gates were proxies or spot checks** | — | Deterministic gates per step (below) |
+
+**Alignment results (R4):**
+
+| Testament | Method | Linked | Precision |
+|---|---|---|---|
+| Greek NT | one direction | 98% | 75% |
+| Greek NT | both directions agree | 72% | 90% |
+| Greek NT | both directions agree + posterior ≥ 0.5 | 70% | 92% |
+| Hebrew OT | one direction | 80% | 45% |
+| Hebrew OT | both directions agree | 37% | 76% |
+
+For comparison, the P4 verse-level method reached 79% precision on 52% of occurrences (a different
+metric).
+
+**BSB tables checked (D20).** Same file as P4 (SHA-256 `4763b1fa…`). Sheet `biblosinterlinear96` has
+one row per OL word, with:
+
+- `Heb Sort` / `Greek Sort` (OL word order);
+- `BSB Sort` (BSB English order);
+- `Str Heb` / `Str Grk`;
+- `VerseId`;
+- ` BSB version ` (the English chunk; `-` when the word is untranslated, e.g. the direct-object marker);
+- `pnc`.
+
+That is a **gold word-level alignment**: OL word ↔ English chunk, with both orders. For Hebrew it is
+per whole word (prefix and suffix included), not per MACULA segment. Mapping a row to a MACULA word uses
+verse + OL order + Strong's. The heading, cross-reference and footnote columns are not read.
+
+**Refined builder (replaces SCRATCH in §5b.2–5b.6).**
+
+1. **Align (P5b-0).** Word-align reference ↔ OL.
+   - BSB uses the gold alignment from the BSB tables (D20).
+   - Other references use Model 1 + position prior in both directions, keeping the links both directions
+     agree on, with a posterior threshold. Hebrew uses segments as tokens.
+   - English references may use the transitive route via BSB if it measures better.
+   - Cached by (reference hash, OL package hash, aligner version).
+   - **The same engine serves P6 (SOURCE ↔ TARGET).**
+2. **Inventory.** The union of:
+   - Biblical Terms (if imported);
+   - the SAGE Key Concepts package (single- and multi-lemma);
+   - concepts declared by the Operator or team, anchored to OL words through the alignment on import, so
+     they become portable;
+   - KEEPs inherited from a base RL.
+
+   DROPs are removed.
+3. **Realize.** Start from every **OL occurrence** of a concept and take the aligned reference span (a
+   contiguous span; multi-word renderings appear naturally, as S2). An unaligned occurrence is counted as
+   `NO_REALIZATION`, never guessed. Starting from the OL side also shows where the reference renders a
+   concept with no word.
+4. **Partition senses (D19).** By head stem (learned suffixes) and case feature; S2 renderings merge with
+   their head; wordings in fewer than 2 verses go to "other renderings".
+5. **Select (D17).** At least 3 verses per concept sense over the whole reference (a setting). Everything
+   else is left out, with counts by reason.
+6. **Package.** One row per concept, with sense sub-rows. Each sense carries its wordings with counts,
+   three example references, provenance (inventory source, alignment method, realization coverage) and
+   the license.
+
+**Deterministic gates.**
+
+| Step | Gate |
+|---|---|
+| Align | Precision and coverage against the BSB tables, per testament |
+| Inventory | Key Concepts recall and precision against Biblical Terms (local) |
+| Realize | Realization coverage per concept |
+| Partition | Sense splits on a seeded sample judged by two LLMs in the SOURCE gateway language (§9) |
+| Whole build | Byte-identical rebuild |
+
+**PO answers (2026-11-25).**
+
+1. **No NIV MACULA alignment exists; base SAGE on BSB** (BSB derives from NIV84). An NIV reference is
+   aligned NIV → BSB → OL (D20).
+2. **Yes: ship the MACULA syntax-tree word groups**, from
+   [macula-greek](https://github.com/Clear-Bible/macula-greek/) (`SBLGNT/lowfat`, commit `076282a…`) and
+   [macula-hebrew](https://github.com/Clear-Bible/macula-hebrew/) (`WLC/lowfat`, commit `df1ea5d…`), the same
+   pinned commits as the OL analysis package. Built as P5b-R.
+3. **D19 accepted.**
 
 ## 6. Function B — consistency check
 
@@ -287,8 +652,9 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 | **P3** | Function A discovery + local list + index builder tool (`tools/build_phrase_index.py` with a byte-identical `verify` mode, like `build_ol_analysis.py`); BSB package (D5) | M2, doc 13 | Reproducible counts; every occurrence traces to raw SOURCE; package checksums verified on load |
 | **P4** | Sense evidence (D2 path or curated-only) + grouping | M3 | AT03, AT11, AT16, AT22; no cross-sense obligation |
 | **P5** | Terms-list Markdown/XLSX + glossary import into the journal + optional language-facts sheet (§7 L2); read-only Paratext TermRenderings import as proposed entries (D10) | new (D1, D4, D10, D11) | Round trip: export → fill → import → materialized rules; malformed rows reported with row numbers |
-| **P6** | Function B forward: span location, rendering learning with learned affixes, `ORTHOGRAPHIC` subkind, per-WIP self-qualification (§7 L3–L5), classification, occurrence audit, coverage | M4 | AT01, AT02, AT04–AT07, AT10, AT12, AT25–AT27; every eligible occurrence has a disposition |
-| **P7** | Rule resolver: specificity, `REJECT`, `STALE`, `PC23` | M5 | AT13, AT14, AT23, AT24; every acceptance names its rule |
+| **P5b** | Reference lists (D12–D20): word aligner, RL package + store, `concept_key`, top-down build, Job pin, RL workbook round trip, Key Concepts package, inheritance, RL export/import, glossary bundle, overlay folded in | new | Plan "P5b plan" below |
+| **P6** | Function B forward: span location, rendering learning with learned affixes, `ORTHOGRAPHIC` subkind, per-WIP self-qualification (§7 L3–L5), classification, occurrence audit, coverage | M4 | AT01, AT02, AT04–AT07, AT10, AT12, AT25–AT27; every eligible occurrence has a disposition; planted-error recall on Biblica WIPs (plan "P6 plan") |
+| **P7** | Rule resolver: specificity, `REJECT`, `STALE`, `PC23`; finding decisions (review workbook) become scoped rules | M5 | AT13, AT14, AT18, AT23, AT24; every acceptance names its rule (plan "P7 plan") |
 | **P8** | Reverse scan + clusters | M6 | AT08, AT09, AT29 |
 | **P9** | Reports in SAGE conventions, `PCC-CHEAT-SHEET.md`, Operator guide, known limitations, third-party notices; full acceptance AT01–AT30 + Function A tests; benchmark on a whole Bible | M7, M8 | Handover acceptance checklist complete or deviations accepted |
 | **P10** (later) | Optional advisory model step with qualification | M6 (assisted) | Qualified route; never approves |
@@ -435,8 +801,9 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 - Senses stay `PROVISIONAL` and the team confirms them in P5. No release bar is set yet; next step to
   raise precision is learned word alignment (IBM Model 1 per plan A3) and a lexical-word filter, and the
   tool is the gate to measure it.
-- The table is **not** shipped and not used at run time (it only helps a BSB SOURCE; the main SOURCE is
-  NIV). It is evaluation data.
+- ~~The table is not shipped and not used at run time; it is evaluation data.~~ Revised 2026-11-25 (D20):
+  the table derives from MACULA (Biblica, CC BY 4.0), so it is a build-time input (gold BSB alignment)
+  as well as evaluation data.
 
 ### P5 as built (2026-11-03)
 
@@ -470,6 +837,98 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   overlay in `localdata/inputs/pcc/core-overlay.jsonl`, shared by all Jobs, never editing shipped packages.
   The phrase index is not yet loaded by a Run, so INDEX_ENTRY verdicts are honoured by `curated_seeds` only.
 - Tests: `test_pcc_p5.py`; P1-P5 = 92 passed.
+
+### P5b-R as built (2026-11-25): PCC original-language package in the distro
+
+- `SAGE_PCC_OL_2026-11-25` in `system/resources/pcc-ol/2026-11-25/` (pin `system/config/pcc-ol-reference.json`),
+  three TSV tables keyed by MACULA word ref (26 MB unpacked):
+  - `bsb-alignment.tsv` (442,870 rows): BSB verse, position, English, punctuation per OL word.
+    - Hebrew 289,477 words paired by Strong's sequence + 15,951 by position (1–3-word equal gaps between
+      anchors: form-specific Strong's such as 846/848, 1510/2258, object marker + suffix) = 305,428 of
+      305,517 (99.97%).
+    - Greek 127,896 + 9,546 = 137,442 of 137,741 (99.8%). The remainder are text differences: the BSB base
+      text vs SBLGNT, e.g. 315 Greek words not in SBLGNT.
+    - Aramaic rows count as Hebrew, as in MACULA. Spot checks (GEN 1:1, DAN 2:4, JHN 1:1, JHN 3:16) are
+      correct, and JHN 5:4 is correctly absent.
+  - `ol-senses.tsv` (240,855): Clear senses, Greek joined by MACULA id (60,353 of 60,574; 221 ids not in
+    SBLGNT) and Hebrew `@sensenumber`.
+  - `ol-groups.tsv` (153,993): `np` / `adjp` / `pp` groups of 2–6 words from the lowfat trees.
+- Clear senses are evidence, not the sense split. Greek πνεῦμα 366 / 3 / 2 / 1, Ἰουδαῖος 177 / 9 / 1 (no
+  *Jews* / *Jewish leaders* split); Hebrew רוּחַ 229 / 110 / 35 / … So D19's reference-side split stays
+  primary.
+- Code:
+  - `sage/pcc/ol_build.py` (build-time: pins, input verification, table reader, per-book Strong's pairing
+    with gap fill, lowfat group extraction reading only structure attributes, deterministic package
+    writer);
+  - `sage/pcc/ol_resources.py` (loader: pin + checksums, lazy tables, `groups_by_ref`);
+  - `tools/build_pcc_ol_resources.py` (`fetch` / `build` / `verify`; `verify` reports IDENTICAL).
+- Inputs (cache only, never in the repo): BSB tables (SHA-256 pinned), MACULA word tables (existing pins),
+  Clear Greek senses (SHA-256), lowfat trees (git tree SHA + listing digest; every file checked against its
+  git blob SHA).
+- Notices: `THIRD-PARTY-NOTICES.md` (pins, Groves Center credit for the Hebrew trees, Clear senses, BSB
+  tables) and `ORIGINAL-LANGUAGE-RESOURCES.md`.
+- Distro inventory `VANILLA-INSTALL-MANIFEST.md` updated. It also gained `pcc/overlay.py` and
+  `pcc/transfer.py`, missing since 7ac8ee2.
+- Source audit: two prohibited target-text verbs reworded (one pre-existing in `glossary.py`); the plan's spelling is
+  US English.
+- Tests: `tests/pcc/test_pcc_ol_resources.py`, fabricated inputs plus an integrity check of the shipped
+  package. PCC 103 passed; `test_package.py` 19 passed.
+- Environment note: python.org Python on the build machine has no CA certificates, so `fetch` over
+  `urllib` failed there; the inputs were fetched with curl from the same pinned URLs and verified by the
+  same pins.
+
+### P5b plan (reference lists, D12–D20)
+
+PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
+replaced, not converted.
+
+| Step | Work | Files | Done when |
+|---|---|---|---|
+| **P5b-0** Word aligner (§5b.7 step 1, R3/R4) | `pcc/align.py`: **gold path** for a BSB reference from `SAGE_PCC_OL` `bsb-alignment.tsv` (P5b-R); **transitive path** for NIV and other English references: reference ↔ BSB (same language; identical and stem-equal tokens anchor, EM fills the rest) composed with the BSB gold; **direct path** (other languages, fallback): IBM Model 1 + position prior, both directions, keeping only links both agree on, with a posterior threshold, Hebrew prefix/suffix segments as OL tokens; cache by (reference hash, OL package hash, aligner version). `tools/evaluate_pcc_alignment.py`: precision/coverage against the BSB tables per testament, counts only. Shared with P6-3 (SOURCE ↔ TARGET) | new `align.py`, new tool, `name_alignment.py` (shared helpers) | Greek ≥ 90% precision at ≥ 70% coverage (prototype: 92% / 70%); Hebrew bar set and met after the segment fix; deterministic output |
+| **P5b-1** Identity and package | `ids.concept_key` (D13), wordings as realizations under a concept; `pcc/reflist.py`: RL contract (`reference_list_manifest`, `reference_list_entry` in `contracts.py`), `build` / `verify` / `load`, store under `localdata/inputs/resources/reference-lists/`, fork-on-clash import, license flag; replace `group_id`'s scope policy by `concept_key` + sense | `ids.py`, `contracts.py`, new `reflist.py`, `sense.py`, `glossary.py` | Same inputs → byte-identical package; a changed byte fails `verify`; a group ID is unchanged across scope and threshold changes |
+| **P5b-2** Top-down build (D14 revised, D17, D19) | Inventory (Biblical Terms if imported ∪ Key Concepts package ∪ declared ∪ inherited KEEP − DROP) → realize every OL occurrence through the P5b-0 alignment (`NO_REALIZATION` counted) → partition senses by head stem + case feature (outside sentence start, `\nd` kept), S2 renderings merged, rare wordings to "other renderings" → select at least 3 verses per concept sense over the whole reference → left-out summary by reason. N-gram discovery no longer creates entries (kept only to locate unanchored declared phrases). Elision split (§5b.3 finding 4). Progress per book | `reflist.py`, `align.py`, `sense.py` (OL splits), `segment.py` (case kept beside `norm`), `traits.py` | Whole Bible in a few minutes (aligner cached); NIV JHN: *Jews* and *Jewish leaders* are separate senses of Ἰουδαῖος; no function words among the realizations of πνεῦμα / σάρξ / νόμος; *God*, *Lord*, *eternal life*, *Son of Man* present; byte-identical rebuild |
+| **P5b-3** Job pin and terms Run | Job wizard picks (or builds) an RL for the SOURCE edition; `job.defaults.reference_list = {rl_id, version, sha256}`. A terms Run = RL entries ∩ scope + `phrases.txt`, located in the Job's SOURCE. `assign_senses` gets a **fixed-candidates** mode (the RL's lemma keys, per occurrence; no re-choosing). SOURCE hash ≠ RL hash → entries `PROVISIONAL` (`RELOCATE` at run time). Re-pin action with carry-over report and `STALE` rules. One-time WIP attach (D16) | `run.py`, `pcc_menu.py`, `jobs.py` defaults validation, `sense.py` | Rules survive a re-pin by `concept_key`; dropped entries → `STALE`; snapshot seals the RL hash; stale RL hash → `PCC_RUN_INPUT_STALE` |
+| **P5b-4** RL workbook | Export `RL-<id>-v<n>.xlsx` (§5b.4); import → new version + `RL-DIFF.md`; formula-safe cells. Move the overlay verdicts into RL entry status; delete `overlay.py` and the "Review core lists" overlay path (the review screens edit a new RL version instead) | `reflist.py`, new `reflist_xlsx.py`, `pcc_menu.py` | Export → edit → import round trip; bad rows reported by row number and the rest applied; no global overlay file is written |
+| **P5b-5a** Key Concepts package (D18 S4b, R5, R7) | `tools/build_pcc_concepts.py`. **Single-lemma candidates:** MACULA content lemmas in ≥ 3 verses. **Multi-lemma candidates:** unordered lemma sets in a short window with at least one noun, rendered by BSB as one contiguous unit in most occurrences (gold alignment, D20), or MACULA word groups if the package gains them. Count candidates and budget LLM calls first. Advisory verdict ("key concept a team must render consistently?" / "single unit of meaning?") `CONFIRM`/`REJECT`/`UNSURE` through `candidates.py` with receipts, on the selected provider (Claude Phase 4 or Codex). Only `CONFIRM` ships, as `PROPOSED` concepts. Package `app/system/resources/pcc-concepts/<date>/`: OL keys, MACULA CC BY glosses, BSB example wording, no NIV, no Biblical Terms content; pin file, `verify` mode; closes P3b | new tool, `resources/pcc-concepts/`, `reflist.py` | Recall and precision against Biblical Terms recorded (local only); *eternal life*, *kingdom of God*, *Son of Man* in; *down from heaven* out; two-LLM agreement on a seeded sample (§9); byte-identical verify |
+| **P5b-5** Inheritance (D14 revised) | Build an RL for reference B with a base RL A: concept KEEP / DROP, declared phrases (with OL anchors), notes and category switches carry by `concept_key` as `PROPOSED`; B's own realizations come from B's alignment. Declared phrases without an OL anchor are `RELOCATE`d by wording (same language only) or reported. Lineage in the manifest | `reflist.py` | NIV → NIV Anglicised and NIV → Spanish NVI inheritance runs; carried / not-realized counts reported; nothing derived is `ACTIVE` without review |
+| **P5b-6** Exchange | RL export/import as one checksummed `.sagerl.zip` (package folder). `transfer.py` becomes the **glossary bundle**: renderings keyed by `concept_key` + wording + lemma (re-matched by key, else by wording + lemma), same target language | `reflist.py`, `transfer.py`, `pcc_menu.py` | Export on one instance, import on another (test: two temp workspaces); tampered bundle refused; license warning shown for NIV-derived RLs |
+| **P5b-7** Menu | PCC home gains **Reference lists** (list, build, derive, export, import, edit via workbook, show diff), outside any Job. The Job's terms menu keeps the glossary actions only | `pcc_menu.py`, `menu-localization.json` | Menu tests; an Operator can build and pin an RL without creating a Job first |
+
+Evaluation (P5b): alignment against the BSB tables, Key Concepts against Biblical Terms (local), sense
+partition and Key Concepts precision by two LLM judges (§9); there is no hand labelling.
+
+### P6 plan (Function B forward)
+
+**Inputs sealed in the Run snapshot:**
+
+- the pinned RL hash;
+- the glossary rule view hash (journal head);
+- SOURCE, secondary and WIP hashes;
+- WIP traits (§7 L1) and language facts (§7 L2);
+- the alignment and qualification settings.
+
+| Step | Work | Done when |
+|---|---|---|
+| **P6-1** Verse pairing | WIP verse units (`numbers.target.target_units`, visible body text); SOURCE ↔ WIP pairing through `verse_alignment.align_records` and both VRS files; bridges and splits become `EQUIVALENCE_GROUP` units (AT25). Unpaired SOURCE verses → occurrences `PC21` with reason `NO_TARGET_VERSE` | Fabricated split/merged verses pair correctly or give `PC21` |
+| **P6-2** Groups | Only `ACTIVE` (key-term) RL entries and Operator additions form groups (D17); common words are never traced. Eligible groups from the terms analysis (P5b-3): confirmed occurrences per `concept_key` + sense; fewer than 2 confirmed verses → `INFORMATIONAL` (AT16); unresolved sense → `PC20` (AT11). Secondary SOURCE is advisory only (AT15) | AT11, AT15, AT16 |
+| **P6-3** Learned alignment | The P5b-0 aligner (`pcc/align.py`; cached by SOURCE + WIP hash), run once per Run over all paired verses in scope, both directions; per-occurrence TARGET span = the contiguous TARGET token run that maximises the expression's alignment mass. Each span gets a reliability score (agreement of both directions + mass); unreliable → `PC21` (AT12). One SOURCE phrase → several TARGET units: span set, never auto-`PC11` (AT10). Learned TARGET affixes (suffixes now; prefixes per `TODO-20261016-003`) reduce forms to stems for comparison only | AT10, AT12; spans reconstruct exactly from offsets |
+| **P6-4** Approved-rendering match | For each occurrence: does an approved rendering (glossary rule, D13 key) occur in the mapped verse(s), allowing learned inflection (`TGT02`) and approved orthographic equivalences (L2)? A match beats a learned span. Rule resolution here is the simple form (group-scope `APPROVED` / `REJECTED`); P7 replaces it | Approved match with inflection on fabricated prefixing and suffixing languages |
+| **P6-5** Classification per group | **Pass outcomes:** `PC00` (all occurrences carry approved renderings, sense confirmed, entry reviewed) (AT01), `PC01` (differences explained by approved variants or learned inflection) (AT02, AT05), `PC02` (uniform but unapproved, or sense only provisional) (AT27). **Review:** `PC10` (differing unapproved forms; subkind `ORTHOGRAPHIC` at `LOW` severity per L3) (AT04), `PC11` (reliable alignment, adequate context, no TARGET support) (AT07), `PC13` (negation or polarity, only when negation facts are declared, else `NOT_CHECKED`) (AT06). Every `PC10` / `PC11` carries the rendering distribution (counts + references). Severity from the code and category (key terms higher), never from confidence | AT01, AT02, AT04–AT07, AT27 |
+| **P6-6** Self-qualification (§7 L4–L5) | Plant substitutions and removals into an in-memory WIP copy, seeded, over eligible groups; measure recall per kind; below the bar (80%, tunable in the snapshot) → that kind `NOT_CHECKED` with the measured recall. Evidence minimum for `PC11` set from the same pass | A tiny or unspaced fabricated WIP reports `NOT_CHECKED`, not a pass |
+| **P6-7** Outputs | Run `validation/`: `findings.jsonl`, `occurrence-audit.jsonl` (one disposition for **every** eligible occurrence), `summary.json` (handover coverage formulas; never a green total with open review). Reports: `localdata/reports/<job>/PCC-CHECK.md` + `PCC-FINDINGS.xlsx` (one row per finding, blank *decision* / *scope* / *note* columns for P7), exception reports for `NOT_ASSESSED` areas. TARGET quoted verbatim with references; SOURCE by reference (NIV limit) | Every eligible occurrence appears exactly once in the audit; stable ordering (AT18) |
+| **P6-8** Evaluation | Planted-error recall per kind on real WIPs, local only, counts only. Use Biblica projects from the local Paratext folder: NIV as SOURCE; WIPs Spanish NVI, Swahili Neno (prefixing), Hindi and one unspaced script (Thai or Chinese). A prefixing language and an unspaced script are part of the gate (§9). False-alarm sample via two LLM judges for `GOOD`-rated languages only | Recall bars recorded per language; unspaced → `PARTIAL` reported honestly |
+
+Out of P6: specificity and conflicts (P7), reverse scan (P8), advisory model (P10).
+
+### P7 plan (rule resolver and decisions)
+
+| Step | Work | Done when |
+|---|---|---|
+| **P7-1** Rule scopes | `variant_rule.scope`: `OCCURRENCE` (`concept_key` + verse ref + nth occurrence + verse-text hash), `PASSAGE` (reference range + text hash of its verses), `GROUP` (`concept_key` + sense), `LANGUAGE` (inflection or orthographic rule for the WIP language). Effects `APPROVE` / `REJECT` / `CONTEXT_ONLY` | Contracts and validators; journal round trip |
+| **P7-2** Resolver | Pure function: applicable rules for an occurrence ordered occurrence > passage > group > language; the most specific decision wins; a more specific `REJECT` beats a broader `APPROVE` (AT24); `PROPOSED`, `REVOKED`, `STALE` never accept (AT23); equal-scope `APPROVE` + `REJECT` for the same form → `PC23` for that group only: group `NOT_ASSESSED` + exception report, the Run continues (D9) (AT14). Each audit row names the rule ID it used | AT14, AT23, AT24; every acceptance names its rule |
+| **P7-3** Staleness | A rule is `STALE` when: its `concept_key` is gone from the pinned RL; its sense changed; the SOURCE or WIP text hash bound to its scope changed (AT13); or the RL is re-pinned and the entry changed. `STALE` rules are listed for re-review and never deleted | AT13 |
+| **P7-4** Finding decisions | Import the filled `PCC-FINDINGS.xlsx`: decisions `APPROVE_VARIANT` (→ rule at the chosen scope), `CONFIRMED_ISSUE`, `DISMISS`, `DEFER`, `REJECT_FORM`. Each one is a `review_event` in the Job journal with actor and evidence. Finding identity is stable: `H(concept_key, sense, code, coordinate, TARGET form, verse-text hash)`. A decided finding keeps its `review_status` in later Runs until its evidence changes. Menu: revoke a rule; review stale rules | Decide → re-run → `PC10` becomes `PC01` with the rule named; dismissed findings stay dismissed until the text changes |
+| **P7-5** Determinism | Same inputs + same journal → byte-identical outputs and IDs (AT18); the materialized rule view rebuilds from the journal alone | AT18 test with shuffled journal replay refused and identical rebuild |
 
 P1–P6 form a usable first slice: a team can get a terms list and a forward check. The handover says
 Stage 1 is not complete without governance (P7) and the reverse scan (P8).
@@ -516,4 +975,8 @@ Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 
 ## 11. Next step
 
-All product decisions are recorded. D7–D9 are technical defaults adopted unless the PO objects. Start P1.
+2026-11-25: D12, D15, D17 (in principle), D18, D19 and D20 decided by the PO; D3 corrected for Clear word
+senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package) is built and in the
+distro. Next is P5b-0 (the word aligner: BSB gold, NIV via BSB, direct EM), because the top-down build
+(P5b-2) and P6 both rest on it, then P5b-1 (`concept_key` and RL package). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

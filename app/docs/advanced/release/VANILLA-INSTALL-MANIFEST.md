@@ -206,6 +206,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/config/model-qualification-seeds.json`
 - `system/config/numbers-reference.json`
 - `system/config/ol-analysis-reference.json`
+- `system/config/pcc-ol-reference.json`
 - `system/config/profiles`
 - `system/config/profiles/grammar`
 - `system/config/profiles/grammar/README.md`
@@ -609,6 +610,13 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/resources/ol-analysis/2026-10-15/MANIFEST.json`
 - `system/resources/ol-analysis/2026-10-15/greek.tsv`
 - `system/resources/ol-analysis/2026-10-15/hebrew.tsv`
+- `system/resources/pcc-ol`
+- `system/resources/pcc-ol/2026-11-25`
+- `system/resources/pcc-ol/2026-11-25/CHECKSUMS.sha256`
+- `system/resources/pcc-ol/2026-11-25/MANIFEST.json`
+- `system/resources/pcc-ol/2026-11-25/bsb-alignment.tsv`
+- `system/resources/pcc-ol/2026-11-25/ol-groups.tsv`
+- `system/resources/pcc-ol/2026-11-25/ol-senses.tsv`
 - `system/resources/numbers/2026-09-09`
 - `system/resources/numbers/2026-09-09/CHECKSUMS.sha256`
 - `system/resources/numbers/2026-09-09/FILE_MANIFEST.json`
@@ -983,7 +991,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/index.py`
 - `system/src/sage/pcc/journal.py`
 - `system/src/sage/pcc/jsonl.py`
+- `system/src/sage/pcc/ol_build.py`
 - `system/src/sage/pcc/ol_evidence.py`
+- `system/src/sage/pcc/ol_resources.py`
+- `system/src/sage/pcc/overlay.py`
 - `system/src/sage/pcc/phrases.py`
 - `system/src/sage/pcc/run.py`
 - `system/src/sage/pcc/glossary.py`
@@ -992,6 +1003,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/source_text.py`
 - `system/src/sage/pcc/traits.py`
 - `system/src/sage/pcc/trie.py`
+- `system/src/sage/pcc/transfer.py`
 - `system/src/sage/pcc_menu.py`
 - `system/src/sage/plan_continuation.py`
 - `system/src/sage/platform_commands.py`
@@ -1186,6 +1198,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc/test_pcc_p3_index.py`
 - `system/tests/pcc/test_pcc_p4.py`
 - `system/tests/pcc/test_pcc_p5.py`
+- `system/tests/pcc/test_pcc_ol_resources.py`
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`
 - `system/tests/test_bic4_contract_and_vocabulary.py`
@@ -1323,6 +1336,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/build_model_evaluation_cases.py`
 - `system/tools/build_numbers_index.py`
 - `system/tools/build_ol_analysis.py`
+- `system/tools/build_pcc_ol_resources.py`
 - `system/tools/build_phrase_index.py`
 - `system/tools/build_release.py`
 - `system/tools/calibrate_token_estimator.py`

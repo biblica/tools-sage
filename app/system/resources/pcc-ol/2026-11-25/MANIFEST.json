@@ -1,0 +1,108 @@
+{
+  "excluded_fields": [
+    "ln",
+    "domain",
+    "sdbh",
+    "lexdomain",
+    "coredomain",
+    "contextualdomain"
+  ],
+  "files": {
+    "bsb-alignment.tsv": {
+      "columns": [
+        "ol_ref",
+        "bsb_ref",
+        "bsb_order",
+        "english",
+        "punct",
+        "match"
+      ],
+      "mapping": {
+        "GRK": {
+          "macula_words": 137741,
+          "paired_by_position": 9546,
+          "paired_by_strong": 127896,
+          "table_words": 138131
+        },
+        "HEB": {
+          "macula_words": 305517,
+          "paired_by_position": 15951,
+          "paired_by_strong": 289477,
+          "table_words": 305494
+        }
+      },
+      "rows": 442870
+    },
+    "ol-groups.tsv": {
+      "classes": [
+        "adjp",
+        "np",
+        "pp"
+      ],
+      "columns": [
+        "class",
+        "rule",
+        "role",
+        "refs"
+      ],
+      "rows": 153993,
+      "words": [
+        2,
+        6
+      ]
+    },
+    "ol-senses.tsv": {
+      "columns": [
+        "ol_ref",
+        "seg",
+        "sense"
+      ],
+      "greek_ids_not_in_sblgnt": 221,
+      "rows": 240855
+    }
+  },
+  "license": "CC BY 4.0 (MACULA, (c) 2022-2024 Biblica, Inc.) and public domain (Berean Standard Bible); see docs/advanced/projects-and-resources/THIRD-PARTY-NOTICES.md",
+  "package_id": "SAGE_PCC_OL_2026-11-25",
+  "purpose": "PCC reference-list builder: gold BSB word alignment, Clear word senses and syntax-tree phrase groups, keyed by MACULA word ref (the key of SAGE_OL_ANALYSIS).",
+  "schema_version": "1.0",
+  "sources": {
+    "bsb_tables": {
+      "attribution": "Berean Standard Bible tables (bereanbible.com), public domain; word alignment derived from MACULA (CC BY 4.0, Biblica, Inc.)",
+      "file": "witnesses/bsb-tables/bsb_tables.xlsx",
+      "sha256": "4763b1fa530c9f69ace032ee5b1bdbfe6e471b889fdcf00e1c1de9d8cc09cf3d",
+      "url": "https://bereanbible.com/bsb_tables.xlsx"
+    },
+    "greek_wordsenses": {
+      "attribution": "MACULA Greek Linguistic Datasets (Clear word senses), available at https://github.com/Clear-Bible/macula-greek/",
+      "file": "macula/greek-wordsenses.tsv",
+      "sha256": "10a6b4fe1e262fc187c7425c009b796ebfbcd634c657866cbd2032c2efa788bd",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/sources/Clear/wordsense/greek-wordsenses.tsv"
+    },
+    "lowfat_greek": {
+      "attribution": "MACULA Greek Linguistic Datasets (syntax trees), available at https://github.com/Clear-Bible/macula-greek/",
+      "listing_sha256": "08b1aeba8ea917bc9ee8f2bff423cb02188d1fa094ce35853a2fe350bc513a97",
+      "repo": "Clear-Bible/macula-greek",
+      "tree": "458623037e4d53adc3049ebb287a46ddeb3629e9",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/SBLGNT/lowfat/"
+    },
+    "lowfat_hebrew": {
+      "attribution": "MACULA Hebrew Linguistic Datasets (syntax trees), available at https://github.com/Clear-Bible/macula-hebrew/; Westminster Hebrew Syntax without Morphology, Copyright (C) 1991-2018 by The J. Alan Groves Center for Advanced Biblical Research (CC BY 4.0)",
+      "listing_sha256": "d6874dd48fdd5e899ab2ade0100a74794db0d36685a65258c023d6c3a2399e92",
+      "repo": "Clear-Bible/macula-hebrew",
+      "tree": "1d3da3bddd05f7e0a825acd0966e08b91a883203",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-hebrew/df1ea5d85c8cb194278a874d6c670cd1d8abd97f/WLC/lowfat/"
+    },
+    "macula_grk": {
+      "attribution": "MACULA Greek Linguistic Datasets, available at https://github.com/Clear-Bible/macula-greek/",
+      "commit": "076282a3926625a5e670823b0738ce5f1e619528",
+      "sha256": "7f71504fdee8659bdd9f85342e4103d645864c2851b8205915bb298f0c004cc5",
+      "url": "https://raw.githubusercontent.com/Clear-Bible/macula-greek/076282a3926625a5e670823b0738ce5f1e619528/SBLGNT/tsv/macula-greek-SBLGNT.tsv"
+    },
+    "macula_heb": {
+      "attribution": "MACULA Hebrew Linguistic Datasets, available at https://github.com/Clear-Bible/macula-hebrew/",
+      "commit": "df1ea5d85c8cb194278a874d6c670cd1d8abd97f",
+      "sha256": "965cb0599beed2fe31283b615bcc369178141c0e718a66d97518d94309cfc124",
+      "url": "https://media.githubusercontent.com/media/Clear-Bible/macula-hebrew/df1ea5d85c8cb194278a874d6c670cd1d8abd97f/WLC/tsv/macula-hebrew.tsv"
+    }
+  }
+}
