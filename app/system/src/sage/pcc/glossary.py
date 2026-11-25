@@ -584,8 +584,41 @@ def decide_proposals(job: Any, rule_ids: Iterable[str], *, approve: bool, lock_p
 # --- key terms (Paratext Biblical Terms) ----------------------------------------------------------
 
 
-def read_biblical_terms(path: Path) -> dict[str, str]:
-    """Parse a Paratext ``BiblicalTerms.xml`` read-only into {original-language lemma: gloss}."""
+@dataclass(frozen=True)
+class BiblicalTerm:
+    """One Paratext Biblical Terms entry, as read (never written back, never shipped)."""
+
+    term_id: str                # e.g. "πνεῦμα-1", "υἱὸς τοῦ ἀνθρώπου"
+    family: str                 # "GRK" or "HEB" (Aramaic counts as Hebrew, as in MACULA)
+    strongs: tuple[int, ...]    # Strong's digits, in the order given
+    category: str
+    gloss: str
+    references: tuple[str, ...]  # BBBCCCVVVWWWWW
+
+    @property
+    def name(self) -> str:
+        """The term without Paratext's homograph number (``πνεῦμα-1`` -> ``πνεῦμα``)."""
+        return re.sub(r"-\d+$", "", self.term_id)
+
+
+def read_biblical_term_entries(path: Path) -> list[BiblicalTerm]:
+    """Parse a Paratext ``BiblicalTerms.xml`` read-only into full entries (Strong's, category, references)."""
+    found = []
+    for element in _biblical_terms_root(path).iter("Term"):
+        term_id = unicodedata.normalize("NFC", (element.get("Id") or element.findtext("Id") or "").strip())
+        if not term_id:
+            continue
+        language = (element.findtext("Language") or "").strip().casefold()
+        strongs = tuple(int(n) for n in re.findall(r"[GH]0*(\d+)", element.findtext("Strong") or ""))
+        found.append(BiblicalTerm(term_id, "GRK" if language == "greek" else "HEB", strongs,
+                                  (element.findtext("Category") or "").strip() or "UNCATEGORIZED",
+                                  (element.findtext("Gloss") or "").strip(),
+                                  tuple(v.text.strip() for v in element.iter("Verse") if v.text and v.text.strip())))
+    return found
+
+
+def _biblical_terms_root(path: Path) -> ET.Element:
+    """Safely parse the file and require at least one Term."""
     raw = path.read_bytes()
     if b"<!ENTITY" in raw or b"<!DOCTYPE" in raw:
         raise ValidationError(f"{path.name} declares a DTD or entities; SAGE will not parse it.",
@@ -594,14 +627,19 @@ def read_biblical_terms(path: Path) -> dict[str, str]:
         root = ET.fromstring(raw)
     except ET.ParseError as exc:
         raise ValidationError(f"{path.name} is not valid XML: {exc}", code="PCC_PARATEXT_XML_INVALID") from exc
+    if not any((element.get("Id") or element.findtext("Id") or "").strip() for element in root.iter("Term")):
+        raise ValidationError(f"{path.name} holds no Term entries.", code="PCC_PARATEXT_XML_EMPTY",
+                              next_action="Choose the BiblicalTerms.xml from the Paratext installation.")
+    return root
+
+
+def read_biblical_terms(path: Path) -> dict[str, str]:
+    """Parse a Paratext ``BiblicalTerms.xml`` read-only into {original-language lemma: gloss}."""
     terms: dict[str, str] = {}
-    for element in root.iter("Term"):
+    for element in _biblical_terms_root(path).iter("Term"):
         term_id = unicodedata.normalize("NFC", (element.get("Id") or element.findtext("Id") or "").strip())
         if term_id:
             terms.setdefault(term_id, (element.findtext("Gloss") or "").strip())
-    if not terms:
-        raise ValidationError(f"{path.name} holds no Term entries.", code="PCC_PARATEXT_XML_EMPTY",
-                              next_action="Choose the BiblicalTerms.xml from the Paratext installation.")
     return terms
 
 

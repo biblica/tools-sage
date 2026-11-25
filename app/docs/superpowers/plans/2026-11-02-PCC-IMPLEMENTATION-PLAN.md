@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package) built; P5b–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages) and P5b-2 (top-down build) built; P5b-3–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -912,6 +912,126 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 - Run time: whole OT ~100 s, whole NT ~30 s (pure Python).
 - Tests: `tests/pcc/test_pcc_align.py`, 7 tests on fabricated data. PCC 110 passed.
 
+### P5b-1 as built (2026-11-25): concept keys and reference-list packages
+
+- `ids.concept_key(kind, anchor)` (D13). Kinds:
+  - `OL`: sorted original-language keys, one lemma or a multi-lemma set;
+  - `BT`: a Biblical Terms term id;
+  - `WORDING`: `<language>|<wording>`.
+
+  `ids.sense_key(concept, sense)` identifies a sense inside a concept (D19). `ids.group_id(concept, sense)`
+  no longer contains the scope policy, so a group keeps its id across book scopes and discovery settings.
+  The P4 groups, still expression-based until P5b-2, are keyed by a `WORDING` concept. The
+  `scope_policy_sha256` argument is gone from `assign_senses`, `run.py`, the tests and
+  `tools/evaluate_pcc_senses.py`.
+- Contracts `reference_list_manifest` and `reference_list_entry` (`contracts.py`):
+  - the manifest holds the reference identity, the license (`local_only`), the build (mode
+    `SCRATCH`/`INHERIT`/`MERGE`/`IMPORT`, `base_version`, `derived_from`, `imported_from`, settings),
+    counts per status, the entries' SHA-256 and the creation time;
+  - an entry holds the concept key, the anchor, label, category, status (`ACTIVE`/`PROPOSED`/`DROPPED`),
+    origin, senses with wordings and verse counts, Clear OL senses and state, verses, examples and notes.
+- `sage/pcc/reflist.py`:
+  - `write_reference_list` is deterministic: the caller supplies the creation time, and a used folder is
+    refused;
+  - `verify_reference_list` checks checksums, contracts, sort order, uniqueness and counts;
+  - `new_rl_id` is a slug plus 8 hex of (instance, time);
+  - `ReferenceListStore` keeps lists at `<resources>/reference-lists/<rl_id>/<version>/`. It writes a new
+    version on every save, loads the newest or a named version, lists all lists, and imports a package
+    (`kept` if identical, `imported` if new, `forked` under a new id if the id and version exist with
+    other content; it never overwrites).
+- Tests: `tests/pcc/test_pcc_reflist.py`, 6 tests. PCC 116 passed.
+
+### P5b-2 as built (2026-11-25): top-down reference-list build
+
+- `sage/pcc/rlbuild.py`, following §5b.7 steps 2–5. N-gram discovery is not used.
+  - **Inventory.** The sources are Biblical Terms (`glossary.read_biblical_term_entries`, read-only), declared
+    phrases, and the entries of a base RL. A `DROPPED` base entry removes its concept. Concepts merge by
+    `concept_key`: sources are joined, and `ACTIVE` wins over `PROPOSED`.
+    - A one-word term, or a phrase with a Strong's number for each content word, gets an `OL` key. So
+      `πνεῦμα-1/-2/-3` become one concept, and the reference decides its senses (D19).
+    - A phrase that names fewer lemmas than it has words (*in Christ*: only χριστός) keeps its `BT` id. It is
+      found through its listed verses and its original-language words.
+    - The Key Concepts package (P5b-5a) is not built yet. Without Biblical Terms, the inventory is
+      therefore only declared and inherited concepts.
+  - **Occurrences** are every MACULA word with the concept's key, through versification.
+    - A multi-lemma concept counts only where all its lemmas fall inside one MACULA phrase group (R7),
+      in any order. Without groups, a window of `len + 3` words is used.
+  - **Realize.** An occurrence takes only the tokens linked to the concept's own segment: in a
+    prefixed Hebrew word, *and the earth* gives *earth*.
+    - An unlinked neighbor is added when three things hold: the aligner's hint for it is the same word
+      with posterior ≥ 0.5; it is not a function token; and no other word of the verse carries the lemma
+      it usually renders (*leaders* in *Jewish leaders*).
+    - A span stops at clause punctuation and at a token that renders another content word.
+    - Function tokens at the edges are trimmed, and so is a linked edge token with < 5% of its links on
+      the concept (a copula the BSB puts in a chunk).
+    - Results are counted as `realized`, `function_only` (e.g. a pronoun for a name) or `no_realization`.
+  - **Function tokens are measured** from the alignment, never listed. A form is one when:
+    - its most frequent lemma is non-content; or
+    - it is spread over ≥ 20 lemmas, none above 20%, and is a word's only linked token in ≤ 15% of its
+      links (auxiliaries); or
+    - it is linked to ≥ 5 lemmas and is almost never a word's only linked token (vocative *O*).
+
+    Content words spread over many lemmas (*leaders*, *life*) are often the only token, so they stay.
+  - **Senses (D19).** The key is the stems of the wording (learned suffixes, stripped to a fixpoint,
+    so *brother*/*brothers* agree) plus the case of its first token outside a sentence start.
+    - A sentence-start occurrence joins the case its stem usually has.
+    - **Deviation from §5b.7 step 4:** a multi-word wording that recurs is a sense of its own, because a
+      head-only key merged *Jewish leaders* with adjectival *Jewish*. A rarer multi-word wording still
+      joins its first word's sense (S2).
+  - **Select (D17).** A sense needs ≥ `min_verses` (3) verses. Other senses are pooled as one `OTHER`
+    sense, which is evidence only. A concept with no recurring sense is left out.
+    - Left-out reasons: `CATEGORY_OFF`, `DROPPED_IN_BASE`, `NOT_LOCATABLE`, `NOT_IN_REFERENCE`,
+      `NO_REALIZATION`, `FUNCTION_ONLY`, `BELOW_RECURRENCE`.
+    - A declared phrase that is not found is kept with no senses (AT30) and reported.
+  - **Declared phrases** are anchored on the content lemmas linked inside them in ≥ 50% of their
+    occurrences. *eternal life* gets {αἰώνιος, ζωή} and is then built top-down like any OL concept.
+    Without an anchor, the key is a `WORDING` key and the located spans are used.
+  - Clear senses of each sense's occurrences are kept as evidence (`ol_senses`).
+- **Contract changes** (P5b-1 contracts, not released):
+  - entry gains `sources` and `realization` (counts per outcome and method);
+  - sense gains `kind` (`SENSE`/`OTHER`), `verses` and `examples`;
+  - manifest `build` gains `summary` (left-out counts, stats, declared problems).
+- **Aligner changes** (`ALIGNER_VERSION` 3):
+  - every link names the segment it renders: the direct model assigns BSB-chunk tokens to segments;
+  - unlinked tokens keep a hint (word, segment, posterior);
+  - elided prefixes (*l'*) are split where the text shows them (`segment.measure_elisions`, §5b.3
+    finding 4);
+  - `AlignmentCache` (`localdata/.system/cache/pcc-alignment`, gzip, deterministic bytes) is keyed by
+    reference hash, packages, versification and settings;
+  - `segment_key` keeps MACULA's letter on non-content segments. The article is `1886a` while the name
+    Dothan is `1886`, so before this fix Biblical Terms names (Dothan, Atharim, Jetheth) took 33% of all
+    occurrences.
+  - Re-measured on the BSB per testament: Greek 73.1% words at 94.2% (unchanged), Hebrew 73.6% at 91.1%
+    (was 73.1% / 91.6%). Gates still met.
+- **R8 answered (counts only).**
+  - Biblical Terms word references are MACULA word numbers × 2 for Greek: 9,327 of 9,637 sampled
+    references (97%).
+  - Hebrew does not map: 57% by segment count. So occurrences come from MACULA Strong's numbers, and the
+    references are used only for `BT`-kind phrases.
+- `segment.at_sentence_start` / `case_feature` keep case beside `norm`. `\nd` is not read, because the
+  visible text has no character styles; *LORD* and *Lord* are separated by their OL keys anyway.
+- `tools/build_pcc_reference_list.py` writes a new version into the store (`--dry-run`, `--rebuild-check`,
+  `--base`, `--phrases`, `--categories`, `--min-verses`). It prints counts. `--show` prints chosen
+  concepts' senses on the local console only.
+- **Gates.** NIV (`usNIVv2`) with its Biblical Terms list, local only:
+
+| Gate | Result |
+|---|---|
+| Whole Bible in a few minutes | Align 157 s uncached, ~7 s cached; build ~10 s |
+| Byte-identical rebuild | Yes |
+| NIV John: *Jews* and *Jewish leaders* separate senses of Ἰουδαῖος | Yes: *Jews* 32, *Jewish* 12, *Jewish leaders* 8 verses (whole Bible 127 / 29 / 14) |
+| No function words among realizations of πνεῦμα / σάρξ / νόμος | Yes: *Spirit*, *spirit*, *breath*; *flesh*, *body*, *people*; *law*, *Law*. Rare wordings are pooled in `OTHER` |
+| *God*, *Lord*, *Son of Man* present | Yes |
+| *eternal life* present | Only as a declared phrase: Biblical Terms has no such term. The Key Concepts package (P5b-5a) is meant to supply it |
+
+- Whole NIV with Biblical Terms: 6,825 concepts → 2,236 entries. Left out: 1,872 not in the reference,
+  2,593 below recurrence, 100 not realized, 27 function only.
+- Included entries realize 88% of their 96,396 occurrences: 3% function only, 9% unaligned.
+- Known noise, about 1 in 500 wordings: a BSB-path duplicate match can join two renderings of one word
+  (*God … God's*), and a strong hint can add an adverb (*Jews there*).
+- Tests: `tests/pcc/test_pcc_rlbuild.py` (14) and a segment-key test in `test_pcc_align.py`. PCC 131
+  passed; `test_package.py` 19 passed; source audit PASS.
+
 ### P5b plan (reference lists, D12–D20)
 
 PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
@@ -1012,6 +1132,6 @@ Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 
 2026-11-25: D12, D15, D17 (in principle), D18, D19 and D20 decided by the PO; D3 corrected for Clear word
 senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package) is built and in the
-distro, and P5b-0 (word aligner) is built and passes its gates. Next is P5b-1 (`concept_key` and RL
-package), then P5b-2 (the top-down build, with an alignment cache). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+distro; P5b-0 (word aligner), P5b-1 (concept keys, RL packages and store) and P5b-2 (top-down build,
+alignment cache) are built. Next is P5b-3 (Job pin and terms Run). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

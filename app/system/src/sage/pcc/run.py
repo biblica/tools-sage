@@ -88,9 +88,8 @@ def _terms_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any],
         ol = ol_items_for_units(units, analysis, load_project_vrs(config, project))
         if not ol:
             sense_note = ("PCC_SENSE_NOT_ASSESSED", "No original-language words map to this SOURCE scope; senses were not assessed.", snapshot["scope"])
-        scope_policy = full_digest({"scope": snapshot["scope"], "discovery": settings, "source": source["content_sha256"]})
         sensed = assign_senses(
-            expressions, occurrences, ol, scope_policy_sha256=scope_policy,
+            expressions, occurrences, ol,
             min_support=settings["min_confirmed_same_sense_occurrences"],
             unit_lengths={u.unit_id: len(u.text) for u in units},
         )

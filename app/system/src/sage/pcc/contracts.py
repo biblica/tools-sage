@@ -391,6 +391,68 @@ CONTRACTS["run_snapshot"] = _object({
     "created_utc": _TEXT,
 })
 
+# Reference lists (plan §5b, D12-D19): one versioned package per REFERENCE edition, built outside any Job.
+RL_STATUSES = ("ACTIVE", "PROPOSED", "DROPPED")
+RL_BUILD_MODES = ("SCRATCH", "INHERIT", "MERGE", "IMPORT")
+# SENSE: a reference sense (D19) that recurs; OTHER: renderings too rare to be a sense, kept as evidence only.
+RL_SENSE_KINDS = ("SENSE", "OTHER")
+# Per concept: original-language occurrences in the reference, how many were realized by a wording, rendered
+# only by function words (pronoun, article), or left without any aligned token; links by alignment method.
+RL_REALIZATION_COUNTS = ("occurrences", "realized", "function_only", "no_realization",
+                         "gold", "transitive", "direct", "located")
+_RL_REF = _object({"rl_id": _TEXT, "version": {"type": "integer", "minimum": 1}})
+CONTRACTS["reference_list_manifest"] = _object({
+    "schema_version": _VERSION,
+    "rl_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*-[a-f0-9]{8}$"},
+    "version": {"type": "integer", "minimum": 1},
+    "title": _TEXT,
+    "reference": _object({
+        "project_id": _TEXT,
+        "edition": _TEXT,
+        "language_tag": _TEXT,
+        "content_sha256": _SHA256,
+        "versification_id": _TEXT,
+    }),
+    "license": _object({"license_id": _TEXT, "local_only": {"type": "boolean"}, "note": {"type": "string"}}),
+    "build": _object({
+        "mode": {"type": "string", "enum": list(RL_BUILD_MODES)},
+        "base_version": {"oneOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]},
+        "derived_from": {"oneOf": [_RL_REF, {"type": "null"}]},
+        "imported_from": {"oneOf": [_RL_REF, {"type": "null"}]},
+        "engine_version": _TEXT,
+        "settings": {"type": "object"},
+        "summary": {"type": "object"},
+    }),
+    "counts": _object({status.lower(): _COUNT for status in RL_STATUSES} | {"entries": _COUNT}),
+    "entries_sha256": _SHA256,
+    "created_utc": _TEXT,
+})
+_RL_WORDING = _object({"wording": _TEXT, "verses": _COUNT})
+CONTRACTS["reference_list_entry"] = _object({
+    "concept_key": {"type": "string", "pattern": "^CPT-[a-f0-9]{16}$"},
+    "anchor": _object({"kind": {"type": "string", "enum": ["OL", "BT", "WORDING"]},
+                       "value": {"type": "array", "items": _TEXT, "minItems": 1}}),
+    "label": _TEXT,
+    "category": _TEXT,
+    "status": {"type": "string", "enum": list(RL_STATUSES)},
+    "origin": _TEXT,
+    "sources": _TEXT_LIST,
+    "senses": {"type": "array", "items": _object({
+        "sense_key": {"type": "string", "pattern": "^CSN-[a-f0-9]{16}$"},
+        "kind": {"type": "string", "enum": list(RL_SENSE_KINDS)},
+        "label": _TEXT,
+        "wordings": {"type": "array", "items": _RL_WORDING},
+        "verses": _COUNT,
+        "examples": {"type": "array", "items": _TEXT},
+        "ol_senses": _TEXT_LIST,
+        "state": {"type": "string", "enum": ["PROPOSED", "CONFIRMED"]},
+    })},
+    "realization": _object({name: _COUNT for name in RL_REALIZATION_COUNTS}),
+    "verses": _COUNT,
+    "examples": {"type": "array", "items": _TEXT},
+    "notes": {"type": "string"},
+})
+
 RECORD_KINDS = tuple(sorted(CONTRACTS))
 
 _TYPE_CHECKS = {

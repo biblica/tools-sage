@@ -72,8 +72,7 @@ def evaluate(tables: Path, bsb: Path, books: list[str], window: float | None) ->
         units = source_units(bsb, parse_scope(book))
         traits = measure_traits(u.text for u in units)
         found = discover(units, source_corpus_id="BSB", source_sha256="0" * 64, traits=traits)
-        result = assign_senses(found.expressions, found.occurrences, ol_items_for_units(units, analysis, schema),
-                               scope_policy_sha256="0" * 64, window=window,
+        result = assign_senses(found.expressions, found.occurrences, ol_items_for_units(units, analysis, schema), window=window,
                                unit_lengths={u.unit_id: len(u.text) for u in units})
         wanted = {e["expression_id"]: e["normalized_source_form"].split(" ") for e in result.expressions}
         stream = {key: [(t.norm, strong) for strong, english in chunks

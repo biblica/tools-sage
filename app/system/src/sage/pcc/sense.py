@@ -28,7 +28,7 @@ from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from .ids import IdRegistry, group_id
+from .ids import IdRegistry, concept_key, group_id
 
 RULE = "SENSE-OL-LEMMA"
 # An occurrence is tied to a lemma only when that lemma sits within this share of the verse of it
@@ -61,7 +61,6 @@ def assign_senses(
     occurrences: Sequence[Mapping[str, Any]],
     ol_by_unit: Mapping[str, Sequence[OlItem]],
     *,
-    scope_policy_sha256: str,
     min_support: int = 2,
     min_cover: float = 0.15,
     min_precision: float = 0.2,
@@ -97,7 +96,7 @@ def assign_senses(
                 else:
                     occ["sense_evidence"] = ["CURATED_SENSES_NEED_TEAM_DECISION"]
                     reasons["CURATED_SENSES_NEED_TEAM_DECISION"] += 1
-            _groups(result, ids, scope_policy_sha256, expr, mine, min_support, reasons)
+            _groups(result, ids, expr, mine, min_support, reasons)
             continue
         units = {o["source_unit_id"] for o in mine if o["source_unit_id"] in keys}
         counts: Counter[str] = Counter()
@@ -151,13 +150,13 @@ def assign_senses(
                     ("WEAK_ALIGNMENT" if not chosen else "NO_ASSOCIATED_LEMMA"))
                 occ["sense_evidence"] = [why]
                 reasons[why.split(":")[0]] += 1
-        _groups(result, ids, scope_policy_sha256, expr, mine, min_support, reasons)
+        _groups(result, ids, expr, mine, min_support, reasons)
     result.groups.sort(key=lambda g: g["group_id"])
     result.unresolved.sort(key=lambda u: u["expression_id"])
     return result
 
 
-def _groups(result: SenseResult, ids: IdRegistry, policy: str, expr: Mapping[str, Any],
+def _groups(result: SenseResult, ids: IdRegistry, expr: Mapping[str, Any],
             mine: Sequence[Mapping[str, Any]], min_confirmed: int, reasons: Counter[str]) -> None:
     """One group per (expression, sense) with confirmed occurrences; summarize what stayed unresolved."""
     eid = expr["expression_id"]
@@ -168,7 +167,7 @@ def _groups(result: SenseResult, ids: IdRegistry, policy: str, expr: Mapping[str
     for sense, items in sorted(by_sense.items()):
         verses = len({o["source_unit_id"] for o in items})
         result.groups.append({
-            "group_id": group_id(policy, eid, sense),
+            "group_id": group_id(concept_key("WORDING", f"und|{expr['normalized_source_form']}"), sense),
             "expression_id": eid,
             "sense_id": sense,
             "confirmed_occurrences": len(items),

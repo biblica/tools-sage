@@ -23,7 +23,7 @@ def _setup(rows):
 def _assign(rows, **kw):
     """Implement assign."""
     found, ol = _setup(rows)
-    return assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64, **kw)
+    return assign_senses(found.expressions, found.occurrences, ol, **kw)
 
 
 def _by_form(result):
@@ -75,7 +75,7 @@ def test_ambiguity_and_missing_alignment_stay_unresolved_never_majority():
             ("light road", [WEIGHT])]
     found, ol = _setup(rows)
     del ol["u4"]
-    result = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64)
+    result = assign_senses(found.expressions, found.occurrences, ol)
     states = {o["canonical_ref"]: (o["sense_state"], o["sense_evidence"][0].split(":")[0])
               for o in _occ(result, _by_form(result)["light"])}
     assert states["MAT 1:1"][1] == "AMBIGUOUS_LEMMAS" and states["MAT 1:1"][0] == "UNRESOLVED"
@@ -106,7 +106,7 @@ def test_curated_senses_are_kept():
     units = [SourceUnit("u0", "MAT 1:1", ("MAT 1:1",), "the lamp"), SourceUnit("u1", "MAT 1:2", ("MAT 1:2",), "a lamp")]
     found = discover(units, source_corpus_id="S", source_sha256=SHA, traits=measure_traits(["the lamp", "a lamp"]),
                      seeds=[Seed("lamp", ("lamp",), "AUTHORIZED_REFERENCE", "TERM", (sense,))])
-    result = assign_senses(found.expressions, found.occurrences, {}, scope_policy_sha256="f" * 64)
+    result = assign_senses(found.expressions, found.occurrences, {})
     expr = _by_form(result)["lamp"]
     assert expr["senses"] == [sense]
     assert {o["sense_id"] for o in _occ(result, expr)} == {"SENSE-C"}
@@ -117,8 +117,8 @@ def test_deterministic_and_inputs_not_mutated():
     rows = [("light weight", [WEIGHT]), ("light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [LAMP])]
     found, ol = _setup(rows)
     before = [dict(o) for o in found.occurrences]
-    a = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64)
-    b = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64)
+    a = assign_senses(found.expressions, found.occurrences, ol)
+    b = assign_senses(found.expressions, found.occurrences, ol)
     assert a.occurrences == b.occurrences and a.groups == b.groups
     assert found.occurrences == before
 
@@ -131,7 +131,7 @@ def test_position_window_marks_far_lemma_out_of_position():
             ("far light", [near] + filler)]
     found, ol = _setup(rows)
     lengths = {u: len(r[0]) for u, r in zip(ol, rows)}
-    result = assign_senses(found.expressions, found.occurrences, ol, scope_policy_sha256="f" * 64,
+    result = assign_senses(found.expressions, found.occurrences, ol,
                            unit_lengths=lengths, window=0.15)
     states = {o["canonical_ref"]: o["sense_state"] for o in _occ(result, _by_form(result)["light"])}
     assert states["MAT 1:1"] == "CONFIRMED" and states["MAT 1:3"] == "UNRESOLVED"

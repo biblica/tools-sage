@@ -26,8 +26,7 @@ def _terms_output(tmp_path: Path) -> Path:
     rows = [("a light yoke", [WEIGHT]), ("a light load", [WEIGHT]), ("light lamp", [LAMP]), ("light day", [LAMP])]
     units = [SourceUnit(f"u{i}", f"MAT 1:{i + 1}", (f"MAT 1:{i + 1}",), t) for i, (t, _) in enumerate(rows)]
     found = discover(units, source_corpus_id="S", source_sha256=SHA, traits=measure_traits(u.text for u in units))
-    sensed = assign_senses(found.expressions, found.occurrences, {f"u{i}": r[1] for i, r in enumerate(rows)},
-                           scope_policy_sha256="f" * 64)
+    sensed = assign_senses(found.expressions, found.occurrences, {f"u{i}": r[1] for i, r in enumerate(rows)})
     out = tmp_path / "out"
     write_jsonl(out / "expressions.jsonl", sensed.expressions, kind="expression", sort_key="expression_id")
     write_jsonl(out / "occurrences.jsonl", sensed.occurrences, kind="occurrence", sort_key="occurrence_id")

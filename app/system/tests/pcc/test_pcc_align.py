@@ -115,9 +115,10 @@ class _Schema:
 
 
 def test_hebrew_segments_are_separate_tokens_of_their_word():
-    """Prefix and suffix segments are their own tokens and all point to the word's ref."""
+    """Prefix and suffix segments are their own tokens and all point to the word's ref; a non-content segment
+    keeps MACULA's letter (``0871a`` is the prefix, ``0871`` a name), a content one does not."""
     found = ol_tokens_for_units([_unit(1, "x", book="GEN")], _Analysis(), _Schema())
-    assert found == {"u1": [OlToken("GEN 1:1!1", "HEB:871"), OlToken("GEN 1:1!1", "HEB:7225"),
+    assert found == {"u1": [OlToken("GEN 1:1!1", "HEB:871a"), OlToken("GEN 1:1!1", "HEB:7225"),
                             OlToken("GEN 1:1!2", "HEB:x")]}
 
 
@@ -142,3 +143,12 @@ def test_cache_key_depends_on_every_input():
     assert key != cache_key("b" * 64, "SAGE_OL_ANALYSIS_X", "SAGE_PCC_OL_Y")
     assert key != cache_key("a" * 64, "SAGE_OL_ANALYSIS_X", "SAGE_PCC_OL_Z")
     assert isinstance(Link(0, "r", "gold", 1.0), Link)
+
+
+def test_segment_keys_keep_letters_only_for_non_content_segments():
+    """Article ``1886a`` and the name ``1886`` differ; noun homographs ``0218a`` and ``0218`` share a key."""
+    from sage.pcc.align import segment_key
+    assert segment_key("HEB", {"strong": "1886a", "pos": "particle"}) == "HEB:1886a"
+    assert segment_key("HEB", {"strong": "1886", "pos": "noun"}) == "HEB:1886"
+    assert segment_key("HEB", {"strong": "0218a", "pos": "noun"}) == segment_key("HEB", {"strong": "0218", "pos": "noun"})
+    assert segment_key("HEB", {"strong": "", "lemma": "x"}) == "HEB:x"
