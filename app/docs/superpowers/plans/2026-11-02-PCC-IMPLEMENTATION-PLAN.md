@@ -877,6 +877,41 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   `urllib` failed there; the inputs were fetched with curl from the same pinned URLs and verified by the
   same pins.
 
+### P5b-0 as built (2026-11-25): word aligner
+
+- `sage/pcc/align.py`. Each reference token gets at most one link to a MACULA word.
+  - **Through the BSB:** ordered token matching against the BSB English of the same verse, from
+    `SAGE_PCC_OL`. A verse in which every BSB token is found in order is the BSB: `gold`. Otherwise matched
+    tokens become `transitive`, e.g. for the NIV.
+  - **Direct:** IBM Model 1 with a relative-position prior (λ = 8), trained in both directions over the
+    whole reference. A link is kept only when both directions agree and its posterior is ≥ 0.6. Hebrew
+    prefix and suffix segments are separate tokens.
+  - BSB links win over direct ones; unlinked tokens stay unlinked. `cache_key` covers the reference hash,
+    the package ids and `ALIGNER_VERSION`. A persistent cache is not built yet; P5b-2 adds it.
+- `tools/evaluate_pcc_alignment.py`: on the BSB (eBible `engbsb`, local cache), the direct path is scored
+  against the gold links on content words. Counts only:
+
+| Testament | Content words found | Token precision | Threshold |
+|---|---|---|---|
+| Greek NT (70,616 gold content tokens) | 74.7% | 92.7% | 0.5 |
+| Greek NT | 73.1% | **94.2%** | **0.6 (default)** |
+| Hebrew OT (196,112 content words) | 75.5% | 89.8% | 0.5 |
+| Hebrew OT | 73.1% | **91.6%** | **0.6 (default)** |
+
+  Both gates pass at 0.6 (≥ 90% precision, ≥ 70% coverage). The §5b.7 prototype, which collapsed Hebrew
+  segments, had 76% precision at 37% coverage.
+- NIV (local, `--coverage-only`, no gold exists):
+
+| Books | Tokens linked through BSB | Either path | Agreement where both link |
+|---|---|---|---|
+| John + Romans | 80% | 84% | 91.2% |
+| Genesis + Psalms | 74% | 83% | 89.6% |
+
+  The agreement matches the direct path's measured precision, so the NIV → BSB route is consistent. That
+  is a proxy, not a precision measurement.
+- Run time: whole OT ~100 s, whole NT ~30 s (pure Python).
+- Tests: `tests/pcc/test_pcc_align.py`, 7 tests on fabricated data. PCC 110 passed.
+
 ### P5b plan (reference lists, D12–D20)
 
 PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
@@ -977,6 +1012,6 @@ Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 
 2026-11-25: D12, D15, D17 (in principle), D18, D19 and D20 decided by the PO; D3 corrected for Clear word
 senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package) is built and in the
-distro. Next is P5b-0 (the word aligner: BSB gold, NIV via BSB, direct EM), because the top-down build
-(P5b-2) and P6 both rest on it, then P5b-1 (`concept_key` and RL package). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+distro, and P5b-0 (word aligner) is built and passes its gates. Next is P5b-1 (`concept_key` and RL
+package), then P5b-2 (the top-down build, with an alignment cache). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

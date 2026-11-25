@@ -985,6 +985,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/paratext_filenames.py`
 - `system/src/sage/pcc`
 - `system/src/sage/pcc/__init__.py`
+- `system/src/sage/pcc/align.py`
 - `system/src/sage/pcc/contracts.py`
 - `system/src/sage/pcc/discovery.py`
 - `system/src/sage/pcc/ids.py`
@@ -1156,6 +1157,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_witnesses.py`
 - `system/tests/pcc`
 - `system/tests/pcc/__init__.py`
+- `system/tests/pcc/test_pcc_align.py`
 - `system/tests/pcc/test_pcc_menu.py`
 - `system/tests/pcc/fixtures`
 - `system/tests/pcc/fixtures/handover`
@@ -1345,6 +1347,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/clone_and_install.sh`
 - `system/tools/deep_audit.py`
 - `system/tools/evaluate_name_alignment.py`
+- `system/tools/evaluate_pcc_alignment.py`
 - `system/tools/evaluate_pcc_senses.py`
 - `system/tools/hardening.py`
 - `system/tools/qualify_nca.py`
