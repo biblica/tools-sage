@@ -253,23 +253,21 @@ def test_key_terms_survive_curation_and_import_from_biblical_terms(tmp_path):
 
 def test_bundle_round_trip_between_jobs_and_operator_list(setup, tmp_path):
     """Verify bundle export/import proposes renderings in another Job and operator lists feed phrases and proposals."""
-    from sage.pcc import overlay, transfer
+    from sage.pcc import transfer
     job, rows, lock = setup
     xlsx = _export(rows, tmp_path)
     _fill(xlsx, {("light", "βάρος"): ("Licht", "", "")})
     glossary.import_filled_list(job, xlsx, rows, lock_path=lock, source_corpus_sha256=SHA, target_language="en")
-    overlay.record_verdict(tmp_path / "ov", "OL_SENSE", "light|φῶς", "REJECT")
     bundle = tmp_path / "b.json"
-    counts = transfer.export_bundle(job, rows, source_project="S", source_sha256=SHA, target_language="en",
-                                    verdict_folder=tmp_path / "ov", path=bundle)
-    assert counts["rules"] == 1 and counts["verdicts"] == 1
+    counts = transfer.export_bundle(job, rows, source_project="S", source_sha256=SHA, target_language="en", path=bundle)
+    assert counts["rules"] == 1 and "verdicts" not in counts
     other = SimpleNamespace(root=tmp_path / "other", job_id="PCC_T-en")
     report = transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
-                                    target_language="en", verdict_folder=tmp_path / "ov2")
+                                    target_language="en")
     assert report.imported == 1 and [r["state"] for r in glossary.current_rules(other.root).values()] == ["PROPOSED"]
-    assert (other.root / "input" / "phrases.txt").is_file() and overlay.verdict_map(tmp_path / "ov2")
+    assert (other.root / "input" / "phrases.txt").is_file()
     assert transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
-                                  target_language="de", verdict_folder=tmp_path / "ov2").imported == 0
+                                  target_language="de").imported == 0
     bundle.write_text(bundle.read_text(encoding="utf-8").replace("Licht", "Lichtx"), encoding="utf-8")
     with pytest.raises(ValidationError):
         transfer.read_bundle(bundle)
@@ -281,15 +279,13 @@ def test_bundle_round_trip_between_jobs_and_operator_list(setup, tmp_path):
     assert result.imported >= 2 and any("nothing here" in p for p in result.problems)
 
 
-def test_overlay_reject_hides_sense_and_accept_protects_it(tmp_path):
-    """Verify core-list verdicts are applied on top of the curated rows."""
-    from sage.pcc import overlay
+def test_curation_verdicts_hide_or_protect_rows():
+    """``curate_rows`` applies verdicts it is given (no global overlay file exists any more, P5b-4)."""
     a, b = _row("alpha beta", "x: one", ["A 1", "A 2"]), _row("beta", "x: one", ["A 1", "A 2"])
     a["lemma"] = b["lemma"] = "x"
     rows, left = glossary.curate_rows([dict(a), dict(b)], {}, {("OL_SENSE", "alpha beta|x"): "REJECT"})
     assert [r["wording"] for r in rows] == ["beta"] and left["rejected_by_operator"] == 1
     rows, _ = glossary.curate_rows([dict(a), dict(b)], {}, {("OL_SENSE", "beta|x"): "ACCEPT"})
     assert {r["wording"] for r in rows} == {"alpha beta", "beta"}
-    overlay.record_verdict(tmp_path, "KEY_TERM", "x", "ACCEPT")
-    overlay.record_verdict(tmp_path, "KEY_TERM", "x", "CLEAR")
-    assert overlay.verdict_map(tmp_path) == {}
+    import importlib.util
+    assert importlib.util.find_spec("sage.pcc.overlay") is None

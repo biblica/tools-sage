@@ -1,9 +1,10 @@
 """Move terms lists between Jobs (WIPs) and bring in the Operator's own lists.
 
 * ``export_bundle`` writes one portable JSON file from a Job: its SOURCE wordings, key terms, approved
-  renderings and the Operator's core-list verdicts.
-* ``import_bundle`` loads it into another Job. Wordings go to ``input/phrases.txt``; key terms and
-  verdicts merge; renderings arrive as PROPOSED rules (same target language only) that the Operator
+  renderings. (Core-list verdicts now live in reference-list versions, plan P5b-4; a bundle that still carries
+  them is read and their count reported.)
+* ``import_bundle`` loads it into another Job. Wordings go to ``input/phrases.txt``; key terms merge;
+  renderings arrive as PROPOSED rules (same target language only) that the Operator
   still approves. A bundle whose checksum does not match is refused.
 * ``import_operator_list`` reads a CSV, TSV, TXT or XLSX list (wording[, rendering(s)[, note]]).
 
@@ -28,7 +29,6 @@ from .glossary import (ImportReport, KEY_TERMS_FILE, _append_rule, _rule, curren
                        split_renderings)
 from .ids import canonical_json, full_digest
 from .journal import journal_path
-from .overlay import LISTS, current_verdicts, record_verdict
 from .phrases import PHRASES_FILE
 
 BUNDLE_FORMAT = "SAGE-PCC-TERMS-BUNDLE"
@@ -42,7 +42,7 @@ def match_key(text: str) -> str:
 
 
 def export_bundle(job: Any, rows: Sequence[Mapping[str, Any]], *, source_project: str, source_sha256: str,
-                  target_language: str, verdict_folder: Path, path: Path) -> dict[str, int]:
+                  target_language: str, path: Path) -> dict[str, int]:
     """Write the portable bundle; return counts of what it carries."""
     by_entry = {r["entry_id"]: r for r in rows}
     entries = [{"wording": r["wording"], "category": r["category"], "lemma": r["lemma"], "sense": r["sense"]}
@@ -53,15 +53,13 @@ def export_bundle(job: Any, rows: Sequence[Mapping[str, Any]], *, source_project
         if rule["state"] == "APPROVED" and row is not None:
             rules.append({"wording": row["wording"], "lemma": row["lemma"], "target_language": rule["target_language"],
                           "target_form": rule["target_form"], "effect": rule["effect"]})
-    verdicts = [{"list": k[0], "key": k[1], "verdict": v["verdict"], "note": v.get("note", "")}
-                for k, v in sorted(current_verdicts(verdict_folder).items())]
     body = {"format": BUNDLE_FORMAT, "version": BUNDLE_VERSION, "from_job": job.job_id, "source_project": source_project,
             "source_sha256": source_sha256, "target_language": target_language,
             "created_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "entries": entries,
             "rules": sorted(rules, key=lambda r: (r["wording"], r["target_form"])),
-            "key_terms": current_key_terms(job.root), "verdicts": verdicts}
+            "key_terms": current_key_terms(job.root)}
     atomic_write_text(path, canonical_json({**body, "bundle_sha256": full_digest(body)}) + "\n")
-    return {"entries": len(entries), "rules": len(rules), "key_terms": len(body["key_terms"]), "verdicts": len(verdicts)}
+    return {"entries": len(entries), "rules": len(rules), "key_terms": len(body["key_terms"])}
 
 
 def read_bundle(path: Path) -> dict[str, Any]:
@@ -111,7 +109,7 @@ def _propose(job: Any, lock_path: Path, snapshot_sha: str, target_language: str,
 
 
 def import_bundle(job: Any, path: Path, rows: Sequence[Mapping[str, Any]], *, lock_path: Path,
-                  source_corpus_sha256: str, target_language: str, verdict_folder: Path,
+                  source_corpus_sha256: str, target_language: str,
                   actor: str = "operator") -> ImportReport:
     """Load a bundle into this Job; returns what was proposed plus anything that could not be used."""
     bundle = read_bundle(path)
@@ -122,10 +120,9 @@ def import_bundle(job: Any, path: Path, rows: Sequence[Mapping[str, Any]], *, lo
     if merged != current_key_terms(job.root):
         atomic_write_text(journal_path(job.root).parent / KEY_TERMS_FILE, canonical_json(
             {"source": f"BUNDLE:{bundle['from_job']}", "sha256": full_digest(bundle["key_terms"]), "terms": dict(sorted(merged.items()))}) + "\n")
-    standing = current_verdicts(verdict_folder)
-    for item in bundle["verdicts"]:
-        if item["list"] in LISTS and (item["list"], item["key"]) not in standing:
-            record_verdict(verdict_folder, item["list"], item["key"], item["verdict"], item.get("note", ""), actor)
+    if bundle.get("verdicts"):
+        report.problems.append(f"{len(bundle['verdicts'])} core-list verdict(s) in this bundle were not used: verdicts "
+                               "now live in reference-list versions (edit the list's workbook instead).")
     existing = current_rules(job.root)
     skipped = unmatched = 0
     for rule in bundle["rules"]:

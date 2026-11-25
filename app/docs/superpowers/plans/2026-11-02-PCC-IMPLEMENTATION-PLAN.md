@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages), P5b-2 (top-down build) and P5b-3 (Job pin, terms Run from the list) built; P5b-4–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages), P5b-2 (top-down build), P5b-3 (Job pin, terms Run from the list), P5b-4 (list workbook) and P6 (forward check) built; P5b-5–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -1101,6 +1101,127 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   - a changed package stops the sealed Run with `PCC_RUN_INPUT_STALE`.
 - PCC 139 passed, `test_package.py` 19 passed, source audit PASS.
 
+### P5b-4 as built (2026-11-25): reference-list workbook
+
+- `pcc/reflist_xlsx.py`.
+  - `export_workbook` writes `RL-<id>-v<n>.xlsx`. The **Entries** sheet has the concept key (the only
+    locked column), label, category, recurring senses with verse counts, verses, examples, **Status**
+    (`KEEP` / `DROP` / blank for undecided; `PROPOSED` exports as blank), notes and origin. The **About**
+    sheet has the id, base version and entries hash.
+  - `import_workbook` applies rows by concept key to the **base version named in the workbook** and always
+    stores a **new version** (build mode `MERGE`, `base_version` = the workbook's base). It writes
+    `RL-DIFF-<id>-v<n>.md` (added / dropped / kept / other edits / rows not used).
+  - A bad status, an unknown key or a keyless row that is not `NEW` is reported by row number, and the
+    other rows still apply.
+  - A workbook naming a version this instance lacks is refused (`PCC_RL_WORKBOOK_BASE_MISSING`).
+  - No change means no version is written.
+- **`NEW` rows** carry a wording in *Wordings*. With the reference text available
+  (`rlservice.reference_context`, through the alignment cache) a row is anchored and realized like a
+  declared phrase. A wording found nowhere is kept with no senses and reported (AT30). Without the text it
+  is kept as a `WORDING` concept and reported.
+- **Formula safety:** cells starting with `= + - @` are written with a protective quote, and import
+  removes it.
+- **Overlay removed.** `pcc/overlay.py` and "Review core lists" are gone; verdicts now live in list
+  versions.
+  - Terms bundles no longer carry verdicts. An older bundle's verdicts are counted and reported, not used.
+  - `glossary.curate_rows` keeps its pure `verdicts` argument, but nothing writes a global file.
+- **Menu.** The Reference list menu gains export and import of the workbook for the pinned list. Import
+  then offers to pin the new version, through the re-pin carry-over.
+- Tests: `tests/pcc/test_pcc_reflist_xlsx.py` (3).
+
+### P6 as built (2026-11-25): forward consistency check
+
+- `pcc/check.py` is the engine; `pcc/check_run.py` handles the Run integration and reports.
+  - A check Run runs the terms analysis of the scope first (pinned list or discovery). It then checks
+    those occurrence, group and expression records, so it works with or without a pin.
+- **P6-1 verse pairing** (`pair_verses`). SOURCE and WIP units that share a canonical verse (through
+  each Project's VRS) are one pair; a bridge or split forms an `EQUIVALENCE_GROUP`. A SOURCE verse
+  without a WIP verse is `PC21` (`NO_TARGET_VERSE`).
+- **P6-2 groups.** Groups are concept + sense. A group with fewer than 2 verses in scope is listed
+  `INFORMATIONAL`: audit row with result `PC02` and that reason, never compared (AT16). Unresolved
+  senses are `PC20` (AT11). Groups of entries the list only `PROPOSED` are not traced (D17).
+- **P6-3 learned alignment.**
+  - Model: IBM Model 1 both ways (the P5b-0 engine) over SOURCE ↔ WIP token pairs. It is trained per
+    testament of the scope: NT only for a John Run, 37–84 s instead of 639 s for the whole Bible. It is
+    cached under `cache/pcc-alignment/model-<key>.json.gz` (pruned at p ≥ 0.005).
+  - Span: target tokens linked to the occurrence in either direction with a **real** probability
+    (t ≥ 0.05), not only a relative posterior. At least one forward link is required. Gaps of one token
+    are bridged; edge tokens that are measured stop forms or weakly linked are trimmed. Position prior
+    λ = 4 (softer than the OL aligner's 8: languages reorder).
+  - A span is **reliable** when a link inside it agrees in both directions at posterior ≥ 0.5.
+  - **No span** where the SOURCE context words (±5 tokens, else the whole verse) are linked in at
+    least 40% of cases gives `OMISSION` → `PC11`. Otherwise it is `UNCERTAIN` → `PC21` (AT07, AT12).
+- **P6-4 glossary forms first.** Every glossary form of the group (any state; group or passage scope)
+  is matched before the learned span: exactly, through a team-declared spelling equivalence (L2), or
+  through learned TARGET prefixes and suffixes (L1; `Morphology`). Only `APPROVED` `ACCEPT` accepts;
+  an approved `REJECT` form found is reported. Equal-scope approved ACCEPT + REJECT of one form gives
+  `PC23` for that group only (AT14).
+- **P6-5 classification** follows the handover's decision order. Negation is checked **before** an
+  all-approved group can pass: a negated approved form must not pass (protected feature, AT06), which
+  deviates from doc 02's literal order.
+  - `PC00`: every occurrence carries an approved form exactly, senses confirmed (AT01).
+  - `PC01`: approved variants or inflection (AT02, AT05).
+  - `PC02`: uniform but unapproved, or senses only `PROVISIONAL` (AT27).
+  - `PC10`: differing unapproved forms, or a rejected form. Subkind `ORTHOGRAPHIC` at LOW severity when
+    all forms are one edit from the main one (L3) (AT04).
+  - `PC11`, `PC13` (only with declared negation markers, else `PCC_NEGATION_NOT_CHECKED`), `PC21`,
+    `PC23` (`BLOCKED`).
+  - Severity comes from code and category: key-term categories one level higher. Every finding carries
+    the rendering distribution `form (n): refs`.
+- **P6-6 self-qualification** (L4). Planted cases are drawn per occurrence from each group's majority
+  rendering (up to 60 per kind in a Run, seeded). The verse copy is located again with the same model.
+  - **Substitution:** another rendering the model knows for the same SOURCE word, a synonym, must give
+    `PC10`; a random word, used only when none is known, may give `PC10` or `PC11`.
+  - **Removal** must give `PC11`.
+  - A rendering that occurs twice in the verse is not planted.
+  - A kind at or above 80% recall, with at least 20 planted cases, is `CHECKED`.
+  - **PO decision 2026-11-25: the check is best effort.** A kind below the bar, or with too few cases, is
+    `BEST_EFFORT`, not withheld.
+    - Its findings are still reported, each with an evidence line giving the measured recall (or "not
+      measured"), and its detection confidence capped at that recall.
+    - An exception report (`PCC_KIND_BEST_EFFORT`) says that some cases may be missed.
+    - The Operator tunes the result through the reference-list workbook and the glossary import/export.
+    - Nothing below the bar is ever counted as a pass.
+- **P6-7 outputs.**
+  - Run `validation/pcc/`: `findings.jsonl`, `occurrence-audit.jsonl` (every eligible occurrence exactly
+    once, AT18), `summary.json` (no green total with open review), `qualification.json`.
+  - Reports `localdata/reports/<job>/`: `PCC-CHECK.md` and `PCC-FINDINGS.xlsx` (formula-safe, blank
+    *Decision* / *Scope* / *Note* columns for P7).
+  - The menu prints counts and the report paths.
+- **P6-8 evaluation** (`tools/evaluate_pcc_check.py`, local, counts only).
+  - Setup: NIV SOURCE with its Biblical Terms list, scope John + Romans (1,312 verses, 315 groups
+    compared), no glossary, so every group is learned-only. Self-qualification is the planted-error
+    measure; up to 300 cases per kind, of which 225–264 could be planted. Real WIPs come from the local
+    Paratext folder.
+
+| WIP | Substitution recall (synonyms) | Removal recall | PC11 / 1000 verses (where checked) | Uncertain occurrences | Outcome |
+|---|---|---|---|---|---|
+| Spanish NVI | 79.8% (96 of 253 synonyms) | 84.8% | 108 | 7% | PC10 best effort (just under the bar), PC11 checked |
+| Swahili Neno (prefixing) | 70.6% | 83.5% | 104 | 9% | PC10 best effort, PC11 checked |
+| Hindi HCV | 72.9% | 87.9% | 104 | 10% | PC10 best effort, PC11 checked |
+| Thai NCV (unspaced) | 58.7% | 33.2% | — | 27% | both best effort |
+| Chinese CCB (unspaced) | no cases (character tokens) | 75.4% | — | 9% | both best effort |
+
+  - Unspaced scripts fall below the bar automatically and are labelled best effort. No language code is
+    used.
+  - **Not measured:**
+    - **Precision.** The `PC11` rate (about 10% of verses) is surely inflated by paraphrase and pronoun
+      renderings. Measuring it needs the two-LLM false-alarm judging of §9, which waits for an LLM
+      provider.
+    - **Substitution recall.** It is under-stated by noisy plants: for a name, the model's
+      second-best rendering is often a co-occurring word (*Judas* for *Iscariote*), not a synonym.
+  - Both are open: plant quality, and the `PC11` false-alarm rate before the bar is relaxed or `PC11` is
+    shown by default.
+- Not in P6: the reverse scan (`PC12`, P8), the full rule resolver and the decision import (P7), and the
+  advisory model (P10).
+- Tests: `tests/pcc/test_pcc_check.py` (11).
+  - The handover's fictional synthetic corpus covers syn-S1 (PC10 → PC01 once approved) and syn-S4
+    (PC02 → PC00).
+  - AT05 inflection and spelling, AT06 negation, AT07/AT12 omission vs uncertain, AT11, AT14, AT16,
+    AT18, AT25 bridges, and self-qualification on a consistent fabricated corpus.
+  - A Run-level check in `test_pcc_pin.py`.
+- PCC 154 passed, `test_package.py` 19 passed, source audit PASS.
+
 ### P5b plan (reference lists, D12–D20)
 
 PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
@@ -1202,6 +1323,8 @@ Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 2026-11-25: D12, D15, D17 (in principle), D18, D19 and D20 decided by the PO; D3 corrected for Clear word
 senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package) is built and in the
 distro; P5b-0 (word aligner), P5b-1 (concept keys, RL packages and store) and P5b-2 (top-down build,
-alignment cache) and P5b-3 (Job pin, terms Run from the list, re-pin, WIP attach) are built. Next is P6
-(Function B forward check), with P5b-4 (RL workbook) alongside. Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+alignment cache) and P5b-3 (Job pin, terms Run from the list, re-pin, WIP attach) are built. P5b-4 (RL
+workbook, overlay removed) and P6 (forward check with self-qualification) are built. Open from P6: PC11
+false-alarm rate and substitution plant quality (§ P6 as built). Next is P7 (rule resolver and decisions),
+with P5b-5..7 alongside. Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

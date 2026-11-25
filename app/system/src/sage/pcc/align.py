@@ -32,6 +32,7 @@ import math
 import re
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
+from typing import Any
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -387,3 +388,34 @@ def cached_alignment(units: Sequence[SourceUnit], analysis: OlAnalysis, schema: 
 def schema_label(schema: VersificationSchema) -> str:
     """Identity of a versification schema for cache keys."""
     return f"{schema.schema_id}>{schema.canonical_id}:{len(schema.mappings)}"
+
+
+# --- SOURCE <-> TARGET model (plan P6-3) -------------------------------------------------------------
+MODEL_MIN_PROB = 0.005  # table entries below this are dropped when a model is cached
+
+
+def save_model(path: Path, model: DirectModel) -> Path:
+    """Store a direct model (both tables, pruned) as deterministic gzip JSON."""
+    def table(t: Mapping[tuple[str, str], float]) -> list[list[Any]]:
+        """Sorted rows above the pruning floor."""
+        return [[e, f, round(p, 6)] for (e, f), p in sorted(t.items()) if p >= MODEL_MIN_PROB]
+
+    record = {"aligner_version": ALIGNER_VERSION, "e_given_f": table(model.e_given_f), "f_given_e": table(model.f_given_e)}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_bytes(gzip.compress(json.dumps(record, ensure_ascii=False, separators=(",", ":")).encode("utf-8"), mtime=0))
+    tmp.replace(path)
+    return path
+
+
+def load_model(path: Path) -> DirectModel | None:
+    """A cached model, or None when absent or unreadable (retrain, never fatal)."""
+    if not path.is_file():
+        return None
+    try:
+        record = json.loads(gzip.decompress(path.read_bytes()).decode("utf-8"))
+        if record.get("aligner_version") != ALIGNER_VERSION:
+            return None
+        return DirectModel({(e, f): p for e, f, p in record["e_given_f"]}, {(e, f): p for e, f, p in record["f_given_e"]})
+    except (OSError, ValueError, KeyError, TypeError):
+        return None

@@ -328,17 +328,20 @@ def test_terms_run_seals_inputs_and_discovers_without_assessing_senses(make_work
     assert store.load_run(job, run.run_id).status == "COMPLETE_WITH_EXCEPTIONS"
 
 
-def test_check_run_reports_nothing_assessed(make_workspace) -> None:
-    """Verify that a check Run still states that no analysis exists yet."""
+def test_check_run_on_a_tiny_text_claims_no_pass(make_workspace) -> None:
+    """A check over three placeholder verses runs, writes contract outputs and claims nothing it did not check."""
     store, _ = _store(make_workspace)
     job = store.create_job(tool="pcc", job_id="", display_name="x",
                            bindings={"source": "usNIVv2", "wip": "usWIP"},
                            defaults=pcc_default_settings("en"))
     config, run = _run(store, job, operation="check")
     summary = execute_pcc_run(store, config, job, run)
-    assert summary["evaluated_occurrences"] == 0 and summary["limitations"]
+    assert summary["fully_resolved_groups"] == 0 and "Forward consistency check" in summary["limitations"][0]
     exceptions = (run.root / "diagnostics" / "EXCEPTION-REPORTS.jsonl").read_text(encoding="utf-8")
-    assert "PCC_ANALYSIS_NOT_IMPLEMENTED" in exceptions
+    assert "PCC_KIND_BEST_EFFORT" in exceptions and "PCC_NEGATION_NOT_CHECKED" in exceptions
+    output = run.root / "validation" / "pcc"
+    read_json(output / "summary.json", kind="summary")
+    read_jsonl(output / "occurrence-audit.jsonl", kind="occurrence_audit")
 
 
 def test_run_outputs_are_identical_for_identical_inputs(make_workspace) -> None:

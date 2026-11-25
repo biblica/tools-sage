@@ -121,3 +121,22 @@ def build_reference_list_for(
                               entries=result.entries, created_utc=created)
     return BuildOutcome(manifest, result, report | {"reference": reference, "build": build, "created": created,
                                                     "license": license_})
+
+
+def reference_context(*, app_root: Path, cache_root: Path, reference_path: Path, schema: VersificationSchema,
+                      settings: dict[str, Any] | None = None):
+    """The ``BuildContext`` of a reference text (aligned through the shared cache), e.g. to locate NEW rows."""
+    from .rlbuild import build_context
+    analysis = load_ol_analysis(app_root)
+    resources = load_pcc_ol(app_root)
+    units = reference_units(reference_path)
+    traits = measure_traits(u.text for u in units)
+    alignment, _ = cached_alignment(
+        units, analysis, schema, bsb_alignment=resources.bsb_alignment if resources else None,
+        package_ids=[analysis.package_id, resources.package_id if resources else "-"],
+        cache=alignment_cache(cache_root), cased=traits.cased, letter_marks=traits.letter_marks)
+    settings = settings or {}
+    return build_context(units, alignment, analysis, schema,
+                         suffixes=settings.get("suffixes", [a.form for a in traits.suffixes]),
+                         cased=settings.get("cased", traits.cased),
+                         groups=resources.groups_by_ref if resources else None)

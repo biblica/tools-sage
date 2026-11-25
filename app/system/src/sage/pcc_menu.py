@@ -10,10 +10,10 @@ from sage.errors import SageError, ValidationError
 from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
 from pathlib import Path
 
-from sage.pcc import glossary, overlay, transfer
+from sage.pcc import glossary, reflist_xlsx, transfer
 from sage.pcc.pin import repin
 from sage.pcc.reflist import ReferenceListStore
-from sage.pcc.rlservice import build_reference_list_for
+from sage.pcc.rlservice import build_reference_list_for, reference_context
 from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, project_identity, run_initializer
 from sage.registry import load_ecosystem
 from sage.vrs import load_project_vrs
@@ -99,6 +99,10 @@ def continue_run(center, job, run):
     center.io.write(f"PCC Run {run.run_id}: {run.status}")
     for limitation in summary.get("limitations", []):
         center.io.write(f"- {limitation}")
+    if run.operation == "check":
+        found = ", ".join(f"{code} {n}" for code, n in summary.get("findings_by_code", {}).items()) or "none"
+        center.io.write(f"Groups compared: {summary.get('evaluated_groups', 0)}; findings: {found}.")
+        center.io.write(f"Reports: {center.store.storage.reports_root / job.job_id / 'PCC-CHECK.md'} and PCC-FINDINGS.xlsx")
     center.io.pause()
     return run
 
@@ -113,11 +117,6 @@ def _start(center, job, operation: str) -> None:
         center.show_error(exc)
 
 
-def _overlay_folder(center) -> Path:
-    """Return the Operator's local PCC data folder (core-list verdicts live here, shared by all Jobs)."""
-    return center.store.storage.inputs_root / "pcc"
-
-
 def _latest_terms(center, job):
     """Return (run, snapshot, rows, left-out summary) of the newest finished terms Run, or None."""
     for run in center.store.list_runs(job, include_archived=False):
@@ -125,8 +124,7 @@ def _latest_terms(center, job):
             output = run.root / "validation" / OUTPUT_DIRECTORY
             if (output / "expressions.jsonl").is_file():
                 summary: dict = {}
-                rows = glossary.terms_rows(output, summary=summary, key_terms=glossary.current_key_terms(job.root),
-                                          verdicts=overlay.verdict_map(_overlay_folder(center)))
+                rows = glossary.terms_rows(output, summary=summary, key_terms=glossary.current_key_terms(job.root))
                 return run, load_run_snapshot(run.root), rows, summary
     return None
 
@@ -163,8 +161,7 @@ def terms_menu(center, job) -> None:
                    ("4", "Review proposed renderings"),
                    ("5", "Import Paratext Biblical Terms (key theological terms, always listed)"),
                    ("6", "Export a terms bundle (to use in another WIP)"), ("7", "Import a terms bundle from another WIP"),
-                   ("8", "Import my own terms list (CSV, TXT or XLSX)"), ("9", "Review core lists (senses and key terms)"),
-                   ("B", "Back")]
+                   ("8", "Import my own terms list (CSV, TXT or XLSX)"), ("B", "Back")]
         choice = center.io.choose(f"PCC terms list {job.job_id}", options, context=tuple(context))
         if choice == "B":
             return
@@ -206,15 +203,15 @@ def terms_menu(center, job) -> None:
                 target = folder / f"{job.job_id}-terms-bundle.json"
                 counts = transfer.export_bundle(
                     job, rows, source_project=job.bindings["source"], source_sha256=snapshot["source"]["content_sha256"],
-                    target_language=snapshot["target_language"], verdict_folder=_overlay_folder(center), path=target)
+                    target_language=snapshot["target_language"], path=target)
                 center.io.write(f"Bundle written to {target}: {counts['entries']} wordings, {counts['rules']} approved renderings, "
-                                f"{counts['key_terms']} key terms, {counts['verdicts']} review verdicts.")
+                                f"{counts['key_terms']} key terms.")
             elif choice == "7":
                 path = _ask_path(center, "Path of the terms bundle .json (blank to cancel)")
                 if path:
                     report = transfer.import_bundle(
                         job, path, rows, lock_path=_lock(job), source_corpus_sha256=snapshot["source"]["content_sha256"],
-                        target_language=snapshot["target_language"], verdict_folder=_overlay_folder(center))
+                        target_language=snapshot["target_language"])
                     center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known. Review them under option 4.")
                     for line in report.problems[:20]:
                         center.io.write(f"- {line}")
@@ -227,59 +224,11 @@ def terms_menu(center, job) -> None:
                     center.io.write(f"Proposed {report.imported} rendering(s); {report.unchanged} already known.")
                     for line in report.problems[:20]:
                         center.io.write(f"- {line}")
-            elif choice == "9":
-                _review_core(center, job, rows)
             elif choice == "4":
                 _review_proposals(center, job, snapshot["source"]["content_sha256"])
         except SageError as exc:
             center.show_error(exc)
         center.io.pause()
-
-
-def _review_core(center, job, rows) -> None:
-    """Operator review of the core lists: sense evidence (MACULA/OL) and Paratext key terms."""
-    folder = _overlay_folder(center)
-    while True:
-        standing = overlay.verdict_map(folder)
-        senses = [r for r in rows if r["lemma"]]
-        pending = [r for r in senses if ("OL_SENSE", f"{r['normalized']}|{r['lemma']}") not in standing]
-        key_terms = glossary.current_key_terms(job.root)
-        choice = center.io.choose(
-            "Review core lists",
-            (("1", f"Review original-language senses ({len(pending)} not yet reviewed of {len(senses)})"),
-             ("2", f"Review key terms ({len(key_terms)} from Paratext Biblical Terms)"),
-             ("3", f"Show or withdraw my verdicts ({len(standing)})"), ("B", "Back")),
-            context=("Your verdicts are a local overlay on the shipped lists; the lists themselves never change.",))
-        if choice == "B":
-            return
-        if choice == "1":
-            for row in pending:
-                key = f"{row['normalized']}|{row['lemma']}"
-                answer = center.io.choose(f"'{row['wording']}' = {row['sense']}  ({row['verses']} verses, e.g. {row['examples']})",
-                                          (("1", "Accept this sense"), ("2", "Reject (hide it from the list)"),
-                                           ("S", "Skip"), ("B", "Stop")))
-                if answer == "B":
-                    break
-                if answer in {"1", "2"}:
-                    overlay.record_verdict(folder, "OL_SENSE", key, "ACCEPT" if answer == "1" else "REJECT")
-        elif choice == "2":
-            for lemma, gloss in sorted(key_terms.items()):
-                if ("KEY_TERM", lemma) in standing:
-                    continue
-                answer = center.io.choose(f"Key term {lemma}  ({gloss or 'no gloss'})",
-                                          (("1", "Keep as a key term"), ("2", "Not a key term for this work"),
-                                           ("S", "Skip"), ("B", "Stop")))
-                if answer == "B":
-                    break
-                if answer in {"1", "2"}:
-                    overlay.record_verdict(folder, "KEY_TERM", lemma, "ACCEPT" if answer == "1" else "REJECT")
-        elif choice == "3":
-            for (name, key), verdict in sorted(standing.items()):
-                answer = center.io.choose(f"{name}  {key}: {verdict}", (("1", "Withdraw this verdict"), ("S", "Keep"), ("B", "Stop")))
-                if answer == "B":
-                    break
-                if answer == "1":
-                    overlay.record_verdict(folder, name, key, "CLEAR")
 
 
 def _review_proposals(center, job, source_sha: str) -> None:
@@ -376,15 +325,47 @@ def reference_list_menu(center, job) -> None:
         options.append((str(n), f"{manifest['title']}: {manifest['rl_id']} v{manifest['version']}, "
                                  f"{manifest['counts']['entries']} concepts, built on {manifest['reference']['project_id']}{mark}"))
     build_key = str(len(lists) + 1)
-    options += [(build_key, f"Build a new reference list from {source} now"), ("B", "Keep the current setting")]
+    options += [(build_key, f"Build a new reference list from {source} now")]
     pin = job.defaults.get("reference_list")
+    if pin:
+        options += [("E", "Export the pinned list as a workbook (edit KEEP / DROP / NEW)"),
+                    ("I", "Import an edited workbook (writes a new version)")]
+    options += [("B", "Keep the current setting")]
     context = (f"Pinned now                   {pin['rl_id']} v{pin['version']}" if pin else "Pinned now                   none",
                "A reference list holds the key concepts and their senses for one reference text. Glossary",
                "decisions carry over to a new version by concept and sense; rules whose concept is gone become STALE.")
     choice = center.io.choose(f"Reference list for {job.job_id}", tuple(options), context=context)
     if choice == "B":
         return
-    if choice == build_key:
+    if choice == "E":
+        path = reflist_xlsx.export_workbook(store, pin["rl_id"], pin["version"], center.store.storage.exports_root / "pcc")
+        center.io.write(f"Workbook written to {path}. Edit it, then import it here; pinning the new version is your choice.")
+        center.io.pause()
+        return
+    if choice == "I":
+        path = _ask_path(center, "Path of the edited reference-list workbook (blank to cancel)")
+        if path is None:
+            return
+        context = None
+        pinned, _ = store.load(pin["rl_id"], pin["version"])
+        if pinned["reference"]["project_id"] == source:
+            config = load_ecosystem(job.runtime_settings_path)
+            project = config.project(source)
+            center.io.write("Reading the reference text to locate NEW rows (uses the cached alignment).")
+            context = reference_context(app_root=config.root, cache_root=config.cache_root,
+                                        reference_path=Path(project.path), schema=load_project_vrs(config, project),
+                                        settings=pinned["build"].get("settings"))
+        result = reflist_xlsx.import_workbook(store, path, report_folder=center.store.storage.reports_root / job.job_id,
+                                              context=context)
+        for line in result.lines()[:30]:
+            center.io.write(line)
+        center.io.write(f"Changes: {result.diff_path}")
+        if not (result.manifest and center.io.confirm(f"Pin {result.manifest['rl_id']} v{result.manifest['version']} "
+                                                      "to this Job now?", default=True)):
+            center.io.pause()
+            return
+        rl_id, version = result.manifest["rl_id"], result.manifest["version"]
+    elif choice == build_key:
         manifest = _build_list(center, job)
         if manifest is None:
             return

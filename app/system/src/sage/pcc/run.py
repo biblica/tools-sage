@@ -26,6 +26,7 @@ from .phrases import PHRASES_FILE, read_phrases
 from .ol_evidence import ol_items_for_units
 from .sense import assign_senses
 from .align import cached_alignment
+from .check_run import check_analysis
 from .ol_resources import load_pcc_ol
 from .pin import resolve_pin
 from .reflist import ReferenceListStore
@@ -337,35 +338,28 @@ def execute_pcc_run(store: Any, config: EcosystemConfig, job: Any, run: Any) -> 
         "limitations": [NOT_IMPLEMENTED_LIMITATION],
     }
     terms = snapshot["operation"] == "terms"
-    counts = _terms_analysis(config, job, snapshot, output, run) if terms else None
-    if counts:
-        summary["eligible_groups"] = counts["expressions"]
-        summary["eligible_occurrences"] = counts["occurrences"]
-        summary["limitations"] = [RL_TERMS_LIMITATION if snapshot.get("reference_list") else TERMS_LIMITATION]
-    write_json(output / "run-manifest.json", manifest, kind="run_manifest")
-    write_jsonl(output / "findings.jsonl", [], kind="finding", sort_key="finding_id")
-    write_jsonl(output / "occurrence-audit.jsonl", [], kind="occurrence_audit", sort_key="occurrence_id")
-    write_json(output / "summary.json", summary, kind="summary")
+    counts = _terms_analysis(config, job, snapshot, output, run)
+    summary["eligible_groups"] = counts["expressions"]
+    summary["eligible_occurrences"] = counts["occurrences"]
+    summary["limitations"] = [RL_TERMS_LIMITATION if snapshot.get("reference_list") else TERMS_LIMITATION]
+    notes = counts["notes"]
+    findings_written = False
     if not terms:
-        record_exception(
-            run.root,
-            ExceptionRecord(
-                tool="pcc",
-                code="PCC_ANALYSIS_NOT_IMPLEMENTED",
-                message=NOT_IMPLEMENTED_LIMITATION,
-                effect=NOT_ASSESSED,
-                run_id=run.run_id,
-                job_id=job.job_id,
-                stage=STAGES[1],
-                coordinates=(snapshot["scope"],),
-                severity="WARNING",
-            ),
-        )
-    if terms and not counts["notes"]:
+        store._update_run_for_job(job, run, status="RUNNING", current_stage=STAGES[2])
+        fields, check_notes = check_analysis(config, job, snapshot, output, run, STAGES)
+        summary.update(fields)
+        notes += check_notes
+        findings_written = True
+    write_json(output / "run-manifest.json", manifest, kind="run_manifest")
+    if not findings_written:
+        write_jsonl(output / "findings.jsonl", [], kind="finding", sort_key="finding_id")
+        write_jsonl(output / "occurrence-audit.jsonl", [], kind="occurrence_audit", sort_key="occurrence_id")
+    write_json(output / "summary.json", summary, kind="summary")
+    if not notes:
         store._update_run_for_job(job, run, status="COMPLETE", current_stage=STAGES[-1], result="DONE")
     else:
         store._update_run_for_job(
             job, run, status="COMPLETE_WITH_EXCEPTIONS", current_stage=STAGES[-1], result="DONE",
-            result_reason="PCC_TERMS_NOTES" if terms else "PCC_ANALYSIS_NOT_IMPLEMENTED",
+            result_reason="PCC_TERMS_NOTES" if terms else "PCC_CHECK_NOTES",
         )
     return summary

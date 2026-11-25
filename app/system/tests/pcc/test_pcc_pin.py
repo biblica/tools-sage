@@ -261,3 +261,37 @@ def test_defaults_validate_the_pin_and_accept_jobs_without_one(workspace):
     legacy = {k: v for k, v in pcc_default_settings("sw").items() if k != "reference_list"}
     job = store.create_job(tool="pcc", job_id="", display_name="x", bindings={"source": "usNIVv2"}, defaults=legacy)
     assert job.defaults["reference_list"] is None
+
+
+def test_check_run_with_a_pinned_list_writes_findings_audit_and_reports(workspace):
+    """P6 end to end: an approved rendering and an unapproved variant give PC10 (labelled best effort when unqualified),
+    every listed occurrence is audited once, and the Operator reports are written."""
+    store, config, source = workspace
+    wip = config.project("usWIP").path
+    usfm = next(wip.glob("*.SFM"))
+    usfm.write_text("\\id MAT\n\\c 1\n\\p\n\\v 1 La taa iliangaza nyumba.\n\\v 2 Taa iliwaka.\n"
+                    "\\v 3 Kisha kandili ilizima.\n\\v 4 Nyumba ilikuwa giza.\n", encoding="utf-8")
+    rl_store = ReferenceListStore(store.storage.resources_root)
+    _save(rl_store, source_content_sha256(source), V1)
+    job = store.create_job(tool="pcc", job_id="", display_name="x", bindings={"source": "usNIVv2", "wip": "usWIP"},
+                           defaults=pcc_default_settings("en"))
+    _repin(store, job, rl_store)
+    job = store.load_job(job.job_id, tool="pcc")
+    lock = job.controller_root / "locks" / "pcc-journal.lock"
+    rule = glossary._rule(group_id(LAMP, sense_key(LAMP, "lamp|LOWER")), "en", "taa", "ACCEPT", "APPROVED",
+                          {"level": "SECG", "identifier": "x"}, "team", [], "tester", "2026-11-25T00:00:00Z")
+    glossary._append_rule(job, lock, "a" * 64, rule, "APPROVE", "tester", {})
+    config = load_ecosystem(store.ensure_runtime_files(job))
+    run = store.create_run(job, operation="check", scope="MAT 1",
+                           initialize_run=run_initializer(config, job, operation="check", scope="MAT 1"))
+    summary = execute_pcc_run(store, config, job, run)
+    output = run.root / "validation" / "pcc"
+    audit = read_jsonl(output / "occurrence-audit.jsonl", kind="occurrence_audit")
+    occurrences = read_jsonl(output / "occurrences.jsonl", kind="occurrence")
+    assert sorted(r["occurrence_id"] for r in audit) == sorted(o["occurrence_id"] for o in occurrences)
+    read_jsonl(output / "findings.jsonl", kind="finding")
+    assert read_json(output / "summary.json", kind="summary")["evaluated_groups"] == summary["evaluated_groups"] >= 1
+    assert read_json(output / "qualification.json")["kinds"]["SUBSTITUTION"]["status"] == "BEST_EFFORT"
+    reports = store.storage.reports_root / job.job_id
+    assert (reports / "PCC-CHECK.md").is_file() and (reports / "PCC-FINDINGS.xlsx").is_file()
+    assert "Forward consistency check" in summary["limitations"][0]

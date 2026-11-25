@@ -986,6 +986,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc`
 - `system/src/sage/pcc/__init__.py`
 - `system/src/sage/pcc/align.py`
+- `system/src/sage/pcc/check.py`
+- `system/src/sage/pcc/check_run.py`
 - `system/src/sage/pcc/contracts.py`
 - `system/src/sage/pcc/discovery.py`
 - `system/src/sage/pcc/ids.py`
@@ -995,10 +997,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/ol_build.py`
 - `system/src/sage/pcc/ol_evidence.py`
 - `system/src/sage/pcc/ol_resources.py`
-- `system/src/sage/pcc/overlay.py`
 - `system/src/sage/pcc/phrases.py`
 - `system/src/sage/pcc/pin.py`
 - `system/src/sage/pcc/reflist.py`
+- `system/src/sage/pcc/reflist_xlsx.py`
 - `system/src/sage/pcc/rlbuild.py`
 - `system/src/sage/pcc/rlservice.py`
 - `system/src/sage/pcc/rlterms.py`
@@ -1163,6 +1165,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc`
 - `system/tests/pcc/__init__.py`
 - `system/tests/pcc/test_pcc_align.py`
+- `system/tests/pcc/test_pcc_check.py`
 - `system/tests/pcc/test_pcc_menu.py`
 - `system/tests/pcc/fixtures`
 - `system/tests/pcc/fixtures/handover`
@@ -1207,6 +1210,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc/test_pcc_p5.py`
 - `system/tests/pcc/test_pcc_pin.py`
 - `system/tests/pcc/test_pcc_reflist.py`
+- `system/tests/pcc/test_pcc_reflist_xlsx.py`
 - `system/tests/pcc/test_pcc_rlbuild.py`
 - `system/tests/pcc/test_pcc_ol_resources.py`
 - `system/tests/test_authority_boundaries.py`
@@ -1357,6 +1361,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tools/deep_audit.py`
 - `system/tools/evaluate_name_alignment.py`
 - `system/tools/evaluate_pcc_alignment.py`
+- `system/tools/evaluate_pcc_check.py`
 - `system/tools/evaluate_pcc_senses.py`
 - `system/tools/hardening.py`
 - `system/tools/qualify_nca.py`

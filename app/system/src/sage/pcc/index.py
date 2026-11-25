@@ -113,7 +113,7 @@ def curated_seeds(folder: Path, traits: WipTraits, source_sha256: str,
 
     Discovered entries of the package are not seeds (the Run recomputes discovery from the actual
     SOURCE). Without an exact content match, curated senses are downgraded to PROVISIONAL. ``rejected`` holds
-    normalized forms the Operator rejected in the core-list overlay.
+    normalized forms to leave out (the caller's choice).
     """
     manifest = verify_index(folder)
     matches = any(c["content_sha256"] == source_sha256 for c in manifest["corpora"])
