@@ -57,3 +57,28 @@ def test_check_without_wip_is_explained_not_crashed(make_workspace) -> None:
     from sage.pcc_menu import open_job
     open_job(center, job)
     assert "needs a WIP" in output.getvalue()
+
+
+def test_manage_pins_a_stored_reference_list_and_offers_wip_attach(make_workspace) -> None:
+    """Manage -> Reference list pins a stored list and reports the carry-over; WIP attach is offered once."""
+    from sage.pcc.reflist import ReferenceListStore
+    from sage.pcc_menu import open_job
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = _center(root, ["4", "3", "1", "", "a"], output)
+    job = center.store.create_job(
+        tool="pcc", job_id="", display_name="PCC usNIVv2", bindings={"source": "usNIVv2"},
+        defaults=pcc_default_settings("sw"),
+    )
+    ReferenceListStore(center.store.storage.resources_root).save(
+        rl_id="syn-list-0123abcd", title="Syn list",
+        reference={"project_id": "usNIVv2", "edition": "usNIVv2", "language_tag": "en", "content_sha256": "c" * 64,
+                   "versification_id": "eng"},
+        license={"license_id": "SYNTHETIC", "local_only": True, "note": ""}, build={"mode": "SCRATCH"}, entries=[],
+        created_utc="2026-11-25T00:00:00Z")
+    open_job(center, job)
+    rendered = output.getvalue()
+    assert "Attach a WIP (once)" in rendered and "Syn list: syn-list-0123abcd v1" in rendered and "(this SOURCE)" in rendered
+    assert "Reference list: none -> syn-list-0123abcd v1" in rendered
+    assert center.store.load_job(job.job_id, tool="pcc").defaults["reference_list"]["version"] == 1

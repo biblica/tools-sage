@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages) and P5b-2 (top-down build) built; P5b-3–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages), P5b-2 (top-down build) and P5b-3 (Job pin, terms Run from the list) built; P5b-4–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -1032,6 +1032,75 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
 - Tests: `tests/pcc/test_pcc_rlbuild.py` (14) and a segment-key test in `test_pcc_align.py`. PCC 131
   passed; `test_package.py` 19 passed; source audit PASS.
 
+### P5b-3 as built (2026-11-25): Job pin and terms Run from the reference list
+
+- **Pin.** `job.defaults.reference_list = {rl_id, version, sha256}` (contract `RL_PIN`). `sha256` is the
+  SHA-256 of the package's `CHECKSUMS.sha256`.
+  - `jobs._validate_pcc_defaults` checks the shape. Defaults written before reference lists load with
+    `null`.
+  - `pcc/pin.py`: `pin_for`, and `resolve_pin`, which stops with `PCC_RL_MISSING` or `PCC_RL_CHANGED`.
+- **Snapshot.** `run_snapshot.reference_list` seals the pin plus the list's reference content hash. Execute
+  compares it like the other inputs. A missing, changed or corrupt package, or a different pin, gives
+  `PCC_RUN_INPUT_STALE`. The run manifest's `reference_index_version` is `<rl_id>@<version>`.
+- **Terms Run** (`pcc/rlterms.py`). With a pin, the Run no longer discovers wordings.
+  - It aligns the whole SOURCE through the shared cache (the list build's cache entry when it is the same
+    text) and builds the same `BuildContext` as the list. The suffixes and case setting come from the
+    list's build settings.
+  - It locates every listed concept inside the scope. A concept without lemma keys (`BT`, `WORDING`) is
+    located by the list's own wordings.
+  - **Fixed candidates.** Each occurrence matches one of the list's senses for its concept, by the sense
+    key the list was built with: the whole wording first, then the first word. Senses are never chosen
+    again. An occurrence with no match is `UNRESOLVED` (`PC20`), with reason `RARE_RENDERING` (pooled
+    `OTHER` on the list) or `NEW_WORDING`. The plan put this mode in `sense.assign_senses`; it lives in
+    `rlterms.py` because occurrences already start from the list's lemma keys.
+  - **Same text** (SOURCE content hash equals the list's): matched occurrences are `CONFIRMED`.
+    **Another text**: they are `PROVISIONAL`, and the Run reports `PCC_RL_OTHER_EDITION` (`RELOCATE` at run
+    time). The terms list now counts a `PROVISIONAL` occurrence under its sense.
+  - The Job's `phrases.txt` lines that are not already concepts on the list are located too, as
+    `LOCAL_INPUT` expressions with senses from their own wording. A line not found gives
+    `PCC_PHRASE_NOT_IN_SOURCE`.
+  - Output keeps the P4 contracts (expressions, occurrences, groups), so the terms list, glossary import,
+    Paratext proposals and bundles work unchanged. A group id is `group_id(concept_key, sense_key)`, and
+    groups gain `concept_key` and `state`. Only concepts that occur in the scope are emitted.
+  - Without a pin, the P4 discovery path still runs, as before.
+- **Re-pin** (`pin.repin`) is refused while a Run is open.
+  - Rules whose group (concept + sense) is still on the new version carry over unchanged. Any other live
+    rule gets a `MARK_STALE` journal event and state `STALE`; both are new contract values. A `STALE` rule
+    is never deleted and never accepting.
+  - It writes `localdata/reports/<job>/PCC-REPIN-<rl_id>-v<n>.md`: concepts added, dropped, changed and
+    unchanged; rules carried and made stale.
+- **WIP attach** (`JobStore.attach_pcc_wip`, D16). A Job without a WIP may bind one once, in the WIP's
+  language, with no Run open.
+  - It is recorded in the manifest as `wip_attached` (Project and time), and the Job ID keeps its
+    target-language form; the loader accepts that identity when `wip_attached` is present.
+  - A second attach gives `PCC_WIP_ALREADY_BOUND`.
+- **Menu** (`pcc_menu.py`).
+  - The Job wizard ends with **Reference list**. The Operator chooses a stored list (lists for this
+    SOURCE first), builds one from the SOURCE now (`rlservice.build_reference_list_for`, which offers the
+    SOURCE's own Paratext `BiblicalTerms.xml` and uses the Job's `phrases.txt`), or keeps none.
+  - Manage PCC JOB gains **Reference list (pin or re-pin)** and, without a WIP, **Attach a WIP (once)**.
+    The Job header shows the pinned list.
+  - `tools/build_pcc_reference_list.py` now calls the same service. The list's `content_sha256` is the
+    SOURCE file hash a Run seals (`source_text.source_content_sha256`), and the reference is read in
+    canonical book order (`source_text.reference_units`).
+- **Real data** (NIV with its Biblical Terms list, local only; list built in memory). A terms Run over
+  John, all cached, takes about 3 s after context indexing:
+
+| Scope | Concepts in scope | Occurrences | Matched to a listed sense |
+|---|---|---|---|
+| John | 287 | 2,669 | 2,329 (87%) |
+| Genesis | 520 | 4,925 | 4,244 (86%) |
+
+  - Ἰουδαῖος in John: *Jews* 36, *Jewish leaders* 14, *Jewish* 10, 2 unresolved.
+  - The unmatched 13% are wordings the list pooled as too rare to be a sense. They appear on the terms
+    list as "meaning not identified" rows for the team.
+- **Gates met** (`tests/pcc/test_pcc_pin.py`, 7 tests, and a menu test):
+  - rules survive a re-pin by concept and sense;
+  - a dropped concept's rule becomes `STALE`;
+  - the snapshot seals the list hash;
+  - a changed package stops the sealed Run with `PCC_RUN_INPUT_STALE`.
+- PCC 139 passed, `test_package.py` 19 passed, source audit PASS.
+
 ### P5b plan (reference lists, D12–D20)
 
 PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
@@ -1133,5 +1202,6 @@ Stage 1 is not complete without governance (P7) and the reverse scan (P8).
 2026-11-25: D12, D15, D17 (in principle), D18, D19 and D20 decided by the PO; D3 corrected for Clear word
 senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package) is built and in the
 distro; P5b-0 (word aligner), P5b-1 (concept keys, RL packages and store) and P5b-2 (top-down build,
-alignment cache) are built. Next is P5b-3 (Job pin and terms Run). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+alignment cache) and P5b-3 (Job pin, terms Run from the list, re-pin, WIP attach) are built. Next is P6
+(Function B forward check), with P5b-4 (RL workbook) alongside. Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

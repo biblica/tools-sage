@@ -34,7 +34,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections import Counter, defaultdict
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any
 
@@ -497,6 +497,9 @@ class _Rendered:
     case: str           # UPPER / LOWER / "" (sentence start or uncased)
     method: str
     ol_senses: tuple[str, ...]
+    unit: str = ""
+    start: int = 0      # code-point span of the wording in the unit text
+    end: int = 0
 
 
 def _examples(verses: Iterable[tuple[int, str]]) -> list[str]:
@@ -592,28 +595,80 @@ def anchor_declared(spans: Sequence[tuple[str, int, int]], alignment: Alignment,
 # --- the build -------------------------------------------------------------------------------------------
 
 
-def build_reference_list(
-    units: Sequence[SourceUnit],
-    alignment: Alignment,
-    analysis: OlAnalysis,
-    schema: VersificationSchema,
-    *,
-    traits: WipTraits,
-    language_tag: str,
-    inventory: Mapping[str, Concept],
-    declared: Iterable[tuple[str, Sequence[str], int]] = (),
-    dropped: Iterable[str] = (),
-    clear_senses: Mapping[tuple[str, int], str] | None = None,
-    groups: Mapping[str, Sequence[Any]] | None = None,
-    min_verses: int = DEFAULT_MIN_VERSES,
-    skipped: Mapping[str, int] | None = None,
-    progress: Callable[[str, str], None] | None = None,
-) -> BuildResult:
-    """Build the entries of one reference list (see module doc). ``declared``: (surface, tokens, line)."""
+@dataclass
+class BuildContext:
+    """What every concept's realization needs: OL words and index, function tokens, the alignment."""
+
+    units: Sequence[SourceUnit]
+    alignment: Alignment
+    words: dict[str, list[_Word]]
+    index: dict[str, list[tuple[str, int]]]
+    verse_units: dict[str, list[str]]
+    verse_keys: dict[str, frozenset[str]]
+    content_keys: dict[str, bool]
+    linked_forms: dict[str, Counter[str]]
+    function: frozenset[str]
+    suffixes: tuple[str, ...]
+    cased: bool
+    groups: Mapping[str, Sequence[Any]] | None = None
+    clear_senses: Mapping[tuple[str, int], str] | None = None
+
+    def __post_init__(self) -> None:
+        """Unit lookups."""
+        self.by_unit = {u.unit_id: u for u in self.units}
+        self.order = {u.unit_id: i for i, u in enumerate(self.units)}
+
+    def realize_concept(self, concept: Concept, spans: Sequence[tuple[str, int, int]] | None = None,
+                        units: Collection[str] | None = None) -> tuple[Counter[str], list[_Rendered]]:
+        """Counts and rendered occurrences of one concept, optionally only inside ``units``."""
+        counts: Counter[str] = Counter()
+        items: list[tuple[Realization, tuple[str, ...]]] = []
+        if concept.kind == "WORDING":
+            if spans is None:
+                spans = locate_wording(self.alignment.tokens, concept.anchor[0].split("|", 1)[1].split(" "))
+            items = [(Realization(u, a, b, "located"), ()) for u, a, b in spans if units is None or u in units]
+            counts["occurrences"] = len(items)
+        else:
+            occurrences = find_occurrences(concept, self.index, self.words, self.verse_units, self.groups)
+            if units is not None:
+                occurrences = [o for o in occurrences if o.unit in units]
+            counts["occurrences"] = len(occurrences)
+            for occ in occurrences:
+                result = realize(occ, self.alignment, self.function, self.linked_forms, self.by_unit[occ.unit].text,
+                                 self.verse_keys.get(occ.unit, frozenset()), self.content_keys)
+                if isinstance(result, str):
+                    counts[result] += 1
+                else:
+                    items.append((result, _clear(occ, self.words, self.clear_senses)))
+        rendered = []
+        for real, senses in items:
+            counts["realized"] += 1
+            counts[real.method] += 1
+            rendered.append(self.rendered(real, senses))
+        return counts, rendered
+
+    def rendered(self, real: Realization, senses: tuple[str, ...] = ()) -> _Rendered:
+        """The wording and sense features of one realization."""
+        unit = self.by_unit[real.unit]
+        tokens = self.alignment.tokens[real.unit]
+        span = tokens[real.first:real.last + 1]
+        head = tokens[real.first]
+        start = at_sentence_start(unit.text, tokens, real.first)
+        case = "" if start or not self.cased else case_feature(head)
+        head_stem = stem(head.norm, self.suffixes)
+        return _Rendered(unit.canonical_ref, self.order[real.unit], " ".join(t.norm for t in span),
+                         unit.text[head.start:span[-1].end], head_stem,
+                         " ".join(stem(t.norm, self.suffixes) for t in span if t.norm not in self.function) or head_stem,
+                         case, real.method, senses, real.unit, head.start, span[-1].end)
+
+
+def build_context(units: Sequence[SourceUnit], alignment: Alignment, analysis: OlAnalysis,
+                  schema: VersificationSchema, *, suffixes: Sequence[str], cased: bool,
+                  groups: Mapping[str, Sequence[Any]] | None = None,
+                  clear_senses: Mapping[tuple[str, int], str] | None = None,
+                  progress: Callable[[str, str], None] | None = None) -> BuildContext:
+    """Index the original-language words of ``units`` and measure function tokens from ``alignment``."""
     note = progress or (lambda stage, detail: None)
-    order = {u.unit_id: i for i, u in enumerate(units)}
-    verse_of = {u.unit_id: u.canonical_ref for u in units}
-    by_unit = {u.unit_id: u for u in units}
     note("index", "original-language words")
     words = ol_words_by_unit(units, analysis, schema)
     index: dict[str, list[tuple[str, int]]] = defaultdict(list)
@@ -634,76 +689,77 @@ def build_reference_list(
                     index[key].append((unit.unit_id, i))
                 key_total[key] += 1
                 content_votes[key] += content
-    verse_keys = {unit: frozenset(k for w in items for k in w.keys) for unit, items in words.items()}
     # A key is a content lemma when most of its segments are (MACULA reuses some prefix numbers on suffixes).
     content_keys = {key: 2 * content_votes[key] > n for key, n in key_total.items()}
     linked_forms = form_links(alignment)
-    function = function_forms(linked_forms, content_keys)
+    return BuildContext(units, alignment, words, dict(index), dict(verse_units),
+                        {unit: frozenset(k for w in items for k in w.keys) for unit, items in words.items()},
+                        content_keys, linked_forms, function_forms(linked_forms, content_keys), tuple(suffixes), cased,
+                        groups, clear_senses)
+
+
+def declared_concepts(ctx: BuildContext, declared: Iterable[tuple[str, Sequence[str], int]], language_tag: str
+                      ) -> tuple[list[Concept], dict[str, list[tuple[str, int, int]]], list[str]]:
+    """Declared phrases as concepts: anchored on original-language lemmas when the alignment shows them.
+
+    Returns (concepts, located spans of WORDING concepts, problems).
+    """
+    concepts, located, problems = [], {}, []
+    for surface, wording, line in declared:
+        spans = locate_wording(ctx.alignment.tokens, wording)
+        if not spans:
+            problems.append(f"line {line}: not found in the reference")
+        anchor = anchor_declared(spans, ctx.alignment, ctx.content_keys)
+        source = f"DECLARED:{line}"
+        if anchor:
+            concepts.append(Concept("OL", anchor, surface, "DECLARED", "ACTIVE", (source,)))
+        else:
+            concept = Concept("WORDING", (f"{language_tag}|{' '.join(wording)}",), surface, "DECLARED", "ACTIVE",
+                              (source,))
+            located[concept.key] = spans
+            concepts.append(concept)
+    return concepts, located, problems
+
+
+def build_reference_list(
+    units: Sequence[SourceUnit],
+    alignment: Alignment,
+    analysis: OlAnalysis,
+    schema: VersificationSchema,
+    *,
+    traits: WipTraits,
+    language_tag: str,
+    inventory: Mapping[str, Concept],
+    declared: Iterable[tuple[str, Sequence[str], int]] = (),
+    dropped: Iterable[str] = (),
+    clear_senses: Mapping[tuple[str, int], str] | None = None,
+    groups: Mapping[str, Sequence[Any]] | None = None,
+    min_verses: int = DEFAULT_MIN_VERSES,
+    skipped: Mapping[str, int] | None = None,
+    progress: Callable[[str, str], None] | None = None,
+) -> BuildResult:
+    """Build the entries of one reference list (see module doc). ``declared``: (surface, tokens, line)."""
+    note = progress or (lambda stage, detail: None)
+    ctx = build_context(units, alignment, analysis, schema, suffixes=[a.form for a in traits.suffixes],
+                        cased=traits.cased, groups=groups, clear_senses=clear_senses, progress=progress)
     left_out: Counter[str] = Counter(skipped or {})
     examples: dict[str, list[str]] = defaultdict(list)
     concepts = dict(inventory)
     for key in set(dropped):
         if concepts.pop(key, None) is not None:
             left_out["DROPPED_IN_BASE"] += 1
-
-    # Declared phrases: anchored on original-language lemmas when the alignment shows them, else by wording.
-    located: dict[str, list[tuple[str, int, int]]] = {}
-    problems: list[str] = []
-    for surface, wording, line in declared:
-        spans = locate_wording(alignment.tokens, wording)
-        if not spans:
-            problems.append(f"line {line}: not found in the reference")
-        anchor = anchor_declared(spans, alignment, content_keys)
-        source = f"DECLARED:{line}"
-        if anchor:
-            concept = Concept("OL", anchor, surface, "DECLARED", "ACTIVE", (source,))
-        else:
-            concept = Concept("WORDING", (f"{language_tag}|{' '.join(wording)}",), surface, "DECLARED", "ACTIVE",
-                              (source,))
-            located[concept.key] = spans
-        concepts = merge_inventory(concepts.values(), [concept])
+    extra, located, problems = declared_concepts(ctx, declared, language_tag)
+    concepts = merge_inventory(concepts.values(), extra)
 
     note("realize", f"{len(concepts)} concepts")
-    suffixes = [a.form for a in traits.suffixes]
     entries: list[dict[str, Any]] = []
     stats: Counter[str] = Counter(concepts=len(concepts))
     for ckey in sorted(concepts):
         concept = concepts[ckey]
-        counts = Counter()
-        rendered: list[_Rendered] = []
-        if concept.kind == "WORDING":
-            spans = located.get(ckey)
-            if spans is None:
-                spans = locate_wording(alignment.tokens, concept.anchor[0].split("|", 1)[1].split(" "))
-            items = [(Realization(u, a, b, "located"), ()) for u, a, b in spans]
-            counts["occurrences"] = len(items)
-        else:
-            if concept.kind == "BT" and not concept.references:
-                _leave(left_out, examples, "NOT_LOCATABLE", concept)
-                continue
-            occurrences = find_occurrences(concept, index, words, verse_units, groups)
-            counts["occurrences"] = len(occurrences)
-            items = []
-            for occ in occurrences:
-                result = realize(occ, alignment, function, linked_forms, by_unit[occ.unit].text,
-                                 verse_keys.get(occ.unit, frozenset()), content_keys)
-                if isinstance(result, str):
-                    counts[result] += 1
-                else:
-                    items.append((result, _clear(occ, words, clear_senses)))
-        for real, senses in items:
-            tokens = alignment.tokens[real.unit]
-            span = tokens[real.first:real.last + 1]
-            head = tokens[real.first]
-            start = at_sentence_start(by_unit[real.unit].text, tokens, real.first)
-            case = "" if start or not traits.cased else case_feature(head)
-            counts["realized"] += 1
-            counts[real.method] += 1
-            rendered.append(_Rendered(
-                verse_of[real.unit], order[real.unit], " ".join(t.norm for t in span),
-                by_unit[real.unit].text[head.start:span[-1].end], stem(head.norm, suffixes),
-                " ".join(stem(t.norm, suffixes) for t in span if t.norm not in function) or stem(head.norm, suffixes),
-                case, real.method, senses))
+        if concept.kind == "BT" and not concept.references:
+            _leave(left_out, examples, "NOT_LOCATABLE", concept)
+            continue
+        counts, rendered = ctx.realize_concept(concept, located.get(ckey))
         if concept.kind == "WORDING" and not rendered:
             entries.append(_entry(concept, [], counts, [], 0))
             stats["declared_not_found"] += 1
@@ -724,9 +780,18 @@ def build_reference_list(
         for name in ("occurrences", "realized", "function_only", "no_realization"):
             stats[name] += counts[name]
     stats["entries"] = len(entries)
-    stats["function_forms"] = len(function)
+    stats["function_forms"] = len(ctx.function)
     return BuildResult(entries, {r: left_out.get(r, 0) for r in REASONS},
                        {r: sorted(v)[:12] for r, v in sorted(examples.items())}, dict(stats), problems)
+
+
+def sense_candidates(concept_key_: str, r: _Rendered) -> list[str]:
+    """Sense keys an occurrence may belong to, most specific first (whole wording, then first word).
+
+    At a sentence start (no case) every case is a candidate; the caller keeps the ones its list has.
+    """
+    cases = [r.case] if r.case else ["UPPER", "LOWER", ""]
+    return [sense_key(concept_key_, f"{stems}|{case}") for stems in (r.stems, r.stem) for case in cases]
 
 
 def _clear(occ: Occurrence, words: Mapping[str, list[_Word]], clear: Mapping[tuple[str, int], str] | None) -> tuple[str, ...]:

@@ -94,7 +94,8 @@ def terms_rows(output: Path, *, curate: bool = True, summary: dict[str, Any] | N
     group_ids = {(g["expression_id"], g["sense_id"]): g["group_id"] for g in groups}
     by_pair: dict[tuple[str, str | None], list[Mapping[str, Any]]] = defaultdict(list)
     for occ in occurrences:
-        sense = occ["sense_id"] if occ["sense_state"] == "CONFIRMED" else None
+        # A PROVISIONAL occurrence with a sense comes from a reference list located in another text (P5b-3).
+        sense = occ["sense_id"] if occ["sense_state"] in ("CONFIRMED", "PROVISIONAL") and occ["sense_id"] else None
         by_pair[(occ["expression_id"], sense)].append(occ)
     rows: list[dict[str, Any]] = []
     for expr in expressions:

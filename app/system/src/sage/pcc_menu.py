@@ -11,8 +11,14 @@ from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
 from pathlib import Path
 
 from sage.pcc import glossary, overlay, transfer
-from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, run_initializer
+from sage.pcc.pin import repin
+from sage.pcc.reflist import ReferenceListStore
+from sage.pcc.rlservice import build_reference_list_for
+from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, project_identity, run_initializer
 from sage.registry import load_ecosystem
+from sage.vrs import load_project_vrs
+
+ACTOR = "operator"
 
 TITLE = "PHRASE CONSISTENCY CHECKER (PCC)"
 OPERATION_LABELS = {"terms": "Build SOURCE terms list", "check": "Check WIP against the glossary"}
@@ -25,6 +31,9 @@ def _binding_lines(job) -> list[str]:
         lines.append(f"Secondary SOURCE             {job.bindings['secondary_source']}")
     lines.append(f"WIP                          {job.bindings.get('wip') or 'NONE (terms list only)'}")
     lines.append(f"Target language              {job.defaults.get('target_language')}")
+    pin = job.defaults.get("reference_list")
+    lines.append(f"Reference list               {pin['rl_id']} v{pin['version']}" if pin
+                 else "Reference list               NONE (terms list discovers wordings)")
     return lines
 
 
@@ -46,15 +55,20 @@ def create_job(center):
             return None
         bindings["wip"] = wip.project_id
         target_language = wip.language_code
-        center.io.write(f"Target language: {target_language} (from the WIP). A WIP cannot be added to a Job later.")
+        center.io.write(f"Target language: {target_language} (from the WIP).")
     else:
+        center.io.write("You can attach a WIP to this Job once, later (Manage PCC JOB).")
         target_language = center.io.text("TARGET language tag for the terms list (for example sw)").strip()
     job = center.store.create_job(
         tool="pcc", job_id="", display_name=f"PCC {bindings['source']}",
         bindings=bindings, defaults=pcc_default_settings(target_language),
     )
     center.store.set_active_job("pcc", job.job_id)
-    return job
+    try:
+        reference_list_menu(center, job)
+    except SageError as exc:
+        center.show_error(exc)
+    return center.store.load_job(job.job_id, tool="pcc")
 
 
 def create_run(center, job, operation: str):
@@ -65,7 +79,7 @@ def create_run(center, job, operation: str):
         raise ValidationError(
             "Checking consistency needs a WIP, and this Job has none.",
             code="PCC_WIP_REQUIRED",
-            next_action="Create a new PCC Job that binds the WIP; a WIP cannot be added to an existing Job.",
+            next_action="Attach a WIP once under Manage PCC JOB, or create a new PCC Job with the WIP.",
         )
     scope = center._select_scripture_scope(job, primary_binding="wip" if operation == "check" else "source")
     if scope is None:
@@ -320,17 +334,106 @@ def open_job(center, job) -> None:
 
 
 def _manage(center, job) -> bool:
-    """Delete or inspect one Job; True once deleted."""
-    choice = center.io.choose(
-        f"Manage PCC {job.job_id}",
-        (("1", "Delete PCC JOB"), ("2", "Recovery and diagnostics"), ("B", "Back")),
-        context=tuple(_binding_lines(job)),
-    )
+    """Delete or inspect one Job, pin its reference list, attach a WIP once; True once deleted."""
+    options = [("1", "Delete PCC JOB"), ("2", "Recovery and diagnostics"), ("3", "Reference list (pin or re-pin)")]
+    if not job.bindings.get("wip"):
+        options.append(("4", "Attach a WIP (once)"))
+    options.append(("B", "Back"))
+    choice = center.io.choose(f"Manage PCC {job.job_id}", tuple(options), context=tuple(_binding_lines(job)))
     if choice == "1":
         return bool(center._delete_job(job))
-    if choice == "2":
-        center.recovery_menu(job)
+    try:
+        if choice == "2":
+            center.recovery_menu(job)
+        elif choice == "3":
+            reference_list_menu(center, job)
+        elif choice == "4":
+            wip = center.choose_or_add_resource("PCC <WIP PROJECT>", "WIP")
+            if wip is not None and center.io.confirm(
+                    f"Attach {wip.project_id} to {job.job_id}? This cannot be changed later.", default=False):
+                center.store.attach_pcc_wip(job, wip.project_id)
+                center.io.write(f"WIP {wip.project_id} attached; the Job ID stays {job.job_id}.")
+                center.io.pause()
+    except SageError as exc:
+        center.show_error(exc)
     return False
+
+
+def _rl_store(center) -> ReferenceListStore:
+    """The Operator's reference lists."""
+    return ReferenceListStore(center.store.storage.resources_root)
+
+
+def reference_list_menu(center, job) -> None:
+    """Pin (or re-pin) a reference list for the Job's SOURCE: choose a stored one, build one, or keep none."""
+    store = _rl_store(center)
+    source = job.bindings["source"]
+    lists = store.lists()
+    lists.sort(key=lambda m: (m["reference"]["project_id"] != source, m["title"].casefold(), m["rl_id"]))
+    options = []
+    for n, manifest in enumerate(lists, 1):
+        mark = " (this SOURCE)" if manifest["reference"]["project_id"] == source else ""
+        options.append((str(n), f"{manifest['title']}: {manifest['rl_id']} v{manifest['version']}, "
+                                 f"{manifest['counts']['entries']} concepts, built on {manifest['reference']['project_id']}{mark}"))
+    build_key = str(len(lists) + 1)
+    options += [(build_key, f"Build a new reference list from {source} now"), ("B", "Keep the current setting")]
+    pin = job.defaults.get("reference_list")
+    context = (f"Pinned now                   {pin['rl_id']} v{pin['version']}" if pin else "Pinned now                   none",
+               "A reference list holds the key concepts and their senses for one reference text. Glossary",
+               "decisions carry over to a new version by concept and sense; rules whose concept is gone become STALE.")
+    choice = center.io.choose(f"Reference list for {job.job_id}", tuple(options), context=context)
+    if choice == "B":
+        return
+    if choice == build_key:
+        manifest = _build_list(center, job)
+        if manifest is None:
+            return
+        rl_id, version = manifest["rl_id"], manifest["version"]
+    else:
+        chosen = lists[int(choice) - 1]
+        rl_id, version = chosen["rl_id"], chosen["version"]
+    config = load_ecosystem(job.runtime_settings_path)
+    report = repin(center.store, job, store, rl_id, version, actor=ACTOR, lock_path=_lock(job),
+                   source_corpus_sha256=project_identity(config, source)["content_sha256"],
+                   reports_root=center.store.storage.reports_root)
+    for line in report.lines():
+        center.io.write(line)
+    center.io.write(f"Report: {report.report_path}")
+    center.io.pause()
+
+
+def _build_list(center, job):
+    """Build a reference list from the Job's SOURCE (whole text) and return its manifest, or None."""
+    config = load_ecosystem(job.runtime_settings_path)
+    project = config.project(job.bindings["source"])
+    terms = Path(project.path) / "BiblicalTerms.xml"
+    biblical_terms = None
+    if terms.is_file() and center.io.confirm(f"Use the Paratext Biblical Terms list of {project.project_id} "
+                                             "(read only, kept local)?", default=True):
+        biblical_terms = terms
+    elif not terms.is_file():
+        biblical_terms = _ask_path(center, "Path of a Paratext BiblicalTerms.xml (blank: none; the list then holds "
+                                           "only your declared phrases)")
+    phrases = job.root / "input" / "phrases.txt"
+    title = center.io.text(f"Title for the list (blank: {project.project_id} reference list)").strip() \
+        or f"{project.project_id} reference list"
+    schema = load_project_vrs(config, project)
+    center.io.write("Aligning the SOURCE with the original language. The first time takes a few minutes; "
+                    "later builds and terms Runs reuse the alignment.")
+    outcome = build_reference_list_for(
+        app_root=config.root, store=_rl_store(center), cache_root=config.cache_root, reference_path=Path(project.path),
+        project_id=project.project_id, title=title, language_tag=project.language_code,
+        schema=schema, versification_id=schema.schema_id, biblical_terms=biblical_terms,
+        phrases=phrases if phrases.is_file() else None, instance_id=str(center.store.storage.data_root),
+        progress=lambda stage, detail: center.io.write(f"  {stage}: {detail}") if stage != "index" else None)
+    left = outcome.result.left_out
+    center.io.write(f"Built {outcome.manifest['rl_id']} v{outcome.manifest['version']}: "
+                    f"{outcome.manifest['counts']['entries']} concepts. Left out: {left['NOT_IN_REFERENCE']} not in "
+                    f"the text, {left['BELOW_RECURRENCE']} not recurring, {left['NO_REALIZATION'] + left['FUNCTION_ONLY']} "
+                    "not rendered by a wording.")
+    for problem in outcome.result.declared_problems[:20]:
+        center.io.write(f"- phrases.txt {problem}")
+    return outcome.manifest
 
 
 def pcc_home(center) -> None:

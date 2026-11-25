@@ -101,6 +101,7 @@ def pcc_default_settings(target_language: str) -> dict[str, Any]:
         "target_language": target_language,
         "discovery": dict(PCC_DEFAULT_DISCOVERY),
         "analysis": dict(PCC_DEFAULT_ANALYSIS),
+        "reference_list": None,
     }
 
 
@@ -108,7 +109,8 @@ def _validate_pcc_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
     """Require the exact PCC Job defaults contract with a canonical target-language tag."""
     from .pcc.contracts import contract_errors
 
-    errors = contract_errors("job_defaults", dict(value))
+    value = {"reference_list": None, **dict(value)}  # Jobs from before reference lists pin nothing
+    errors = contract_errors("job_defaults", value)
     if errors:
         raise ValidationError(
             f"PCC Job defaults are invalid: {errors[0]}",
@@ -125,6 +127,7 @@ def _validate_pcc_defaults(value: Mapping[str, Any]) -> dict[str, Any]:
         "target_language": canonical_language_tag(str(value["target_language"]), "PCC target_language"),
         "discovery": discovery,
         "analysis": dict(value["analysis"]),
+        "reference_list": dict(value["reference_list"]) if value["reference_list"] else None,
     }
 
 
@@ -655,8 +658,12 @@ class JobStore:
         elif job_tool == "pcc":
             raw_defaults = raw.get("defaults")
             try:
+                identity_bindings = dict(bindings)
+                if isinstance(raw.get("wip_attached"), Mapping):
+                    # A WIP attached after creation (plan D16) keeps the target-language identity.
+                    identity_bindings.pop("wip", None)
                 expected_job_id = _pcc_job_identity(
-                    bindings, raw_defaults if isinstance(raw_defaults, Mapping) else {}
+                    identity_bindings, raw_defaults if isinstance(raw_defaults, Mapping) else {}
                 )
             except ValidationError as exc:
                 raise ConfigurationError(
@@ -1906,6 +1913,41 @@ class JobStore:
         # Validate immediately so a broken project cannot become active silently.
         load_ecosystem(project.runtime_settings_path)
         return project.runtime_settings_path
+
+    def attach_pcc_wip(self, project: Job, wip_id: str) -> Job:
+        """Bind a WIP once to a PCC Job created without one (plan D16); the Job ID does not change.
+
+        The attachment is recorded in the Job manifest (``wip_attached``: Project and time) and can never be
+        repeated or undone; a different WIP needs a new Job.
+        """
+        current = self.load_job(project.job_id, tool=project.tool)
+        if current.tool != "pcc":
+            raise ValidationError("Only a PCC Job can attach a WIP", code="JOB_BINDING_REVISION_UNSUPPORTED")
+        raw = load_yaml(current.manifest_path)
+        if current.bindings.get("wip") or raw.get("wip_attached"):
+            raise ValidationError(
+                f"PCC Job {current.job_id} already has a WIP; a WIP can be attached only once",
+                code="PCC_WIP_ALREADY_BOUND",
+                next_action="Create a new PCC Job to check another WIP.",
+            )
+        nonclosed = self.open_run_ids(current)
+        if nonclosed:
+            raise ValidationError("Cannot attach a WIP while a Run is open", code="JOB_DEFAULTS_RUN_OPEN",
+                                  details={"run_ids": nonclosed})
+        bindings = {**current.bindings, "wip": wip_id}
+        _validate_pcc_roles(current.job_id, bindings)
+        self._validate_project_bindings(tool="pcc", job_id=current.job_id, bindings=bindings,
+                                        profiles=dict(current.profiles))
+        self._require_pcc_target_language(wip_id, current.defaults["target_language"])
+        raw["bindings"] = bindings
+        raw["wip_attached"] = {"project_id": wip_id, "attached_utc": _utc_now()}
+        raw["configuration_revision"] = int(raw.get("configuration_revision", 1)) + 1
+        raw["revised_utc"] = _utc_now()
+        atomic_write_text(current.manifest_path, _safe_yaml(raw))
+        updated = self.load_job(current.job_id, tool="pcc")
+        atomic_write_text(updated.root / "README.md", self._render_project_readme(raw))
+        self.write_runtime_files(updated)
+        return self.load_job(current.job_id, tool="pcc")
 
     def open_run_ids(self, project: Job) -> list[str]:
         """Return the IDs of the Job's Runs that are not closed."""

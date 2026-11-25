@@ -41,10 +41,13 @@ FINDING_CODES = (
 )
 BLOCKING_CODES = frozenset({"PC23", "PC24", "PC25"})
 SCOPE_LEVELS = ("OCCURRENCE", "PASSAGE", "SECG", "LANGUAGE_PROFILE", "NORMALIZATION")
-RULE_STATES = ("PROPOSED", "APPROVED", "REVOKED")
+# STALE (plan D16, P7-3): the rule's concept or sense is gone from the pinned reference list; listed for
+# re-review, never deleted, never accepting.
+RULE_STATES = ("PROPOSED", "APPROVED", "REVOKED", "STALE")
 EFFECTS = ("ACCEPT", "REJECT", "CONTEXT_ONLY")
 REVIEW_OPERATIONS = (
     "PROPOSE", "APPROVE", "REJECT", "CONTEXT_ONLY", "REVOKE", "RECLASSIFY_SENSE", "CORRECT_ALIGNMENT",
+    "MARK_STALE",
 )
 REVIEW_SUBJECTS = ("VARIANT_RULE", "EXCEPTION", "OCCURRENCE", "ALIGNMENT", "FINDING")
 RUN_OPERATIONS = ("terms", "check")
@@ -364,12 +367,21 @@ _PROJECT_IDENTITY = _object({
     "versification_sha256": _SHA256,
 })
 
+# A Job's pin of one reference-list version (plan D16): the package is re-checked against ``sha256`` (the
+# SHA-256 of its CHECKSUMS.sha256) whenever a Run seals or executes.
+RL_PIN = _object({
+    "rl_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*-[a-f0-9]{8}$"},
+    "version": {"type": "integer", "minimum": 1},
+    "sha256": _SHA256,
+})
+
 # The Job's editable defaults (Job manifest ``defaults``). ``semantic_assistance`` accepts only
 # ``OFF`` until the optional advisory step (plan P10) exists.
 CONTRACTS["job_defaults"] = _object({
     "target_language": _TEXT,
     "discovery": _DISCOVERY,
     "analysis": _ANALYSIS,
+    "reference_list": {"oneOf": [RL_PIN, {"type": "null"}]},
 })
 
 # The sealed per-Run policy snapshot; it replaces the handover's ``config.json``.
@@ -387,6 +399,8 @@ CONTRACTS["run_snapshot"] = _object({
     "discovery": _DISCOVERY,
     "analysis": _ANALYSIS,
     "decision_snapshot_sha256": _SHA256,
+    "reference_list": {"oneOf": [_object({**RL_PIN["properties"], "reference_content_sha256": _SHA256}),
+                                 {"type": "null"}]},
     "engine_version": _TEXT,
     "created_utc": _TEXT,
 })
