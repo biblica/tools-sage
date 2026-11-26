@@ -11,7 +11,8 @@ Open a terminal in the SAGE root. The classic menu remains the authoritative def
   3. Reference Text Comparison (RTC)
   4. Source Text Correspondence (STC)
   5. Number Consistency & Accuracy (NCA)
-  6. SAGE Maintenance
+  6. Phrase Consistency Checker (PCC)
+  7. SAGE Maintenance
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │  A. Back   B. Main menu   C. Exit SAGE                               │
@@ -179,3 +180,22 @@ Missing comparison coordinates, custom-versification differences, and similar us
 NCA binds one WIP Project, the bundled typed numbers reference (`SAGE_NUMBERS_TYPED_2026-10-09`: original-language values from MACULA Hebrew/Greek, with the NIV numbers as secondary evidence and verse text quoted from the public-domain BSB; see [Third-Party Data Notices](advanced/projects-and-resources/THIRD-PARTY-NOTICES.md) for licenses and attribution), and an optional Number Style Profile. A standard installation requires no NCA reference archive import; additional qualified packages may be selected explicitly. Number accuracy and footnote review are the two independent Run switches. Without a style profile (**Use standard language profile data**), NCA reconstructs the translation's own number style; with one (**Upload style data from template**), it reports every variance from it.
 
 Findings are FAIL (clear errors: `VALUE_DIFFERENCE`, `WRONG_ASSOCIATION`, `MALFORMED_NUMERAL`, `NUMBER_NOT_IN_SOURCE`) or NEEDS_REVIEW. Text-critical decisions are listed separately with cited apparatus evidence. NCA never stops a Run on Scripture content; damaged verses report `NOT_ASSESSED`. NCA publishes per-chapter action reports under `localdata/reports/<job-id>/<BOOK>/<CCC>/` in the same layout as RTC/STC, plus `<run>_NUMBER-STYLE.md` at the Job report root. See the [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) for setup, outcomes, and coverage limits. NCA never modifies Scripture or Paratext Notes XML.
+
+## PCC phrase consistency
+
+PCC (**Main Menu → 6**) helps a team render key biblical terms and phrases consistently. It works locally and by
+fixed rules: no model calls, no Paratext writes. It has two functions:
+
+- **Master reference lists** of key concepts, each built once from a complete reference text (for example usNIV
+  or idKKH), or from another list for another text (usNIV → Spanish NVI). They live outside every Job in
+  `localdata/inputs/resources/reference-lists/` and can be shared with another SAGE as a `.sagerl.zip`.
+- **PCC Jobs**, one per WIP. A Job clones a master list into its own WIP list; the team's additions, omissions and
+  notes stay there until the Operator merges them into the master. The Job holds the WIP's TARGET renderings
+  (filled in from a terms list, Paratext TermRenderings, a glossary bundle or the Operator's own list), checks the
+  WIP against them (`PCC-CHECK.md`, `PCC-FINDINGS.xlsx` under `localdata/reports/<job-id>/`), and records the
+  team's decisions on findings.
+
+Lists are built on the original-language text: MACULA Greek and Hebrew with the BSB word alignment and Clear word
+senses (package `SAGE_PCC_OL_2026-11-25`; see [Third-Party Data Notices](advanced/projects-and-resources/THIRD-PARTY-NOTICES.md)).
+See the [PCC Cheat Sheet](PCC-CHEAT-SHEET.md) for every step and the [PCC flow](advanced/workflows/PCC-FLOW.md) for
+how lists, WIP lists and Jobs fit together.

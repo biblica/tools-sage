@@ -174,7 +174,10 @@ def concepts_from_entries(entries: Iterable[Mapping[str, Any]], origin: str) -> 
             continue
         kind = entry["anchor"]["kind"]
         anchor = tuple(sorted(entry["anchor"]["value"])) if kind == "OL" else tuple(entry["anchor"]["value"][:1])
+        locate = entry.get("locate") or {}
         kept.append(Concept(kind, anchor, entry["label"], entry["category"], entry["status"], (origin,),
+                            surfaces=tuple(tuple(s) for s in locate.get("surfaces", ())),
+                            references=tuple(locate.get("references", ())), family=locate.get("family", ""),
                             notes=entry.get("notes", "")))
     return kept, dropped
 
@@ -756,6 +759,12 @@ def build_reference_list(
     stats: Counter[str] = Counter(concepts=len(concepts))
     for ckey in sorted(concepts):
         concept = concepts[ckey]
+        if concept.kind == "BT":
+            bad = [r for r in concept.references if _bt_word_index(r) is None]
+            if bad:  # AT20: never silently skipped
+                stats["bt_bad_references"] += len(bad)
+                problems.append(f"Biblical Terms '{concept.label}': {len(bad)} reference(s) not in Paratext's "
+                                f"BBBCCCVVVWWWWW form were not used (first: {bad[0]})")
         if concept.kind == "BT" and not concept.references:
             _leave(left_out, examples, "NOT_LOCATABLE", concept)
             continue
@@ -838,7 +847,9 @@ def _entry(concept: Concept, senses: list[dict[str, Any]], counts: Counter[str],
         "verses": verses,
         "examples": examples,
         "notes": concept.notes,
-    }
+    } | ({"locate": {"family": concept.family, "references": list(concept.references),
+                     "surfaces": [list(s) for s in concept.surfaces]}}
+         if concept.kind == "BT" and concept.references else {})
 
 
 __all__ = ["BuildResult", "Concept", "build_reference_list", "concepts_from_biblical_terms", "concepts_from_entries",

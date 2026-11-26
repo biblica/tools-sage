@@ -1,6 +1,6 @@
 # Number Consistency & Accuracy (NCA)
 
-**SAGE NUMBERS CHECK** compares the numbers in one read-only WIP Project with SAGE's own number index of the original-language text, reports the formatting consistency of those numbers, and lists the text-critical decisions an operator must make. Open **Main Menu → 5. Number Consistency & Accuracy (NCA)**. SAGE Maintenance is option **6**.
+**SAGE NUMBERS CHECK** compares the numbers in one read-only WIP Project with SAGE's own number index of the original-language text, reports the formatting consistency of those numbers, and lists the text-critical decisions an operator must make. Open **Main Menu → 5. Number Consistency & Accuracy (NCA)**. SAGE Maintenance is option **7**.
 
 ## Reference and counting rules
 

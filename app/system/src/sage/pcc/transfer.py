@@ -1,9 +1,10 @@
 """Move terms lists between Jobs (WIPs) and bring in the Operator's own lists.
 
-* ``export_bundle`` writes one portable JSON file from a Job: its SOURCE wordings, key terms, approved
-  renderings. (Core-list verdicts now live in reference-list versions, plan P5b-4; a bundle that still carries
+* ``export_bundle`` writes one portable JSON file from a Job (the glossary bundle): its approved renderings, each
+  with its group (concept + sense) key, wording and lemma, plus the SOURCE wordings and key terms for reference. (Core-list verdicts now live in reference-list versions, plan P5b-4; a bundle that still carries
   them is read and their count reported.)
-* ``import_bundle`` loads it into another Job. Renderings arrive as PROPOSED rules (same target language only) that the Operator
+* ``import_bundle`` loads it into another Job, matching each rendering by group key first, else by wording and
+  lemma. Renderings arrive as PROPOSED rules (same target language only) that the Operator
   still approves. A bundle whose checksum does not match is refused.
 * ``import_operator_list`` reads a CSV, TSV, TXT or XLSX list (wording[, rendering(s)[, note]]).
 
@@ -52,8 +53,9 @@ def export_bundle(job: Any, rows: Sequence[Mapping[str, Any]], *, source_project
     for rule in current_rules(job.root).values():
         row = by_entry.get(rule["group_id"])
         if rule["state"] == "APPROVED" and row is not None:
-            rules.append({"wording": row["wording"], "lemma": row["lemma"], "target_language": rule["target_language"],
-                          "target_form": rule["target_form"], "effect": rule["effect"]})
+            rules.append({"wording": row["wording"], "lemma": row["lemma"], "group_id": rule["group_id"],
+                          "target_language": rule["target_language"], "target_form": rule["target_form"],
+                          "effect": rule["effect"]})
     body = {"format": BUNDLE_FORMAT, "version": BUNDLE_VERSION, "from_job": job.job_id, "source_project": source_project,
             "source_sha256": source_sha256, "target_language": target_language,
             "created_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "entries": entries,
@@ -78,10 +80,16 @@ def read_bundle(path: Path) -> dict[str, Any]:
 
 def _propose(job: Any, lock_path: Path, snapshot_sha: str, target_language: str, rows: Sequence[Mapping[str, Any]],
              wording: str, lemma: str, form: str, effect: str, why: str, evidence: str, report: ImportReport,
-             existing: dict[str, dict[str, Any]], actor: str) -> bool:
-    """Propose one rendering against every matching row; True when a row matched."""
+             existing: dict[str, dict[str, Any]], actor: str, group_id: str = "") -> bool:
+    """Propose one rendering against every matching row; True when a row matched.
+
+    A rendering that names its group (concept + sense, P5b-6) matches that group first: two Jobs on clones of
+    the same master share their group keys, whatever the wording. Otherwise it matches by wording and lemma.
+    """
     key = match_key(wording)
-    matched = [r for r in rows if match_key(r["wording"]) == key and (not lemma or not r["lemma"] or r["lemma"] == lemma)]
+    matched = [r for r in rows if group_id and r["entry_id"] == group_id]
+    if not matched:
+        matched = [r for r in rows if match_key(r["wording"]) == key and (not lemma or not r["lemma"] or r["lemma"] == lemma)]
     for row in matched:
         rule = _rule(row["entry_id"], target_language, form, effect, "PROPOSED",
                      {"level": "SECG", "identifier": row["entry_id"]}, why, [evidence], None, None)
@@ -115,7 +123,7 @@ def import_bundle(job: Any, path: Path, rows: Sequence[Mapping[str, Any]], *, lo
             skipped += 1
         elif not _propose(job, lock_path, source_corpus_sha256, target_language, rows, rule["wording"], rule["lemma"],
                           rule["target_form"], rule["effect"], f"Transferred from {bundle['from_job']}.",
-                          f"BUNDLE:{bundle['from_job']}", report, existing, actor):
+                          f"BUNDLE:{bundle['from_job']}", report, existing, actor, rule.get("group_id", "")):
             unmatched += 1
     if skipped:
         report.problems.append(f"{skipped} rendering(s) are for another target language than {target_language}; not used.")

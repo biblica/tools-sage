@@ -1007,6 +1007,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/reflist_xlsx.py`
 - `system/src/sage/pcc/resolver.py`
 - `system/src/sage/pcc/rlbuild.py`
+- `system/src/sage/pcc/rlexchange.py`
 - `system/src/sage/pcc/rlservice.py`
 - `system/src/sage/pcc/rlterms.py`
 - `system/src/sage/pcc/run.py`
@@ -1169,8 +1170,10 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/numbers/test_witnesses.py`
 - `system/tests/pcc`
 - `system/tests/pcc/__init__.py`
+- `system/tests/pcc/test_pcc_acceptance.py`
 - `system/tests/pcc/test_pcc_align.py`
 - `system/tests/pcc/test_pcc_check.py`
+- `system/tests/pcc/test_pcc_exchange.py`
 - `system/tests/pcc/test_pcc_menu.py`
 - `system/tests/pcc/fixtures`
 - `system/tests/pcc/fixtures/handover`

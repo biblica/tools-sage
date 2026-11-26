@@ -100,3 +100,9 @@ release; see [Original-Language Resources](ORIGINAL-LANGUAGE-RESOURCES.md).
 Operator Projects and their rights are governed per Project; see
 [Resource Rights and Provenance](RESOURCE-RIGHTS-AND-PROVENANCE.md).
 SAGE does not infer any permission from a file being present.
+
+PCC reads two kinds of Operator-supplied material read-only: a Project's Paratext `BiblicalTerms.xml` and
+`TermRenderings.xml`. Biblical Terms content is never shipped. A PCC reference list built from a licensed text or
+from Biblical Terms holds wording from that material; it is marked `local_only`, stays in the Operator's
+`localdata`, and SAGE asks before exporting it as a `.sagerl.zip`. Sharing it outside the organization's license is
+the Operator's responsibility.

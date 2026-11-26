@@ -71,6 +71,11 @@ def build_reference_list_for(
     resources = load_pcc_ol(app_root)
     note("read", str(reference_path))
     units = reference_units(reference_path, list(books) if books else None)
+    if not units:
+        from ..errors import ValidationError
+        raise ValidationError(f"No verses were read from {reference_path}" + (f" for {', '.join(books)}" if books else ""),
+                              code="PCC_RL_NO_TEXT",
+                              next_action="Check the reference text folder and the book codes; nothing was written.")
     traits = measure_traits(u.text for u in units)
     package_ids = [analysis.package_id, resources.package_id if resources else "-"]
     note("align", f"{len(units)} verses")
@@ -89,6 +94,7 @@ def build_reference_list_for(
     same_text = False
     if base:
         manifest, entries = store.load(base[0], base[1])
+        base_entries = list(entries)
         derived = {"rl_id": base[0], "version": manifest["version"]}
         same_text = manifest["reference"]["project_id"] == project_id
         entries, carried = inheritable_entries(entries, language_tag=language_tag, same_text=same_text)
@@ -105,6 +111,22 @@ def build_reference_list_for(
         clear_senses=resources.senses if resources else None, groups=resources.groups_by_ref if resources else None,
         min_verses=min_verses, skipped=skipped, progress=progress)
     result.declared_problems = phrase_problems + result.declared_problems
+    if base and same_text:
+        # A rebuild of the same text (for example after the text gained books) never loses a decision: the team's
+        # DROP stays recorded, and a curated concept the rebuild cannot locate again (a multi-word Biblical Terms
+        # phrase without its verse list, or a wording no longer in the text) is kept as it was, and reported.
+        have = {e["concept_key"] for e in result.entries}
+        kept_dropped, kept_unchanged = 0, []
+        for entry in base_entries:
+            if entry["concept_key"] in have:
+                continue
+            result.entries.append(entry)
+            if entry["status"] == "DROPPED":
+                kept_dropped += 1
+            else:
+                kept_unchanged.append(entry["label"])
+        carried["drops_kept"] = kept_dropped
+        carried["kept_unchanged"] = sorted(kept_unchanged)
     created = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     reference = {"project_id": project_id, "edition": project_id, "language_tag": language_tag,
                  "content_sha256": source_content_sha256(reference_path), "versification_id": versification_id}
@@ -190,6 +212,12 @@ def add_biblical_terms(*, app_root: Path, store: ReferenceListStore, cache_root:
             result.added.append(entry["label"])
         elif existing["status"] == "DROPPED":
             result.problems.append(f"{entry['label']}: dropped by the team on this list; left dropped")
+    from .source_text import books_label, present_books
+    present = present_books(reference_path)
+    if isinstance(books, list) and set(present) - set(books):
+        result.problems.append(f"The list covers {books_label(books)}; the text now has {books_label(present)}. Terms were "
+                               "located in the list's books only. Widen the list first: Build a new list from an "
+                               "existing list, with the same text.")
     left = outcome.result.left_out
     result.problems.append(f"Left out by the build rules: {left.get('NOT_IN_REFERENCE', 0)} not in the text, "
                            f"{left.get('BELOW_RECURRENCE', 0)} not recurring, "

@@ -122,3 +122,53 @@ def test_old_job_phrases_are_read_and_retired_not_deleted(tmp_path):
     assert job_phrase_lines(tmp_path) == [(2, "bread of life"), (4, "Son of Man")]
     kept = retire_job_phrases(tmp_path, "20261126")
     assert kept.name == "phrases.moved-20261126.txt" and kept.is_file() and job_phrase_lines(tmp_path) == []
+
+
+def test_a_rebuild_of_the_same_text_keeps_drops_and_concepts_it_cannot_locate(fake_text, tmp_path):
+    """Widening a list (same text, more books) never loses a decision: DROP stays, an unlocatable concept is kept."""
+    store = ReferenceListStore(tmp_path / "store")
+    base = store.save(rl_id="base-list-0123abcd", title="Base", reference=REF, license=LICENSE,
+                      build={"mode": "SCRATCH", "settings": {"min_verses": 3, "books": ["MAT"]}},
+                      entries=[_entry(["GRK:50"], "lamp"), _entry(["GRK:10", "GRK:11"], "house of bread", "DROPPED"),
+                               _entry(["GRK:99"], "ghost")], created_utc="2026-11-25T00:00:00Z")
+    outcome = _build(store, tmp_path, "BASE", base=(base["rl_id"], None))
+    _, entries = store.load(base["rl_id"], 2)
+    by = {e["label"]: e for e in entries}
+    assert by["house of bread"]["status"] == "DROPPED", "the team's DROP stays recorded"
+    assert by["ghost"]["status"] == "ACTIVE" and by["ghost"] == _entry(["GRK:99"], "ghost"), "kept exactly as it was"
+    assert by["lamp"]["status"] == "ACTIVE" and by["lamp"]["senses"]
+    assert outcome.report["inherited"]["drops_kept"] == 1 and outcome.report["inherited"]["kept_unchanged"] == ["ghost"]
+
+
+def test_coverage_labels_say_which_books_a_list_covers():
+    """Coverage is stated in words the Operator can check against the text."""
+    from sage.canon import NT_27, OT_39
+    from sage.pcc.source_text import books_label
+    assert books_label(list(NT_27)) == "27 books (NT)"
+    assert books_label(list(OT_39) + list(NT_27)) == "66 books (OT and NT)"
+    assert books_label(["GEN", "EXO", "RUT"] + list(NT_27)) == "30 books (NT and 3 OT books)"
+    assert books_label(["JHN"]) == "1 book (JHN)" and books_label([]) == "no books"
+
+
+def test_a_build_that_reads_no_verses_stops_and_writes_nothing(fake_text, monkeypatch, tmp_path):
+    """Wrong book codes or an empty folder: a clear error, no new version."""
+    from sage.errors import ValidationError
+    store = ReferenceListStore(tmp_path / "store")
+    monkeypatch.setattr(rlservice, "reference_units", lambda path, books=None: [])
+    with pytest.raises(ValidationError) as caught:
+        _build(store, tmp_path, "BASE")
+    assert caught.value.code == "PCC_RL_NO_TEXT" and store.lists() == []
+
+
+def test_a_biblical_terms_phrase_keeps_what_locates_it(tmp_path):
+    """A BT phrase entry stores its references and surfaces; a list built from it gets them back (P5b-5)."""
+    from sage.pcc.contracts import validate_record
+    from sage.pcc.rlbuild import Concept, _entry, concepts_from_entries
+    concept = Concept("BT", ("εἰς τὸν αἰῶνα",), "for ever", "RE", "ACTIVE", ("BT:x",),
+                      surfaces=(("αιωνα",),), references=("04300301600024",), family="GRK")
+    entry = validate_record("reference_list_entry", _entry(concept, [], {}, [], 0))
+    assert entry["locate"] == {"family": "GRK", "references": ["04300301600024"], "surfaces": [["αιωνα"]]}
+    (back,), _ = concepts_from_entries([entry], "INHERITED:x@1")
+    assert back.references == concept.references and back.surfaces == concept.surfaces and back.family == "GRK"
+    plain = _entry(Concept("OL", ("GRK:50",), "lamp", "RE", "ACTIVE", ("BT:y",)), [], {}, [], 0)
+    assert "locate" not in plain

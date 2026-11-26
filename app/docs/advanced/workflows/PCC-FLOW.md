@@ -61,6 +61,14 @@ base list A (rl_id_A, vK) ──▶ carry concepts by concept_key ──▶ real
 | another text (usNIV → NVI, usNIV → idKKH) | a **new `rl_id`**, v1; every carried concept is `PROPOSED` until reviewed; lineage `derived_from = A@vK` |
 | the same text as A (rebuild) | the **next version of A**; statuses kept |
 
+**Same text, more books (widening).** A list records the books it was built on (`build.settings.books`). When the
+text gains books, a same-text rebuild reads every book now present, takes the Biblical Terms inventory again, and
+writes the list's next version; inherited statuses are kept, base `DROPPED` entries are kept as `DROPPED` entries,
+and a non-dropped concept the rebuild cannot locate again is kept unchanged and listed (`build.summary.inherited.
+kept_unchanged`). Measured 2026-11-26: usNIV John list (141 concepts) widened to the NT: 686 concepts from 7,958
+verses in 39 s, all 141 carried. A build that reads no verses stops (`PCC_RL_NO_TEXT`) and writes nothing. Adding
+Biblical Terms to a list locates them in the list's own books and says so when the text has more.
+
 The base list is never written. Measured 2026-11-26 on John: usNIV list (141 concepts) → idKKH: 108 carried and
 located, 31 below the recurrence bar in idKKH, 1 multi-word Biblical Terms phrase not locatable (it needs its
 verse list, which inheritance does not carry yet), 1 not rendered.
@@ -106,6 +114,25 @@ kept. The Operator merges all changes, chosen changes (by number), or the rows m
 workbook `RL-CHANGES-<list>-v<n>.xlsx`, where Category and Notes may be edited before they reach the master. After
 a merge, PCC offers to update the WIP list from the new master version; merged changes then drop out of its change
 list. Reports: `RL-MERGE-<master>-v<n>.md`, `RL-UPDATE-<list>-v<n>.md`.
+
+### 2.5 Between SAGE instances (plan P5b-6)
+
+```
+SAGE A: list vN ──export──▶ <list>-vN.sagerl.zip ──import──▶ SAGE B: same rl_id vN (byte-identical package)
+          WIP list: + its master version            checked first: index SHA-256, member names, each package's
+                                                     own checksums; refused as a whole if anything differs
+```
+
+| On import, SAGE B has ... | Result |
+|---|---|
+| no version with that id and number | imported |
+| an identical version | kept (nothing written) |
+| a different list with the same id and number | stored under a new id (a fork); the existing list is never overwritten |
+
+The index carries the license flags: a `local_only` list asks before export and warns on import. The glossary
+bundle (TARGET renderings) is the separate Job-to-Job transfer; each rendering carries its group key (concept +
+sense) and is matched by that key first, else by wording and lemma, so two Jobs on clones of the same master
+exchange renderings exactly.
 
 ## 3. Function 2: WIP-list flow (one Job)
 
@@ -174,11 +201,10 @@ target language.
 | Job | `localdata/work/jobs/pcc/<job>/` (pin in the Job defaults, glossary journal and records, Runs) |
 | List reports | `localdata/reports/pcc-reference-lists/` (`RL-DIFF`, `RL-COMPARE`, `RL-MERGE`, `RL-UPDATE`) |
 | Job reports | `localdata/reports/<job>/` |
-| Workbooks (list, changes) and bundles | `localdata/exports/pcc/` |
+| Workbooks (list, changes), bundles and `.sagerl.zip` packages | `localdata/exports/pcc/` |
 
 ## 6. Not yet built
 
-- Export/import of a list as one checksummed package for another SAGE instance (plan P5b-6).
 - The shipped Key Concepts package as an inventory without Biblical Terms (plan P5b-5a).
 - Carrying a multi-word Biblical Terms phrase's verse list into a list built from another list.
 - Operator guide sections in the full [SAGE Help](../../OPERATOR-GUIDE.md) (plan P9).

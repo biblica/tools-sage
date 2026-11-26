@@ -77,7 +77,7 @@ def test_job_reference_list_pins_a_stored_list_and_manage_offers_wip_attach(make
 
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
-    center = _center(root, ["4", "11", "1", "a", "5", "a", "a"], output)
+    center = _center(root, ["4", "13", "1", "a", "5", "a", "a"], output)
     job = center.store.create_job(
         tool="pcc", job_id="", display_name="PCC usNIVv2", bindings={"source": "usNIVv2"},
         defaults=pcc_default_settings("sw"),
@@ -135,7 +135,7 @@ def test_job_with_old_phrases_offers_the_move_into_its_list(make_workspace) -> N
 
     root = make_workspace(configured=True, qualification_status="VALIDATED")
     output = io.StringIO()
-    center = _center(root, ["12", "y", "y", "a"], output)
+    center = _center(root, ["14", "y", "y", "a"], output)
     store = _save_list(center, project_id="NOT-HERE")
     job = center.store.create_job(tool="pcc", job_id="", display_name="PCC usNIVv2", bindings={"source": "usNIVv2"},
                                   defaults=pcc_default_settings("sw") | {"reference_list": pin_for(store, "syn-list-0123abcd")})
@@ -184,3 +184,21 @@ def test_merge_menu_merges_chosen_changes_then_updates_and_repins_the_job(make_w
     pin = center.store.load_job(job.job_id, tool="pcc").defaults["reference_list"]
     updated = store.load(clone["rl_id"], pin["version"])[0]
     assert pin["rl_id"] == clone["rl_id"] and updated["build"]["parent"]["version"] == 2 and updated["build"]["local"] == []
+
+
+def test_reference_lists_export_and_import_a_shared_package(make_workspace) -> None:
+    """Reference lists -> 11 exports a .sagerl.zip (a local-only list asks first); -> 12 imports it back."""
+    import shutil
+
+    from sage.pcc_menu import reference_lists_menu
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    store = _save_list(center := _center(root, ["11", "1", "y", "a"], io.StringIO()))
+    reference_lists_menu(center)
+    package = center.store.storage.exports_root / "pcc" / "syn-list-0123abcd-v1.sagerl.zip"
+    assert package.is_file()
+    shutil.rmtree(store.root)
+    output = io.StringIO()
+    reference_lists_menu(_center(root, ["12", str(package), "a"], output))
+    assert "syn-list-0123abcd v1: imported" in output.getvalue()
+    assert store.versions("syn-list-0123abcd") == [1]

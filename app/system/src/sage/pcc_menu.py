@@ -22,11 +22,12 @@ from typing import Any
 
 from sage.errors import SageError, ValidationError
 from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
-from sage.pcc import decisions, glossary, layers, reflist_xlsx, transfer
+from sage.pcc import decisions, glossary, layers, reflist_xlsx, rlexchange, transfer
 from sage.pcc.phrases import job_phrase_lines, retire_job_phrases
 from sage.pcc.pin import repin
 from sage.pcc.reflist import ReferenceListStore
 from sage.pcc.rlservice import add_biblical_terms, build_reference_list_for, reference_context
+from sage.pcc.source_text import books_label, present_books, source_content_sha256
 from sage.pcc.run import OUTPUT_DIRECTORY, execute_pcc_run, load_run_snapshot, project_identity, run_initializer
 from sage.registry import load_ecosystem
 from sage.vrs import load_project_vrs
@@ -269,7 +270,9 @@ def reference_lists_menu(center, job=None) -> None:
                    ("7", "Add Paratext Biblical Terms (new version)"),
                    ("8", "Compare two versions of a list"),
                    ("9", "Update a WIP list from its master"),
-                   ("10", "Merge WIP-list changes into the master")]
+                   ("10", "Merge WIP-list changes into the master"),
+                   ("11", "Export a list to share with another SAGE (.sagerl.zip)"),
+                   ("12", "Import a shared list (.sagerl.zip)")]
         title = "PCC REFERENCE LISTS"
         moved = []
         if job is not None:
@@ -277,10 +280,10 @@ def reference_lists_menu(center, job=None) -> None:
             context = [f"PCC JOB                      {job.job_id}",
                        f"This JOB's list              {pin['rl_id']} v{pin['version']}" if pin else
                        "This JOB's list              none"] + context
-            options.append(("11", "Pin a master list to this JOB (cloned into this JOB's WIP list)"))
+            options.append(("13", "Pin a master list to this JOB (cloned into this JOB's WIP list)"))
             moved = job_phrase_lines(job.root)
             if moved:
-                options.append(("12", f"Move this JOB's own wordings into its list ({len(moved)} in phrases.txt)"))
+                options.append(("14", f"Move this JOB's own wordings into its list ({len(moved)} in phrases.txt)"))
             title = f"Reference list for {job.job_id}"
         choice = center.io.choose(title, tuple(options + [("B", "Back")]), context=tuple(context))
         if choice == "B":
@@ -356,7 +359,11 @@ def _reference_list_action(center, choice: str, job, moved: list[tuple[int, str]
         clone = _job_list(center, job) if job is not None else _choose_list(center, "Merge which WIP list?", kind="wip")
         if clone and layers.is_clone(clone):
             merge_menu(center, clone, job)
-    elif choice == "11" and job is not None:
+    elif choice == "11":
+        _export_shared(center, job)
+    elif choice == "12":
+        _import_shared(center, job)
+    elif choice == "13" and job is not None:
         pin = job.defaults.get("reference_list")
         if pin and layers.is_clone(store.load(pin["rl_id"], None)[0]):
             changes = len(store.load(pin["rl_id"], None)[0]["build"].get("local", []))
@@ -370,7 +377,7 @@ def _reference_list_action(center, choice: str, job, moved: list[tuple[int, str]
             version = _choose_version(center, manifest["rl_id"], "Pin which version?", default=manifest["version"])
             if version:
                 _clone_for_job(center, job, manifest["rl_id"], version)
-    elif choice == "12" and job is not None and moved:
+    elif choice == "14" and job is not None and moved:
         manifest = _job_list(center, job)
         if manifest is None:
             return
@@ -378,6 +385,41 @@ def _reference_list_action(center, choice: str, job, moved: list[tuple[int, str]
             stamp = datetime.now(timezone.utc).strftime("%Y%m%d")
             kept = retire_job_phrases(job.root, stamp)
             center.io.write(f"phrases.txt is now on the list; the file was kept as {kept.name}.")
+
+
+def _export_shared(center, job=None) -> None:
+    """Export one list (a WIP list together with its master version) as a .sagerl.zip."""
+    manifest = _target_list(center, job, "Export which list?")
+    if manifest is None:
+        return
+    if manifest["license"].get("local_only") and not center.io.confirm(
+            f"{manifest['rl_id']} is marked local only (built from licensed text or Paratext Biblical Terms). Share it "
+            "only within your organization's license. Export it?", default=False):
+        return
+    path, index = rlexchange.export_list(_rl_store(center), manifest["rl_id"], manifest["version"],
+                                         center.store.storage.exports_root / "pcc")
+    what = "WIP list with its master version" if index["kind"] == "WIP_LIST" else "master list"
+    center.io.write(f"Package written to {path} ({what}). Import it on the other SAGE under Reference lists -> 12.")
+
+
+def _import_shared(center, job=None) -> None:
+    """Import a .sagerl.zip; inside a Job offer to pin what came in."""
+    path = _ask_path(center, f"Path of the {rlexchange.SUFFIX} package (blank to cancel)")
+    if path is None:
+        return
+    result = rlexchange.import_list(_rl_store(center), path)
+    for line in result.lines():
+        center.io.write(line)
+    main = result.main
+    if job is None or main is None:
+        return
+    if layers.is_clone(main):
+        if center.io.confirm(f"Pin WIP list {main['rl_id']} v{main['version']} to {job.job_id} (it becomes this JOB's "
+                             "WIP list)?", default=False):
+            _repin(center, job, main["rl_id"], main["version"])
+    elif center.io.confirm(f"Pin master {main['rl_id']} v{main['version']} to {job.job_id} (cloned into this JOB's WIP "
+                           "list)?", default=False):
+        _clone_for_job(center, job, main["rl_id"], main["version"])
 
 
 def _after_build(center, manifest, job) -> None:
@@ -467,6 +509,25 @@ def _parse_numbers(text: str, limit: int) -> list[int]:
     return sorted(n for n in picked if 1 <= n <= limit)
 
 
+def _coverage(center, manifest: dict[str, Any]) -> tuple[str, list[str]]:
+    """(coverage line, warnings) of a list against its reference text as it is now in this SAGE."""
+    books = manifest["build"].get("settings", {}).get("books")
+    line = f"Built on {books_label(books)}" if isinstance(books, list) else "Built on: not recorded"
+    try:
+        project = _config(center).project(manifest["reference"]["project_id"])
+    except SageError:
+        return line + " (the reference text is not in this SAGE)", []
+    warnings = []
+    present = present_books(Path(project.path))
+    if isinstance(books, list) and set(present) - set(books):
+        warnings.append(f"The text now has {books_label(present)}: widen the list (Build a new list from an existing "
+                        "list, with the same text). Every decision is kept.")
+    elif source_content_sha256(Path(project.path)) != manifest["reference"]["content_sha256"]:
+        warnings.append("The text changed since this version was built: rebuild it on the same text to locate the "
+                        "concepts again (every decision is kept).")
+    return line, warnings
+
+
 def _show_lists(center) -> None:
     """Every master list with its versions, its WIP lists and the Jobs that pin them."""
     store = _rl_store(center)
@@ -484,6 +545,10 @@ def _show_lists(center) -> None:
         ref = manifest["reference"]
         center.io.write(f"{manifest['title']}  ({manifest['rl_id']}, master)")
         center.io.write(f"  Reference text: {ref['project_id']} [{ref['language_tag']}]")
+        coverage, warnings = _coverage(center, manifest)
+        center.io.write(f"  {coverage} (newest version)")
+        for warning in warnings:
+            center.io.write(f"  ! {warning}")
         for version in reversed(store.versions(manifest["rl_id"])):
             try:
                 m, _ = store.load(manifest["rl_id"], version)
@@ -551,8 +616,12 @@ def _build_from_list(center, job=None):
     project = config.project(project.project_id)
     same = project.project_id == base["reference"]["project_id"]
     if same:
-        center.io.write(f"Same text as the base: this rebuilds {base['rl_id']} as its next version; every decision "
-                        "is kept.")
+        books = base["build"].get("settings", {}).get("books")
+        present = present_books(Path(project.path))
+        was = f" (the list covered {books_label(books)})" if isinstance(books, list) and books != present else ""
+        center.io.write(f"Same text as the base: this rebuilds {base['rl_id']} on all {books_label(present)} of "
+                        f"{project.project_id}{was} as its next version. Every decision is kept: KEEP, DROP, notes "
+                        "and added wordings.")
         title = base["title"]
     else:
         center.io.write(f"The concepts of {base['rl_id']} v{version} are carried over by original-language key and "
@@ -560,7 +629,7 @@ def _build_from_list(center, job=None):
                         "workbook (KEEP / DROP). Concepts the team dropped stay out.")
         title = center.io.text(f"Title for the new list (blank: {project.project_id} reference list)",
                                required=False).strip() or f"{project.project_id} reference list"
-    biblical_terms = _biblical_terms_path(center, project) if not same else None
+    biblical_terms = _biblical_terms_path(center, project)
     return _run_build(center, config, project, title, biblical_terms, (base["rl_id"], version))
 
 
@@ -584,6 +653,12 @@ def _run_build(center, config, project, title: str, biblical_terms: Path | None,
     if carried:
         center.io.write(f"From the base list: {carried['concepts']} concept(s) carried, {carried['dropped']} dropped "
                         "decision(s) kept.")
+        if "drops_kept" in carried:
+            center.io.write(f"{carried['drops_kept']} DROP decision(s) kept.")
+        unchanged = carried.get("kept_unchanged") or []
+        if unchanged:
+            center.io.write(f"{len(unchanged)} concept(s) could not be located again and were kept as they were: "
+                            f"{', '.join(unchanged[:15])}{' ...' if len(unchanged) > 15 else ''}.")
         other = carried.get("wordings_other_language") or []
         if other:
             center.io.write(f"{len(other)} wording(s) the team added to the base list are in another language and were "

@@ -473,7 +473,13 @@ CONTRACTS["reference_list_entry"] = _object({
     "verses": _COUNT,
     "examples": {"type": "array", "items": _TEXT},
     "notes": {"type": "string"},
-})
+    # BT concepts only (P5b-5): what locates a Biblical Terms phrase whose lemmas do not name every word, so a list
+    # built from this one can locate it in another text. Optional: older lists have none.
+    "locate": _object({"family": {"type": "string"},
+                       "references": {"type": "array", "items": _TEXT},
+                       "surfaces": {"type": "array", "items": {"type": "array", "items": _TEXT}}}),
+}, required=["concept_key", "anchor", "label", "category", "status", "origin", "sources", "senses", "realization",
+             "verses", "examples", "notes"])
 
 RECORD_KINDS = tuple(sorted(CONTRACTS))
 

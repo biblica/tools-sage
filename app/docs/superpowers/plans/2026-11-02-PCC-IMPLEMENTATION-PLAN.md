@@ -1440,6 +1440,90 @@ Out of P6: specificity and conflicts (P7), reverse scan (P8), advisory model (P1
 - Tests: `tests/pcc/test_pcc_wip_lists.py` (record, add, update with master-drop rule, merge all/chosen/workbook),
   menu merge flow in `test_pcc_menu.py`.
 
+### P5b-6 as built (2026-11-26): list exchange and concept-keyed glossary bundle
+
+- `sage/pcc/rlexchange.py`: `export_list` writes `<rl_id>-v<n>.sagerl.zip` (index `SAGERL.json` with format,
+  main list, packages with their `CHECKSUMS.sha256` hashes, `local_only`, license ids and an index SHA-256; members
+  `packages/<rl_id>/<v>/{MANIFEST.json, entries.jsonl, CHECKSUMS.sha256}`; fixed zip timestamps, so exports are
+  byte-reproducible). A WIP list is exported with its master version. `read_package` refuses non-zips, duplicate
+  or unexpected member names (no path traversal), oversize packages (512 MB), a changed index, and packages that
+  differ from the index or fail their own checksums, before anything reaches the store. `import_list` imports
+  masters first through `ReferenceListStore.import_package` (kept / imported / forked, never overwrites) and notes a
+  forked master of a WIP list and the local-only flag.
+- Glossary bundle (`transfer.py`): rules carry `group_id`; `_propose` matches the group first, then wording +
+  lemma. Bundles without `group_id` still import by wording.
+- Menu: Reference lists -> 11 Export a list to share (local-only lists ask first), 12 Import a shared list (inside
+  a Job: offer to clone a master or pin a WIP list); Job-only options move to 13 (pin) and 14 (move phrases).
+- Tests: `tests/pcc/test_pcc_exchange.py` (two stores: move, reproducible bytes, kept, WIP list with master then
+  merge, fork, tampered index / entries / unsafe member / non-zip refused, group-keyed bundle match) and a menu
+  export -> import test. Real data: the idKKH John WIP list with its master is a 33 KB package; imported into an
+  empty store with the local-only note.
+- Not done: exporting all versions of a list (history) in one package.
+
+### Widening a list when the reference text grows (2026-11-26)
+
+- Lists are built on every book of the reference text present at build time (menu); the tool may restrict books.
+  The list records `build.settings.books`. WIP growth needs no list change: Runs take the Operator's scope.
+- Same-text rebuild (Build from an existing list, same text) reads all present books, offers Biblical Terms again
+  (previously only for another text, so new-book-only concepts could not enter), keeps inherited statuses, keeps base
+  `DROPPED` entries (previously removed, losing the decision for later builds), and keeps any non-dropped concept it
+  cannot locate again unchanged (`inherited.kept_unchanged`; e.g. multi-word `BT` phrases without their verse list).
+- `add_biblical_terms` reports when the text has more books than the list covers. `PCC_RL_NO_TEXT` stops a build that
+  reads no verses (found when a mis-split book list read 0 verses and would have written an empty-text version).
+- Show lists: coverage line (`source_text.books_label`, e.g. "30 books (NT and 3 OT books)") and warnings when the
+  text gained books or its content hash changed.
+- Measured: usNIV John list 141 -> NT 686 concepts, 7,958 verses, 39 s, all 141 carried.
+
+### P9 acceptance matrix AT01–AT30 (audit 2026-11-26)
+
+Each handover acceptance case (doc 08) against the test that proves it, a decided deviation, or an open gap.
+Tests are in `app/system/tests/pcc/`.
+
+| AT | Expected | Status | Evidence |
+|---|---|---|---|
+| 01 | PC00 | covered | `test_pcc_check::test_synthetic_s4_…` |
+| 02 | PC01 | covered | `test_pcc_check::test_synthetic_s1_…` |
+| 03 | two senses, no cross obligation | covered | `test_pcc_p4::test_divergent_lemmas_split…`, `test_pcc_rlbuild::test_senses_split_by_case…` |
+| 04 | PC10 | covered | `test_synthetic_s1` |
+| 05 | PC01 through grammar | covered | `test_learned_inflection_and_declared_spelling…` |
+| 06 | PC13 | covered | `test_negation_shift_only_with_declared_markers` |
+| 07 | PC11 | covered | `test_omission_with_reliable_alignment_is_pc11…` |
+| 08 | PC12 | covered | `test_pcc_p8::test_rendering_without_source_support…` |
+| 09 | no PC12 | covered | `test_pcc_p8::test_alternate_source_construction…` |
+| 10 | multi-unit rendering, no automatic PC11 | **open** | no PC11 (a learned span is found), but a rendering split by other words gives a spurious PC10: `check.learned_span` keeps one contiguous run (gaps of 1 bridged), not the span set P6-3 describes. Needs a recall re-measure before changing |
+| 11 | PC20 | covered | `test_single_verse_groups_…_pc20` |
+| 12 | PC21, not PC11 | covered, **fixed** | `test_omission_…weak_alignment_is_pc21`; `test_pcc_acceptance::test_at12_…` (a group with PC21 occurrences was PC02 in one branch; now PC21) |
+| 13 | STALE | covered | `test_pcc_p7::test_text_bound_rules_go_stale…`, `test_pcc_pin::test_repin…stale` |
+| 14 | PC23 | covered; D9 | the group only is `BLOCKED`; the Run continues |
+| 15 | secondary SOURCE advisory | covered (no advisory output) | `test_pcc_acceptance::test_at15_…`: same groups, audit and findings with and without a secondary; `PRIMARY_CONTROLS` sealed. No advisory comparison is produced yet |
+| 16 | informational | covered | `test_single_verse_groups_are_informational…` |
+| 17 | footnotes and headings excluded | covered | `test_pcc_acceptance::test_at17_…` (behavior was already correct) |
+| 18 | deterministic | covered | `test_pcc_p7::test_check_outputs…deterministic`, `test_pcc_p1::test_run_outputs_are_identical…` |
+| 19 | PC24 | D7 | Job-creation errors: `test_pcc_p1::test_pcc_job_creation_rejects_invalid_contracts` (now also secondary = SOURCE, a WIP as secondary, an unknown Project) |
+| 20 | PC25 / integrity | covered, **fixed** | hash changes stop the Run (`test_run_stops_when_the_source_changes…`, `test_changed_list_package_stops…`, tamper tests); malformed Biblical Terms references are now reported (`test_pcc_acceptance::test_at20_…`). Open: a verse record the USFM compiler cannot read is dropped by the shared `numbers.target.target_units` without a PCC report |
+| 21 | nested phrases, no issue inflation | covered, **fixed** | `test_pcc_p3::test_nested_phrase_deduped…`; `test_pcc_acceptance::test_at21_…` (same-code findings on overlapping SOURCE spans now share one issue cluster: `check.merge_overlapping_clusters`) |
+| 22 | lexically different forms separate | D18/D19 | groups are concept + head-word sense; different heads split |
+| 23 | no automatic pass | covered | `test_pcc_p7::test_proposed_revoked_and_stale_rules_never_accept` |
+| 24 | REJECT wins | covered | `test_pcc_p7::test_most_specific_rule_wins…` |
+| 25 | versification spans or PC21 | covered | `test_bridged_and_missing_verses` |
+| 26 | other scripts | covered, **fixed** | `test_pcc_p2::test_unspaced_script_gets_character_tokens`; `test_pcc_acceptance::test_at26_…` (an approved multi-character form never matched an unspaced WIP's single-character tokens; `check.form_tokens` now cuts forms the way the WIP side is cut) |
+| 27 | PC02 | covered | `test_synthetic_s4` |
+| 28 | REFERENCE byte-identical | covered | `test_pcc_p1::test_reference_resources_stay_byte_identical` |
+| 29 | linked issue cluster | covered | `test_pcc_p8::test_moved_rendering_shares_the_omission_cluster` |
+| 30 | absent phrase is a candidate | covered | `test_pcc_p3::test_local_phrase_never_pruned…`, `test_pcc_p1::test_terms_run…` |
+
+### P9 whole-Bible benchmark (2026-11-26, Apple silicon laptop)
+
+| Step | Text | Result | Time | Peak memory |
+|---|---|---|---|---|
+| Build a list (alignment cached) | usNIVv2, 66 books, Paratext Biblical Terms | 31,219 verses, 2,233 concepts | 28 s | 2.4 GB |
+| Build from that list (cold alignment) | spaNVIv3, 66 books | 1,906 concepts carried and located (all PROPOSED), 291 below recurrence, 34 not rendered | 184 s | 2.9 GB |
+| Check, no glossary (every group learned-only), self-qualification on | usNIVv2 -> spaNVIv3, 66 books | 31,215 verse pairs, 3,235 groups compared; outcomes PC10 1,362, PC02 943, PC11 903, PC21 27; 6,615 issue clusters; per 1,000 verses PC10 44, PC11 51, PC12 45, PC20 31, PC21 43; planted recall substitution 78%, removal 78%, insertion 75% (all below the 80% bar: BEST_EFFORT) | 2,423 s (model training 1,135 s; ran alongside the test suite, so slower than alone) | 4.1 GB |
+
+Reading: a whole-Bible check runs in one go on a laptop. With no approved renderings the review load is high
+(6,615 issues), because every uniform-but-unapproved and every differing learned rendering is reported; approved
+renderings turn most groups into PC00/PC01. The model training step dominates and is the first optimization target.
+
 ### P7 plan (rule resolver and decisions)
 
 | Step | Work | Done when |
@@ -1504,6 +1588,7 @@ false-alarm rate and substitution plant quality (§ P6 as built). P7 (scopes, re
 P8 (reverse scan, `PC12`, issue clusters) is built (2026-11-26), so the handover's Stage 1 functions (M0–M6) exist.
 2026-11-26: D21 and D22 decided (WIP lists: Job clones the master, Operator merges changes); P5b-7 (reference-list menu outside a Job, two-function menu) and the core of P5b-5
 (building a list from another list) are built, with an Operator guide and a flow document.
-Open: P5b-5a (Key Concepts package), the rest of P5b-5 (BT verse lists, notes), P5b-6 (exchange), P9 (reports, full
-acceptance), and the `PC11` / `PC12` false-alarm rates (two-LLM judging, waits for a provider). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+P5b-6 (list exchange, concept-keyed glossary bundle) built 2026-11-26; P5b-5 completed (Biblical Terms phrases
+carry their verse lists); P9: SAGE Help, limitations, notices, acceptance matrix (AT10 open) and whole-Bible benchmark done.
+Open: P5b-5a (Key Concepts package), AT10 (span sets), PCC report layout in SAGE conventions, and the `PC11` / `PC12` false-alarm rates (two-LLM judging, waits for a provider). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

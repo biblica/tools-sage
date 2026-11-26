@@ -55,6 +55,37 @@ def source_units_for_project(project_path) -> list[SourceUnit]:
     return units
 
 
+def present_books(project_path) -> list[str]:
+    """Book codes a Project folder holds, in canonical order (read from each file's ``\\id`` line)."""
+    from ..canon import NT_27, OT_39
+    present = set()
+    for path in _book_files(project_path):
+        match = re.search(r"\\id\s+([1-4A-Z]{3})", Path(path).read_text(encoding="utf-8-sig")[:400])
+        if match:
+            present.add(match[1])
+    return [b for b in list(OT_39) + list(NT_27) if b in present]
+
+
+def books_label(books: list[str]) -> str:
+    """Coverage in words: '27 books (NT)', '66 books (OT and NT)', '30 books (NT and 3 OT books)', '2 books (MAT, JHN)'."""
+    from ..canon import NT_27, OT_39
+    if not books:
+        return "no books"
+    noun = "book" if len(books) == 1 else "books"
+    if len(books) <= 3:
+        return f"{len(books)} {noun} ({', '.join(books)})"
+    chosen = set(books)
+    parts = []
+    for name, canon in (("OT", OT_39), ("NT", NT_27)):
+        count = len(chosen & set(canon))
+        if count == len(canon):
+            parts.append(name)
+        elif count:
+            parts.append(f"{count} {name} book{'s' if count != 1 else ''}")
+    parts.sort(key=lambda part: part[0].isdigit())
+    return f"{len(books)} {noun} ({' and '.join(parts)})"
+
+
 def reference_units(project_path, books: list[str] | None = None) -> list[SourceUnit]:
     """Every verse record of a Project (or of ``books``), in canonical book order.
 

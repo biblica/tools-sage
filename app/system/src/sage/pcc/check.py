@@ -140,12 +140,13 @@ class Side:
 
     tokens: dict[str, list[Token]] = field(default_factory=dict)      # pair -> tokens (offsets index their unit)
     units: dict[str, list[str]] = field(default_factory=dict)         # pair -> unit id per token
+    unspaced: bool = False                                            # each letter is a token (AT26)
 
 
 def side_tokens(pairs: Sequence[Pair], units: Mapping[str, SourceUnit], which: str, *, cased: bool,
                 letter_marks: Iterable[str] = (), unspaced: bool = False) -> Side:
     """Tokenize one side of every pair (units in order)."""
-    side = Side()
+    side = Side(unspaced=unspaced)
     marks = tuple(letter_marks)
     for pair in pairs:
         tokens, owners = [], []
@@ -243,6 +244,18 @@ def find_form(form: Sequence[str], tokens: Sequence[Token], morph: Morphology) -
             if [view(x) for x in norms[i:i + n]] == wanted:
                 return i, i + n - 1, kind
     return None
+
+
+def form_tokens(form: str, side: Side) -> list[str]:
+    """Comparison tokens of a written or approved form, cut the way ``side`` cuts its text (AT26).
+
+    A spaced script splits on whitespace. An unspaced script (each letter its own token) splits the form into
+    letters too, so an approved ``灯火`` matches the WIP tokens ``灯`` ``火``.
+    """
+    folded = nfc_fold(form)
+    if side.unspaced:
+        return [nfc_fold(t.norm) for t in tokenize(folded, unspaced=True)]
+    return folded.split()
 
 
 def form_class(form: str, morph: Morphology) -> str:
@@ -439,7 +452,7 @@ def locate(inp: CheckInput, occ: Mapping[str, Any], group: str, nth: int = 0) ->
     rules = _group_rules(inp.rules, group)
     found = None
     for rule in rules:
-        hit = find_form([nfc_fold(t) for t in rule["normalized_target_form"].split()], tgt, inp.morph)
+        hit = find_form(form_tokens(rule["normalized_target_form"], inp.target_side), tgt, inp.morph)
         if hit is not None:
             found = (hit, "glossary form")
             break
@@ -464,10 +477,12 @@ def locate(inp: CheckInput, occ: Mapping[str, Any], group: str, nth: int = 0) ->
     norm = " ".join(t.norm for t in tgt[first:last + 1])
     key = form_class(norm, inp.morph)
     site = Site(group, ref, nth, vhash)
-    decision = resolve(rules, site, key, lambda form: form_class(nfc_fold(form), inp.morph), inp.verse_hashes)
+    decision = resolve(rules, site, key, lambda form: form_class(" ".join(form_tokens(form, inp.target_side)), inp.morph),
+                       inp.verse_hashes)
     status = {"ACCEPT": "ACCEPTED", "CONTEXT_ONLY": "ACCEPTED", "REJECT": "REJECTED", "CONFLICT": "CONFLICT"}.get(decision.effect or "", "FORM")
     if status == "ACCEPTED" and kind == "LEARNED":
-        approved = {nfc_fold(r["normalized_target_form"]) for r in rules if r["rule_id"] in decision.rule_ids}
+        approved = {" ".join(form_tokens(r["normalized_target_form"], inp.target_side)) for r in rules
+                    if r["rule_id"] in decision.rule_ids}
         kind = "EXACT" if nfc_fold(norm) in approved else "INFLECTION"
     reason = how + (f"; {decision.effect.lower()} by {', '.join(decision.rule_ids)} ({decision.level})" if decision.effect
                     else "; no approved rule")
@@ -539,6 +554,9 @@ def classify(evs: Sequence[Evidence], *, confirmed: bool, morph: Morphology,
         group = "PC13"
     elif omissions and group in ("PC02",):
         group = "PC11"
+    elif uncertain and group == "PC02":
+        # as in the all-approved branch: a group with undecidable occurrences is never reported as uniform (AT12)
+        group = "PC21"
     return group, per
 
 
@@ -609,6 +627,7 @@ def run_check(inp: CheckInput, *, qualify: bool = True, seed: int = 0) -> CheckR
                  "SOURCE sense unresolved; decide the sense before this wording is compared.", "LOW")
     ctx = reverse_scan(inp, result)
     result.reverse.sort(key=lambda r: (r["group_id"], r["pair_id"]))
+    merge_overlapping_clusters(inp, result)
     if qualify:
         result.qualification = self_qualify(inp, result, seed=seed)
         result.qualification["INSERTION"] = qualify_insertion(inp, result, ctx, seed=seed)
@@ -643,6 +662,44 @@ def _audit(result: CheckResult, inp: CheckInput, occ: Mapping[str, Any], gid: st
     result.audit.append({"schema_version": SCHEMA_VERSION, "run_id": inp.run_id, "occurrence_id": occ["occurrence_id"],
                          "group_id": gid, "disposition": disposition, "result_code": code, "reason": reason})
     result.counts[f"audit_{disposition.lower()}"] += 1
+
+
+def merge_overlapping_clusters(inp: CheckInput, result: CheckResult) -> None:
+    """AT21: findings of one code on overlapping SOURCE spans (nested or overlapping concepts, e.g. *Son of Man*
+    and *Man*) are one issue. Every finding and its evidence is kept; they share one ``issue_cluster_id``, so the
+    issue count is not inflated. Links already made (a PC12 joined to its PC11, AT29) follow the merge."""
+    by_occ = {o["occurrence_id"]: o for o in inp.occurrences}
+    spans: dict[tuple[str, str], list[tuple[int, int, str]]] = defaultdict(list)
+    for finding in result.findings:
+        for oid in finding["source_occurrence_ids"]:
+            occ = by_occ.get(oid)
+            if occ is not None:
+                spans[(finding["code"], occ["source_unit_id"])].append(
+                    (occ["body_start"], occ["body_end"], finding["issue_cluster_id"]))
+    parent: dict[str, str] = {}
+
+    def root(cluster: str) -> str:
+        """Union-find root (the smallest id wins, so the result does not depend on order)."""
+        while parent.get(cluster, cluster) != cluster:
+            cluster = parent[cluster]
+        return cluster
+
+    for items in spans.values():
+        items.sort()
+        for i, (start, end, cluster) in enumerate(items):
+            for other_start, other_end, other in items[i + 1:]:
+                if other_start >= end:
+                    break
+                a, b = sorted((root(cluster), root(other)))
+                if a != b:
+                    parent[b] = a
+    if not parent:
+        return
+    for finding in result.findings:
+        merged = root(finding["issue_cluster_id"])
+        if merged != finding["issue_cluster_id"]:
+            finding["issue_cluster_id"] = merged
+            result.counts["clusters_merged_overlap"] += 1
 
 
 def _finding(result: CheckResult, inp: CheckInput, code: str, gid: str | None, occs: Sequence[Mapping[str, Any]],
@@ -761,7 +818,7 @@ def scan_forms(inp: CheckInput, result: CheckResult) -> list[ScanForm]:
         for rule in sorted(inp.rules.values(), key=lambda r: r["rule_id"]):
             if (rule["group_id"] == gid and rule["state"] == "APPROVED" and rule["effect"] in ("ACCEPT", "CONTEXT_ONLY")
                     and rule["scope"]["level"] == "SECG" and "=" not in rule["normalized_target_form"]):
-                tokens = tuple(nfc_fold(rule["normalized_target_form"]).split())
+                tokens = tuple(form_tokens(rule["normalized_target_form"], inp.target_side))
                 key = tuple(form_class(" ".join(tokens), inp.morph).split())
                 forms.setdefault((gid, key), ScanForm(gid, key, tokens, f"approved rule {rule['rule_id']}", False))
         seen = Counter(e.form_key for e in evs if e.status in ("ACCEPTED", "FORM") and e.form_key)
@@ -1017,7 +1074,7 @@ def _plant(inp: CheckInput, occ: Mapping[str, Any], ev: Evidence, kind: str, rng
     if pair_id is None or not ev.form:
         return None
     tokens = inp.target_side.tokens[pair_id]
-    hit = find_form(ev.form_key.split(), tokens, inp.morph) or find_form([nfc_fold(t) for t in ev.form.split()], tokens, inp.morph)
+    hit = find_form(ev.form_key.split(), tokens, inp.morph) or find_form(form_tokens(ev.form, inp.target_side), tokens, inp.morph)
     if hit is None:
         return None
     first, last, _ = hit

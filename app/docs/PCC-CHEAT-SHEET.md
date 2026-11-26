@@ -37,9 +37,11 @@ Reference lists
    8. Compare two versions of a list
    9. Update a WIP list from its master
   10. Merge WIP-list changes into the master
+  11. Export a list to share with another SAGE (.sagerl.zip)
+  12. Import a shared list (.sagerl.zip)
    -- inside a Job only --
-  11. Pin a master list to this JOB (cloned into this JOB's WIP list)
-  12. Move this JOB's own wordings into its list   (older Jobs with a phrases.txt)
+  13. Pin a master list to this JOB (cloned into this JOB's WIP list)
+  14. Move this JOB's own wordings into its list   (older Jobs with a phrases.txt)
 
 PCC JOB <id>
    1. Build SOURCE terms list (from the pinned reference list)    or: Continue PCC Run <id>
@@ -67,7 +69,7 @@ Glossary
   10. Revoke an approved rendering
 ```
 
-Inside a Job, Reference lists options 4, 6, 7, 9 and 10 act on **this Job's WIP list**; outside a Job you choose
+Inside a Job, Reference lists options 4, 6, 7, 9, 10 and 11 act on **this Job's WIP list**; outside a Job you choose
 the list. Option numbers in the Job menu move up by one while a Run is open (option 1 is then **Continue PCC
 Run**). **A** goes back one menu.
 
@@ -99,6 +101,19 @@ by a wording). Each concept is split into **senses** by the reference's own word
 
 The base list is never changed.
 
+### When the reference text grows (widen a list)
+
+A list covers the books its reference text had when it was built; **Show lists and versions** states the coverage
+(for example `Built on 30 books (NT and 3 OT books)`) and warns when the text now has more books, or has changed
+since the build. To widen it: **Reference lists → 3**, choose the list as the base and the **same text**. PCC
+rebuilds it on every book now in the text, as the list's next version, and offers the text's Biblical Terms again,
+so concepts that occur only in the new books are added. Every decision is kept: KEEP, DROP, notes and added
+wordings. A curated concept the rebuild cannot locate again is kept as it was and named in the summary. Then
+update the Jobs' WIP lists from the master (**9**) as usual.
+
+A Job's WIP growing book by book needs none of this: the list already covers the complete reference text, and each
+terms or check Run takes the scope you give it (a book, a chapter, a range).
+
 ### Curate a list (workbook)
 
 **Reference lists → 4** writes `RL-<id>-v<n>.xlsx` to `localdata/exports/pcc/`. In sheet **Entries**:
@@ -129,6 +144,17 @@ Both write a new version and a report. The reference text must be in this SAGE i
 Every change writes a **new version**; an old version is never edited. A Job stays on the version it pinned until
 it is re-pinned. **1. Show lists and versions** shows each master, its versions (how each was made), its WIP lists
 (with their changes) and the Jobs. **8. Compare two versions** writes `RL-COMPARE-<id>-v<a>-v<b>.md`.
+
+### Share a list with another SAGE
+
+**Reference lists → 11** writes `<list>-v<n>.sagerl.zip` to `localdata/exports/pcc/`: one checksummed file with the
+list version. A WIP list is exported **together with the master version it was cloned from**, so it can still be
+updated and merged on the other SAGE. A list marked **local only** asks before it is exported.
+
+**Reference lists → 12** imports a `.sagerl.zip`. PCC checks the whole package first and refuses a changed or
+damaged one. Nothing already stored is overwritten: an identical version is kept, and a different list with the
+same id and version is stored under a new id. Inside a Job, PCC then offers to pin what came in (a master is cloned
+into the Job's WIP list; a WIP list becomes the Job's list).
 
 ## Function 2: PCC Jobs and their WIP lists
 
@@ -200,7 +226,8 @@ in the same text the list was built on is **CURATED**; on another text it is **P
 Other ways to propose renderings, all of which arrive as **proposals** for **Glossary → 4 Review**:
 
 - **3** Paratext `TermRenderings.xml` (read only);
-- **6** a glossary bundle exported (**5**) from another WIP of the same language;
+- **6** a glossary bundle exported (**5**) from another WIP of the same language; each rendering is matched to the
+  same concept and sense first (Jobs on clones of the same master share them), otherwise by wording;
 - **7** your own list: `wording, rendering(s)[, note]`.
 
 If an import names SOURCE wordings that are not on the terms list, PCC offers to add them to **this Job's WIP
@@ -249,12 +276,12 @@ the effect.
   `PCC-REPIN-<list>-v<n>.md`.
 - **Glossary → 9 Review stale rules**: rules tied to WIP text that has since changed; mark them STALE or revoke.
 - **Glossary → 10 Revoke**: a revoked rendering stays in the journal and is never applied again.
-- **Job → 4 → 11** pins a different master. It replaces the Job's WIP list with a new clone; merge the old WIP
+- **Job → 4 → 13** pins a different master. It replaces the Job's WIP list with a new clone; merge the old WIP
   list's changes first if the master should keep them.
 
 ### Older Jobs
 
-A Job created before 2026-11-26 may have its own `input/phrases.txt`. **Job → 4 → 12** moves those wordings into
+A Job created before 2026-11-26 may have its own `input/phrases.txt`. **Job → 4 → 14** moves those wordings into
 the Job's WIP list (cloning the master first if needed), re-pins the Job, and keeps the file as
 `phrases.moved-<date>.txt`. Key terms imported into an older Job keep working for that Job.
 
@@ -279,6 +306,7 @@ the Job's WIP list (cloning the master first if needed), re-pins the Job, and ke
 | Master lists and WIP lists (versions) | `localdata/inputs/resources/reference-lists/<list>/<version>/` |
 | List workbooks | `localdata/exports/pcc/RL-<list>-v<n>.xlsx` |
 | Changes workbook (manual merge) | `localdata/exports/pcc/RL-CHANGES-<wip list>-v<n>.xlsx` |
+| List to share with another SAGE | `localdata/exports/pcc/<list>-v<n>.sagerl.zip` |
 | List reports | `localdata/reports/pcc-reference-lists/` (`RL-DIFF`, `RL-COMPARE`, `RL-MERGE`, `RL-UPDATE`) |
 | Terms list to fill in | `localdata/reports/<job>/TERMS-LIST.md`, `TERMS-LIST.xlsx` |
 | Check reports | `localdata/reports/<job>/PCC-CHECK.md`, `PCC-FINDINGS.xlsx` |

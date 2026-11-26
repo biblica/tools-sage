@@ -245,6 +245,10 @@ def test_pcc_job_with_wip_and_secondary_source(make_workspace) -> None:
         ({"source": "usNIVv2"}, {"target_language": "sw"}, "PCC_JOB_DEFAULTS_INVALID"),
         ({"source": "usWIP"}, pcc_default_settings("sw"), "PROJECT_BINDING_MISMATCH"),
         ({"wip": "usWIP"}, pcc_default_settings("en"), "PROJECT_BINDING_MISMATCH"),
+        # AT19 (D7: an unresolved SOURCE authority is a Job-creation error, not a Run finding PC24)
+        ({"source": "usNIVv2", "secondary_source": "usNIVv2"}, pcc_default_settings("sw"), "PROJECT_ROLE_CONFLICT"),
+        ({"source": "usNIVv2", "secondary_source": "usWIP"}, pcc_default_settings("sw"), "PROJECT_BINDING_MISMATCH"),
+        ({"source": "no-such-project"}, pcc_default_settings("sw"), "PROJECT_BINDING_MISMATCH"),
     ],
 )
 def test_pcc_job_creation_rejects_invalid_contracts(make_workspace, bindings, defaults, code) -> None:
