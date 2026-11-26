@@ -56,6 +56,9 @@ class ImportReport:
     imported: int = 0
     unchanged: int = 0
     problems: list[str] = field(default_factory=list)
+    # SOURCE wordings that are not on the terms list: (line, wording). They belong on the reference list,
+    # never in the Job; the menu offers to add them to the pinned list as a new version.
+    missing_wordings: list[tuple[int, str]] = field(default_factory=list)
 
     def as_lines(self) -> list[str]:
         """Return Operator-readable lines."""

@@ -64,3 +64,23 @@ def read_phrases(path: Path, traits: WipTraits) -> tuple[list[PhraseLine], list[
     except UnicodeDecodeError as exc:
         return [], [PhraseProblem(0, path.name, f"NOT_UTF8:{exc.reason}")]
     return parse_phrases(text, traits)
+
+
+def job_phrase_lines(job_root: Path) -> list[tuple[int, str]]:
+    """(line, wording) of a Job's own ``input/phrases.txt`` (older Jobs); blank and ``#`` lines skipped."""
+    path = Path(job_root) / "input" / PHRASES_FILE
+    if not path.is_file():
+        return []
+    text = path.read_bytes().decode("utf-8-sig", errors="replace")
+    return [(n, nfc(raw).strip()) for n, raw in enumerate(text.splitlines(), 1)
+            if nfc(raw).strip() and not nfc(raw).strip().startswith("#")]
+
+
+def retire_job_phrases(job_root: Path, stamp: str) -> Path | None:
+    """Rename a Job's ``phrases.txt`` once its lines live on the reference list; the file is kept, never deleted."""
+    path = Path(job_root) / "input" / PHRASES_FILE
+    if not path.is_file():
+        return None
+    target = path.with_name(f"phrases.moved-{stamp}.txt")
+    path.rename(target)
+    return target

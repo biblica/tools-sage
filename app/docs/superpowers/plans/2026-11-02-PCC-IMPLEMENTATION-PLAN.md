@@ -83,7 +83,9 @@ Book scope, discovery settings, RL version and reference are **not** in the key,
 | D19 | Senses inside a concept | A concept is partitioned into senses by the **reference's own lexical choice**: the head word of the aligned span. Inflections, and multi-word renderings that share the head, merge. Capitalization counts as a sense feature outside sentence-initial position. Rare wordings go to "other renderings" for the team. The team merges or splits senses in the RL workbook; OL lemma splits (AT03) still apply. This refines the per-concept decision: one decision per concept **sense**. Measured need: NIV renders Ἰουδαῖος as *Jews* (30 verses) and as *Jewish leaders* (11), a deliberate sense distinction | **DECIDED** (PO 2026-11-25) |
 | D20 | BSB tables as first-party data | `bsb_tables.xlsx` derives from MACULA (Biblica-owned, CC BY 4.0) plus BSB (public domain). It becomes a **build-time input**: gold word alignment for a BSB RL and for the Key Concepts package, not only evaluation data. Only the columns needed are read (verse, word orders, Strong's, English); no restricted fields (D3). **SAGE is based on BSB (PO 2026-11-25):** Biblica holds no MACULA alignment of the NIV; the BSB derives from NIV84, so an NIV (or other English) reference is aligned to BSB (same language) and through BSB's gold alignment to the OL, with direct EM alignment as fallback and for other languages. Shipped as `SAGE_PCC_OL_2026-11-25` (P5b-R) | **DECIDED** (PO 2026-11-25) |
 | D18 | What a "phrase" is | **A phrase is a semantic identity (one unit of meaning), never a frequent word combination** (user feedback, 2026-11-25). Frequency n-grams and co-occurrence statistics never create list entries; they only help locate wordings. A multi-word entry is admitted only as: **S1** a curated multi-word key term (Biblical Terms multi-word OL term); **S2** a multi-word SOURCE rendering of **one** OL key-term lemma (e.g. *chief priests* for ἀρχιερεύς), filed as a wording of that key term; **S3** declared by the team or Operator; **S4** (open, PO) an advisory proposal (§5b.6). The list entry becomes the **concept** (key-term lemma + sense, a curated multi-word term, or a declared phrase), and its SOURCE wordings are its realizations | **DECIDED** (PO 2026-11-25): S4 = (b) concept seed list; concept-level grouping accepted |
-| D16 | Job ↔ RL binding | A Job pins one RL version for its SOURCE. A re-pin is explicit, rules carry over by `concept_key`, and missing or changed entries make their rules `STALE`. `phrases.txt` stays Job-local, with *promote to the RL*. The terms bundle narrows to a **glossary bundle** (TARGET renderings only). A Job created without a WIP may attach one WIP once (journaled; the Job ID is unchanged). | Recommended |
+| D16 | Job ↔ RL binding | A Job pins one RL version for its SOURCE. A re-pin is explicit, rules carry over by `concept_key`, and missing or changed entries make their rules `STALE`. `phrases.txt` stays Job-local, with *promote to the RL*. The terms bundle narrows to a **glossary bundle** (TARGET renderings only). A Job created without a WIP may attach one WIP once (journaled; the Job ID is unchanged). | Recommended; `phrases.txt` part **superseded by D21** (2026-11-26) |
+| D21 | Two functions; SOURCE lists independent of Jobs | PCC is two separate functions: (1) build and maintain **reference lists** from complete REFERENCE texts, including building one text's list from another's (usNIV curated list → Spanish NVI base list); (2) build and maintain a **WIP list** (a PCC Job) from a reference list, e.g. idKKH list → an untranslated Karon Dori WIP, maintained while it is drafted. Reference lists are kept independently of Jobs: a list curated during Karon Dori work is pinned by a Bonerate Job without a rebuild. Every SOURCE-side change made from inside a Job (Operator wordings, Biblical Terms, workbook) writes a new version of the shared list and offers the Job a re-pin; a Job keeps no SOURCE wordings of its own | **DECIDED** (PO 2026-11-26) |
+| D22 | Master list and WIP list | A Job **clones** the master list it pins into its own **WIP list** (an RL in the shared store, build mode `LOCAL`, `build.parent` = master version, `build.local` = its changes, recomputed on every save). All changes made in a Job go to the WIP list (refines D21, which sent them to the shared list). The Operator merges chosen additions and omissions into the master: all, chosen by number, or through the changes workbook (`Merge = YES`, Category/Notes editable). Merges start from the newest master version. Update from a newer master re-applies the changes: a change the master now has retires; **a master drop wins unless the WIP list explicitly kept the concept**; a concept the master removed takes its changes with it | **DECIDED** (PO 2026-11-26) |
 
 ## 4. Repository fit: what exists and what PCC must add
 
@@ -1388,6 +1390,56 @@ partition and Key Concepts precision by two LLM judges (§9); there is no hand l
 
 Out of P6: specificity and conflicts (P7), reverse scan (P8), advisory model (P10).
 
+### P5b-5 (part) and P5b-7 as built (2026-11-26): shared reference lists, two-function menu (D21)
+
+- **Menu** (`pcc_menu.py`). PCC home: *Reference lists* (function 1, no Job needed), *Open / Set / Add new PCC
+  JOB* (function 2). Reference lists: show lists and versions (with the Jobs that pin them), build from a text,
+  build from an existing list, export / import the curation workbook, add Operator wordings, add Paratext Biblical
+  Terms, compare two versions. Inside a Job the same menu adds *pin / re-pin* and, for older Jobs, *move this Job's
+  own wordings into its list*. The Job menu keeps the WIP side: terms Run, check Run, **Glossary** (fill-in sheet,
+  TermRenderings, review, glossary bundle, own renderings list, findings decisions, stale rules, revoke), Reference
+  list, Manage (delete, recovery, attach a WIP once). Skip choices use key `3` (menu keys must be numeric).
+- **Inheritance** (`rlservice.inheritable_entries`): a base list on **another text** gives a **new `rl_id`**;
+  kept concepts arrive `PROPOSED`, `DROPPED` stay out, `WORDING` concepts carry only into the same language (the
+  others are listed in `build.summary.inherited`). A base on the **same text** is a rebuild: next version of the same
+  list, statuses kept. Previously any base reused the base's `rl_id`, so a list for another text would have
+  become a version of the base list.
+- **Operator wordings and Biblical Terms** write a new version (`reflist_xlsx.add_wordings`,
+  `rlservice.add_biblical_terms`, both `MERGE` with a summary and an `RL-DIFF` report);
+  `reflist_xlsx.compare_versions` writes `RL-COMPARE-<id>-v<a>-v<b>.md`. List reports go to
+  `localdata/reports/pcc-reference-lists/`.
+- **No Job-local SOURCE wordings.** `transfer.import_bundle` and `import_operator_list` no longer write
+  `input/phrases.txt` or the Job key-terms file; wordings not on the terms list come back in
+  `ImportReport.missing_wordings` and the menu offers to add them to the pinned list (new version + re-pin). An older
+  Job's `phrases.txt` is still located by terms Runs until moved (`phrases.job_phrase_lines`,
+  `retire_job_phrases` keeps the file as `phrases.moved-<date>.txt`). The Job key-terms file is still read for
+  older Jobs; the menu no longer writes it. The bundle export file is now `<job>-glossary-bundle.json`.
+- **Measured** (scratch store, John): usNIV list with Paratext Biblical Terms, 141 concepts → idKKHv0 built from
+  it: new list, 108 concepts `PROPOSED`, 31 below recurrence in idKKH, 1 multi-word Biblical Terms phrase
+  `NOT_LOCATABLE` (inheritance does not carry a `BT` concept's verse list yet), 1 `NO_REALIZATION`; base list
+  unchanged. About 9 s each with the alignment cached.
+- **Docs**: Operator guide `docs/PCC-CHEAT-SHEET.md`, flow `docs/advanced/workflows/PCC-FLOW.md`.
+- **Tests**: `tests/pcc/test_pcc_shared_lists.py` (derive to another text / rebuild, wordings, compare, missing
+  wordings, phrases move), `test_pcc_menu.py` rewritten for the new menus. PCC + package tests: 220 passed.
+- **Still open**: P5b-5 notes/declared-phrase relocation beyond the above and carrying `BT` verse lists; P5b-6
+  (`.sagerl.zip` exchange); P5b-5a (Key Concepts package).
+
+### WIP lists as built (2026-11-26, D22)
+
+- `sage/pcc/layers.py`: `create_clone`, `diff_changes` (ADD with full entry / SET of status, category, notes;
+  a master concept missing from the clone is a SET DROPPED), `apply_changes`, `update_clone`, `merge_to_master`
+  (chosen change ids + Operator edits, from the newest master), `export_changes` / `read_changes`
+  (`RL-CHANGES-<list>-v<n>.xlsx`). Reports `RL-UPDATE-*`, `RL-MERGE-*`.
+- `reflist_xlsx.store_changes` keeps a clone in mode `LOCAL` and recomputes `build.local` against its parent, so
+  workbook import, Operator wordings and Biblical Terms work on clones unchanged. Contract: `build.parent` and
+  `build.local` optional; mode `LOCAL` added.
+- Menu: a Job pins a master by cloning it (at creation, Reference list -> 11, and after building a master from a
+  Job); inside a Job, list actions act on the Job's WIP list (an older Job pinned to a master is offered a clone);
+  Reference lists -> 9 Update a WIP list from its master, 10 Merge (all / choose / export / import workbook);
+  Show lists nests WIP lists under their master with added / left-out counts.
+- Tests: `tests/pcc/test_pcc_wip_lists.py` (record, add, update with master-drop rule, merge all/chosen/workbook),
+  menu merge flow in `test_pcc_menu.py`.
+
 ### P7 plan (rule resolver and decisions)
 
 | Step | Work | Done when |
@@ -1450,6 +1502,8 @@ alignment cache) and P5b-3 (Job pin, terms Run from the list, re-pin, WIP attach
 workbook, overlay removed) and P6 (forward check with self-qualification) are built. Open from P6: PC11
 false-alarm rate and substitution plant quality (§ P6 as built). P7 (scopes, resolver, staleness, finding decisions) is built.
 P8 (reverse scan, `PC12`, issue clusters) is built (2026-11-26), so the handover's Stage 1 functions (M0–M6) exist.
-Open: P5b-5..7 (Key Concepts package, inheritance, exchange, RL menu outside a Job), P9 (reports, guide, full
+2026-11-26: D21 and D22 decided (WIP lists: Job clones the master, Operator merges changes); P5b-7 (reference-list menu outside a Job, two-function menu) and the core of P5b-5
+(building a list from another list) are built, with an Operator guide and a flow document.
+Open: P5b-5a (Key Concepts package), the rest of P5b-5 (BT verse lists, notes), P5b-6 (exchange), P9 (reports, full
 acceptance), and the `PC11` / `PC12` false-alarm rates (two-LLM judging, waits for a provider). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

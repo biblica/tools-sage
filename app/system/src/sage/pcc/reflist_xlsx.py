@@ -185,16 +185,30 @@ def import_workbook(store: ReferenceListStore, path: Path, *, report_folder: Pat
             continue
         by_key[entry["concept_key"]] = entry
         result.added.append(wording)
+    return store_changes(store, manifest, base_version, by_key, result, report_folder=report_folder,
+                         summary_key="workbook", summary={"file": path.name}, created_utc=created_utc)
+
+
+def store_changes(store: ReferenceListStore, manifest: dict[str, Any], base_version: int,
+                  by_key: dict[str, dict[str, Any]], result: ImportResult, *, report_folder: Path, summary_key: str,
+                  summary: dict[str, Any], created_utc: str | None = None) -> ImportResult:
+    """Store ``by_key`` as the next version when ``result`` records a change; always write the diff report."""
+    rl_id = manifest["rl_id"]
     if not (result.added or result.dropped or result.kept or result.changed):
         result.diff_path = _write_diff(report_folder, rl_id, base_version, None, result)
         return result
     created = created_utc or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     build = {**manifest["build"], "mode": "MERGE", "imported_from": None,
              "summary": {**manifest["build"].get("summary", {}),
-                         "workbook": {"file": path.name, "added": len(result.added), "dropped": len(result.dropped),
-                                      "kept": len(result.kept), "changed": len(result.changed),
-                                      "problems": len(result.problems)}}}
+                         summary_key: {**summary, "added": len(result.added), "dropped": len(result.dropped),
+                                       "kept": len(result.kept), "changed": len(result.changed),
+                                       "problems": len(result.problems)}}}
     build["base_version"] = base_version
+    parent = manifest["build"].get("parent")
+    if parent:  # a Job's WIP list: keep it a clone and record its changes against its master version
+        from .layers import diff_changes
+        build["mode"] = "LOCAL"
+        build["local"] = diff_changes(store.load(parent["rl_id"], parent["version"])[1], by_key.values())
     result.manifest = store.save(rl_id=rl_id, title=manifest["title"], reference=manifest["reference"],
                                  license=manifest["license"], build=build, entries=list(by_key.values()),
                                  created_utc=created)
@@ -202,29 +216,94 @@ def import_workbook(store: ReferenceListStore, path: Path, *, report_folder: Pat
     return result
 
 
+def add_wordings(store: ReferenceListStore, rl_id: str, version: int | None, items: list[tuple[int, str]], *,
+                 report_folder: Path, context: BuildContext | None, origin: str,
+                 created_utc: str | None = None) -> ImportResult:
+    """Add the Operator's own SOURCE wordings ((line, wording) pairs) to a list as a new version.
+
+    Each wording is anchored and realized in the list's reference text exactly like a workbook ``NEW`` row. A
+    wording already on the list is reported (and a dropped or proposed one is set back to ``ACTIVE``); a line
+    with no letters is reported with its line number. Nothing is written when nothing changes.
+    """
+    manifest, entries = store.load(rl_id, version)
+    base_version = manifest["version"]
+    by_key = {e["concept_key"]: dict(e) for e in entries}
+    result = ImportResult(None)
+    seen: set[str] = set()
+    for number, wording in items:
+        wording = " ".join(wording.split())
+        entry = _new_entry(number, wording, context, manifest["reference"]["language_tag"], manifest, result,
+                           where=f"{origin} line {number}")
+        if entry is None:
+            continue
+        key = entry["concept_key"]
+        if key in by_key:
+            existing = by_key[key]
+            if existing["status"] != "ACTIVE":
+                existing["status"] = "ACTIVE"
+                result.kept.append(existing["label"])
+            elif key not in seen:
+                result.problems.append(f"{origin} line {number}: '{wording}' is already on the list as "
+                                       f"{existing['label']}")
+            continue
+        seen.add(key)
+        by_key[key] = entry
+        result.added.append(wording)
+    return store_changes(store, manifest, base_version, by_key, result, report_folder=report_folder,
+                         summary_key="operator_wordings", summary={"origin": origin}, created_utc=created_utc)
+
+
+def compare_versions(store: ReferenceListStore, rl_id: str, old: int, new: int, *, report_folder: Path) -> tuple[ImportResult, Path]:
+    """Compare two versions of one list by concept; write ``RL-COMPARE-<id>-v<old>-v<new>.md``."""
+    _, before = store.load(rl_id, old)
+    _, after = store.load(rl_id, new)
+    a = {e["concept_key"]: e for e in before}
+    b = {e["concept_key"]: e for e in after}
+    result = ImportResult(None)
+    result.added = sorted(b[k]["label"] for k in b.keys() - a.keys())
+    result.problems = sorted(f"{a[k]['label']} (no longer on the list)" for k in a.keys() - b.keys())
+    for key in sorted(a.keys() & b.keys(), key=lambda k: b[k]["label"].casefold()):
+        old_e, new_e = a[key], b[key]
+        if old_e["status"] != new_e["status"]:
+            (result.dropped if new_e["status"] == "DROPPED" else result.kept).append(
+                f"{new_e['label']}: {old_e['status']} -> {new_e['status']}")
+        elif (old_e["category"], old_e["notes"], [s["sense_key"] for s in old_e["senses"]]) != \
+                (new_e["category"], new_e["notes"], [s["sense_key"] for s in new_e["senses"]]):
+            result.changed.append(new_e["label"])
+    report_folder.mkdir(parents=True, exist_ok=True)
+    path = report_folder / f"RL-COMPARE-{rl_id}-v{old}-v{new}.md"
+    lines = [f"# Reference list {rl_id}: v{old} compared with v{new}", ""]
+    for title, items in (("Added", result.added), ("Removed", result.problems), ("Dropped", result.dropped),
+                         ("Status changed", result.kept), ("Senses, category or notes changed", result.changed)):
+        lines += [f"## {title} ({len(items)})", ""] + [f"- {item}" for item in items] + [""]
+    atomic_write_text(path, "\n".join(lines))
+    return result, path
+
+
 def _new_entry(number: int, wording: str, ctx: BuildContext | None, language_tag: str, manifest: dict[str, Any],
-               result: ImportResult) -> dict[str, Any] | None:
+               result: ImportResult, where: str | None = None) -> dict[str, Any] | None:
     """A NEW row as an entry: anchored and realized in the reference text when it is available."""
+    where = where or f"row {number}"
+    source = f"DECLARED:{where}" if where != f"row {number}" else f"DECLARED:workbook row {number}"
     if ctx is None:
         tokens = [t.norm for t in tokenize(wording)]
         if not tokens:
-            result.problems.append(f"row {number}: '{wording}' has no letters; row not used")
+            result.problems.append(f"{where}: '{wording}' has no letters; not used")
             return None
-        concept = Concept("WORDING", (f"{language_tag}|{' '.join(tokens)}",), wording, "DECLARED", "ACTIVE",
-                          (f"DECLARED:workbook row {number}",))
-        result.problems.append(f"row {number}: '{wording}' kept without senses: the reference text was not available "
+        concept = Concept("WORDING", (f"{language_tag}|{' '.join(tokens)}",), wording, "DECLARED", "ACTIVE", (source,))
+        result.problems.append(f"{where}: '{wording}' kept without senses: the reference text was not available "
                                "to locate it")
         return _entry(concept, [], {}, [], 0)
     tokens = tuple(t.norm for t in tokenize(wording, cased=ctx.cased))
     if not tokens:
-        result.problems.append(f"row {number}: '{wording}' has no letters; row not used")
+        result.problems.append(f"{where}: '{wording}' has no letters; not used")
         return None
     concepts, located, problems = declared_concepts(ctx, [(wording, tokens, number)], language_tag)
     concept = concepts[0]
-    concept = Concept(concept.kind, concept.anchor, wording, "DECLARED", "ACTIVE", (f"DECLARED:workbook row {number}",))
+    concept = Concept(concept.kind, concept.anchor, wording, "DECLARED", "ACTIVE", (source,))
     counts, rendered = ctx.realize_concept(concept, located.get(concept.key))
     if not rendered:
-        result.problems.append(f"row {number}: '{wording}' does not occur in the reference text; kept with no senses")
+        result.problems.append(f"{where}: '{wording}' does not occur in the reference text; kept with no senses")
         return _entry(concept, [], counts, [], 0)
     min_verses = int(manifest["build"].get("settings", {}).get("min_verses", DEFAULT_MIN_VERSES))
     senses = partition(concept.key, rendered, min_verses=min_verses)

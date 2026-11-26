@@ -3,10 +3,13 @@
 * ``export_bundle`` writes one portable JSON file from a Job: its SOURCE wordings, key terms, approved
   renderings. (Core-list verdicts now live in reference-list versions, plan P5b-4; a bundle that still carries
   them is read and their count reported.)
-* ``import_bundle`` loads it into another Job. Wordings go to ``input/phrases.txt``; key terms merge;
-  renderings arrive as PROPOSED rules (same target language only) that the Operator
+* ``import_bundle`` loads it into another Job. Renderings arrive as PROPOSED rules (same target language only) that the Operator
   still approves. A bundle whose checksum does not match is refused.
 * ``import_operator_list`` reads a CSV, TSV, TXT or XLSX list (wording[, rendering(s)[, note]]).
+
+SOURCE wordings never go into the Job: wordings that are not on the terms list are returned in
+``ImportReport.missing_wordings`` and the menu offers to add them to the pinned reference list (a new version
+that every Job on that list can use).
 
 Nothing here blocks on content: unusable lines are reported with their line numbers.
 """
@@ -25,11 +28,9 @@ from typing import Any
 
 from ..atomic import atomic_write_text
 from ..errors import ValidationError
-from .glossary import (ImportReport, KEY_TERMS_FILE, _append_rule, _rule, current_key_terms, current_rules,
+from .glossary import (ImportReport, _append_rule, _rule, current_key_terms, current_rules,
                        split_renderings)
 from .ids import canonical_json, full_digest
-from .journal import journal_path
-from .phrases import PHRASES_FILE
 
 BUNDLE_FORMAT = "SAGE-PCC-TERMS-BUNDLE"
 BUNDLE_VERSION = 1
@@ -75,22 +76,6 @@ def read_bundle(path: Path) -> dict[str, Any]:
     return data
 
 
-def add_phrases(job_root: Path, wordings: Sequence[str]) -> tuple[int, int]:
-    """Append wordings missing from ``input/phrases.txt``; return (added, already present)."""
-    path = job_root / "input" / PHRASES_FILE
-    text = path.read_text(encoding="utf-8-sig") if path.is_file() else ""
-    have = {match_key(line) for line in text.splitlines() if line.strip() and not line.startswith("#")}
-    new: list[str] = []
-    for wording in wordings:
-        key = match_key(wording)
-        if key and key not in have:
-            have.add(key)
-            new.append(" ".join(wording.split()))
-    if new:
-        atomic_write_text(path, text + ("" if not text or text.endswith("\n") else "\n") + "\n".join(new) + "\n")
-    return len(new), len(wordings) - len(new)
-
-
 def _propose(job: Any, lock_path: Path, snapshot_sha: str, target_language: str, rows: Sequence[Mapping[str, Any]],
              wording: str, lemma: str, form: str, effect: str, why: str, evidence: str, report: ImportReport,
              existing: dict[str, dict[str, Any]], actor: str) -> bool:
@@ -114,12 +99,12 @@ def import_bundle(job: Any, path: Path, rows: Sequence[Mapping[str, Any]], *, lo
     """Load a bundle into this Job; returns what was proposed plus anything that could not be used."""
     bundle = read_bundle(path)
     report = ImportReport()
-    added, present = add_phrases(job.root, [e["wording"] for e in bundle["entries"] if e["category"] != "KEY_TERM"])
-    report.problems.append(f"{added} wording(s) added to input/phrases.txt, {present} already there; run the terms list again to locate them.")
-    merged = {**bundle["key_terms"], **current_key_terms(job.root)}
-    if merged != current_key_terms(job.root):
-        atomic_write_text(journal_path(job.root).parent / KEY_TERMS_FILE, canonical_json(
-            {"source": f"BUNDLE:{bundle['from_job']}", "sha256": full_digest(bundle["key_terms"]), "terms": dict(sorted(merged.items()))}) + "\n")
+    on_list = {match_key(r["wording"]) for r in rows}
+    report.missing_wordings = [(n, e["wording"]) for n, e in enumerate(bundle["entries"], 1)
+                               if e["category"] != "KEY_TERM" and match_key(e["wording"]) not in on_list]
+    if bundle.get("key_terms"):
+        report.problems.append(f"{len(bundle['key_terms'])} key term(s) in this bundle were not used: key terms belong "
+                               "to the reference list (add Paratext Biblical Terms to the list).")
     if bundle.get("verdicts"):
         report.problems.append(f"{len(bundle['verdicts'])} core-list verdict(s) in this bundle were not used: verdicts "
                                "now live in reference-list versions (edit the list's workbook instead).")
@@ -159,7 +144,7 @@ def import_operator_list(job: Any, path: Path, rows: Sequence[Mapping[str, Any]]
                          source_corpus_sha256: str, target_language: str, actor: str = "operator") -> ImportReport:
     """Import the Operator's list: wording[, rendering(s)[, note]]; renderings become proposals."""
     report = ImportReport()
-    wordings: list[str] = []
+    wordings: list[tuple[int, str]] = []
     pairs: list[tuple[int, str, list[str], str]] = []
     for number, cells in _operator_lines(path):
         cells = [unicodedata.normalize("NFC", c).strip() for c in cells]
@@ -170,10 +155,16 @@ def import_operator_list(job: Any, path: Path, rows: Sequence[Mapping[str, Any]]
         if not match_key(cells[0]):
             report.problems.append(f"Line {number}: no wording; line not used.")
             continue
-        wordings.append(cells[0])
+        wordings.append((number, cells[0]))
         if len(cells) > 1 and cells[1]:
             pairs.append((number, cells[0], split_renderings(cells[1]), cells[2] if len(cells) > 2 else ""))
-    added, present = add_phrases(job.root, wordings)
+    on_list = {match_key(r["wording"]) for r in rows}
+    seen: set[str] = set()
+    for number, wording in wordings:
+        key = match_key(wording)
+        if key not in on_list and key not in seen:
+            seen.add(key)
+            report.missing_wordings.append((number, wording))
     existing = current_rules(job.root)
     for number, wording, forms, note in pairs:
         for form in forms:
@@ -181,7 +172,7 @@ def import_operator_list(job: Any, path: Path, rows: Sequence[Mapping[str, Any]]
             if text and not _propose(job, lock_path, source_corpus_sha256, target_language, rows, wording, "", text, effect,
                                      f"From the Operator's list{': ' + note if note else ''}.", f"OPERATOR_LIST:{path.name}",
                                      report, existing, actor):
-                report.problems.append(f"Line {number}: '{wording}' is not on the latest terms list yet; run the terms list and import again.")
+                report.problems.append(f"Line {number}: '{wording}' is not on the latest terms list yet; its "
+                                       "renderings were not used.")
                 break
-    report.problems.insert(0, f"{added} wording(s) added to input/phrases.txt, {present} already there.")
     return report

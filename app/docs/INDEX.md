@@ -14,6 +14,8 @@ in the `docs/` root. Technical and governance material is grouped under
 - [NCA Cheat Sheet](NCA-CHEAT-SHEET.md) — number accuracy, FAIL/NEEDS_REVIEW findings, text-critical decisions, optional style profiles and the number-style report, Run switches, and coverage limits.
 - [NCA Reference Package and Rules](advanced/workflows/NCA-REFERENCE-AND-RULES.md) — the bundled number index, MACULA/NIV layers, and text-critical evidence sources.
 - [NCA Counting Convention](../system/skills/nca-numbers/references/COUNTING-CONVENTION.md) — which numbers NCA counts (quantities and dates) and what value each gets.
+- [PCC Cheat Sheet](PCC-CHEAT-SHEET.md) — the two PCC functions: shared reference lists (build, build from another list, curate, add wordings) and PCC Jobs (terms list, renderings, check, decisions, re-pin).
+- [PCC Flow](advanced/workflows/PCC-FLOW.md) — how reference lists and WIP lists fit together, what each step reads and writes, and where it is stored.
 - [Good Practice](GOOD-PRACTICE.md) — safe operating and source-maintenance habits.
 - [Known Limitations](KNOWN-LIMITATIONS.md) — explicit functional and platform limits.
 - [Windows Cheat Sheet](windows/CHEAT-SHEET.md), [Recovery](windows/RECOVERY.md), and [Errors](windows/ERRORS.md).

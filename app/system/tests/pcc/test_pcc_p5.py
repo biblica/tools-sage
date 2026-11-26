@@ -265,7 +265,7 @@ def test_bundle_round_trip_between_jobs_and_operator_list(setup, tmp_path):
     report = transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
                                     target_language="en")
     assert report.imported == 1 and [r["state"] for r in glossary.current_rules(other.root).values()] == ["PROPOSED"]
-    assert (other.root / "input" / "phrases.txt").is_file()
+    assert not (other.root / "input" / "phrases.txt").exists() and report.missing_wordings == []
     assert transfer.import_bundle(other, bundle, rows, lock_path=tmp_path / "lock2", source_corpus_sha256=SHA,
                                   target_language="de").imported == 0
     bundle.write_text(bundle.read_text(encoding="utf-8").replace("Licht", "Lichtx"), encoding="utf-8")
@@ -277,6 +277,7 @@ def test_bundle_round_trip_between_jobs_and_operator_list(setup, tmp_path):
     result = transfer.import_operator_list(third, mine, rows, lock_path=tmp_path / "lock3", source_corpus_sha256=SHA,
                                            target_language="en")
     assert result.imported >= 2 and any("nothing here" in p for p in result.problems)
+    assert result.missing_wordings == [(3, "nothing here")]
 
 
 def test_curation_verdicts_hide_or_protect_rows():

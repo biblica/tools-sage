@@ -23,6 +23,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/KNOWN-LIMITATIONS.md`
 - `docs/NCA-CHEAT-SHEET.md`
 - `docs/OPERATOR-GUIDE.md`
+- `docs/PCC-CHEAT-SHEET.md`
 - `docs/PROJECT-OPERATOR-CHEAT-SHEET.md`
 - `docs/RTC-STC-CHEAT-SHEET.md`
 - `docs/TUI.md`
@@ -130,6 +131,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `docs/advanced/workflows/JOB-STORAGE-MAINTENANCE.md`
 - `docs/advanced/workflows/NATURAL-LANGUAGE-COMMAND-ROUTING.md`
 - `docs/advanced/workflows/NCA-REFERENCE-AND-RULES.md`
+- `docs/advanced/workflows/PCC-FLOW.md`
 - `docs/advanced/workflows/REWRITE-LEXICAL-RISK-AND-OL.md`
 - `docs/advanced/workflows/RTC-CHECK-POLICY.md`
 - `docs/advanced/workflows/RTC-STC-OPERATOR-MODES.md`
@@ -994,6 +996,7 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/src/sage/pcc/ids.py`
 - `system/src/sage/pcc/index.py`
 - `system/src/sage/pcc/journal.py`
+- `system/src/sage/pcc/layers.py`
 - `system/src/sage/pcc/jsonl.py`
 - `system/src/sage/pcc/ol_build.py`
 - `system/src/sage/pcc/ol_evidence.py`
@@ -1216,6 +1219,8 @@ This inventory is a release contract: package tests require it to match the clea
 - `system/tests/pcc/test_pcc_reflist.py`
 - `system/tests/pcc/test_pcc_reflist_xlsx.py`
 - `system/tests/pcc/test_pcc_rlbuild.py`
+- `system/tests/pcc/test_pcc_shared_lists.py`
+- `system/tests/pcc/test_pcc_wip_lists.py`
 - `system/tests/pcc/test_pcc_ol_resources.py`
 - `system/tests/test_authority_boundaries.py`
 - `system/tests/test_beta_saw_policy.py`

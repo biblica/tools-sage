@@ -85,9 +85,13 @@ def build_reference_list_for(
         groups.append(concepts)
         sources.append("Paratext Biblical Terms (Operator-supplied, local only)")
     derived = None
+    carried: dict[str, Any] = {}
+    same_text = False
     if base:
         manifest, entries = store.load(base[0], base[1])
         derived = {"rl_id": base[0], "version": manifest["version"]}
+        same_text = manifest["reference"]["project_id"] == project_id
+        entries, carried = inheritable_entries(entries, language_tag=language_tag, same_text=same_text)
         kept, dropped = concepts_from_entries(entries, f"INHERITED:{base[0]}@{manifest['version']}")
         groups.insert(0, kept)
     declared, phrase_problems = [], []
@@ -112,15 +116,86 @@ def build_reference_list_for(
                           "aligner": package_ids, "cased": traits.cased,
                           "suffixes": [a.form for a in traits.suffixes]},
              "summary": result.summary()}
+    if carried:
+        build["summary"] = {**build["summary"], "inherited": carried}
     report = {"verses": len(units), "alignment": alignment.stats, "alignment_cached": cached,
-              "inventory": sum(len(g) for g in groups), **result.summary()}
+              "inventory": sum(len(g) for g in groups), "inherited": carried, **result.summary()}
     manifest = None
     if not dry_run:
-        rl_id = rl_id or (base[0] if base else new_rl_id(title, instance_id, created))
+        # A rebuild of the same text is the next version of its list; another text gets a list of its own.
+        rl_id = rl_id or (base[0] if base and same_text else new_rl_id(title, instance_id, created))
         manifest = store.save(rl_id=rl_id, title=title, reference=reference, license=license_, build=build,
                               entries=result.entries, created_utc=created)
     return BuildOutcome(manifest, result, report | {"reference": reference, "build": build, "created": created,
                                                     "license": license_})
+
+
+def inheritable_entries(entries: Sequence[dict[str, Any]], *, language_tag: str,
+                        same_text: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """What a base list hands to a new build (plan P5b-5, D14 revised).
+
+    Concepts carry by ``concept_key``; the new text's own wordings come from its own alignment. Rebuilding the
+    same text keeps every status. Building **another** text from the list keeps ``DROPPED`` decisions, but a
+    kept concept arrives as ``PROPOSED``: nothing derived is ``ACTIVE`` until the team reviews it in the new
+    list's workbook. An Operator wording (``WORDING`` anchor, no original-language key) can only be located
+    in a text of the same language; in another language it is not carried and is listed in the summary.
+    """
+    carried: dict[str, Any] = {"concepts": 0, "dropped": 0, "wordings_same_language": 0,
+                               "wordings_other_language": []}
+    kept = []
+    for entry in entries:
+        if entry["status"] == "DROPPED":
+            carried["dropped"] += 1
+            kept.append(entry)
+            continue
+        if entry["anchor"]["kind"] == "WORDING":
+            language = entry["anchor"]["value"][0].split("|", 1)[0]
+            if language.casefold() != language_tag.casefold() and not same_text:
+                carried["wordings_other_language"].append(entry["label"])
+                continue
+            carried["wordings_same_language"] += 1
+        carried["concepts"] += 1
+        kept.append(entry if same_text else {**entry, "status": "PROPOSED"})
+    carried["wordings_other_language"] = sorted(carried["wordings_other_language"])
+    return kept, carried
+
+
+def add_biblical_terms(*, app_root: Path, store: ReferenceListStore, cache_root: Path, rl_id: str,
+                       version: int | None, reference_path: Path, schema: VersificationSchema, biblical_terms: Path,
+                       report_folder: Path, categories: Sequence[str] | None = None,
+                       progress: Callable[[str, str], None] | None = None):
+    """Add the concepts of a Paratext Biblical Terms list to a reference list, as its next version.
+
+    The terms are realized in the list's own reference text with the list's settings (books, recurrence), exactly
+    as a build would. A concept already on the list is left as it is; one the team dropped stays dropped. Returns
+    ``(ImportResult, BuildOutcome)``; no version is written when no new concept qualifies.
+    """
+    from .reflist_xlsx import ImportResult, store_changes
+    manifest, entries = store.load(rl_id, version)
+    settings = manifest["build"].get("settings", {})
+    books = settings.get("books")
+    outcome = build_reference_list_for(
+        app_root=app_root, store=store, cache_root=cache_root, reference_path=reference_path,
+        project_id=manifest["reference"]["project_id"], title=manifest["title"],
+        language_tag=manifest["reference"]["language_tag"], schema=schema,
+        versification_id=manifest["reference"]["versification_id"], books=books if isinstance(books, list) else None,
+        biblical_terms=biblical_terms, categories=categories,
+        min_verses=int(settings.get("min_verses", DEFAULT_MIN_VERSES)), dry_run=True, progress=progress)
+    by_key = {e["concept_key"]: dict(e) for e in entries}
+    result = ImportResult(None)
+    for entry in outcome.result.entries:
+        existing = by_key.get(entry["concept_key"])
+        if existing is None:
+            by_key[entry["concept_key"]] = entry
+            result.added.append(entry["label"])
+        elif existing["status"] == "DROPPED":
+            result.problems.append(f"{entry['label']}: dropped by the team on this list; left dropped")
+    left = outcome.result.left_out
+    result.problems.append(f"Left out by the build rules: {left.get('NOT_IN_REFERENCE', 0)} not in the text, "
+                           f"{left.get('BELOW_RECURRENCE', 0)} not recurring, "
+                           f"{left.get('NO_REALIZATION', 0) + left.get('FUNCTION_ONLY', 0)} not rendered by a wording")
+    return store_changes(store, manifest, manifest["version"], by_key, result, report_folder=report_folder,
+                         summary_key="biblical_terms", summary={"file": Path(biblical_terms).name}), outcome
 
 
 def reference_context(*, app_root: Path, cache_root: Path, reference_path: Path, schema: VersificationSchema,

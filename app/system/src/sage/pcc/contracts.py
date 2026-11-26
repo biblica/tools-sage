@@ -412,7 +412,7 @@ CONTRACTS["run_snapshot"] = _object({
 
 # Reference lists (plan §5b, D12-D19): one versioned package per REFERENCE edition, built outside any Job.
 RL_STATUSES = ("ACTIVE", "PROPOSED", "DROPPED")
-RL_BUILD_MODES = ("SCRATCH", "INHERIT", "MERGE", "IMPORT")
+RL_BUILD_MODES = ("SCRATCH", "INHERIT", "MERGE", "IMPORT", "LOCAL")
 # SENSE: a reference sense (D19) that recurs; OTHER: renderings too rare to be a sense, kept as evidence only.
 RL_SENSE_KINDS = ("SENSE", "OTHER")
 # Per concept: original-language occurrences in the reference, how many were realized by a wording, rendered
@@ -441,7 +441,10 @@ CONTRACTS["reference_list_manifest"] = _object({
         "engine_version": _TEXT,
         "settings": {"type": "object"},
         "summary": {"type": "object"},
-    }),
+        # A WIP layer (mode LOCAL, PO 2026-11-26): its master list version and its changes against that version.
+        "parent": {"oneOf": [_RL_REF, {"type": "null"}]},
+        "local": {"type": "array", "items": {"type": "object"}},
+    }, required=["mode", "base_version", "derived_from", "imported_from", "engine_version", "settings", "summary"]),
     "counts": _object({status.lower(): _COUNT for status in RL_STATUSES} | {"entries": _COUNT}),
     "entries_sha256": _SHA256,
     "created_utc": _TEXT,
