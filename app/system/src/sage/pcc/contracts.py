@@ -47,7 +47,7 @@ RULE_STATES = ("PROPOSED", "APPROVED", "REVOKED", "STALE")
 EFFECTS = ("ACCEPT", "REJECT", "CONTEXT_ONLY")
 REVIEW_OPERATIONS = (
     "PROPOSE", "APPROVE", "REJECT", "CONTEXT_ONLY", "REVOKE", "RECLASSIFY_SENSE", "CORRECT_ALIGNMENT",
-    "MARK_STALE",
+    "MARK_STALE", "CONFIRM_ISSUE", "DISMISS", "DEFER",
 )
 REVIEW_SUBJECTS = ("VARIANT_RULE", "EXCEPTION", "OCCURRENCE", "ALIGNMENT", "FINDING")
 RUN_OPERATIONS = ("terms", "check")
@@ -279,7 +279,12 @@ CONTRACTS: dict[str, dict[str, Any]] = {
             "additionalProperties": _COUNT,
         },
         "limitations": {"type": "array", "items": {"type": "string"}},
-    }),
+        # check Runs only (P8): distinct issues (linked findings count once) and reverse-scan dispositions
+        "issue_clusters": _COUNT,
+        "reverse_scan": {"type": "object", "propertyNames": {"pattern": "^[A-Z_]+$"}, "additionalProperties": _COUNT},
+    }, required=["schema_version", "run_id", "operation", "source_corpus_id", "target_corpus_id", "eligible_groups",
+                 "evaluated_groups", "fully_resolved_groups", "eligible_occurrences", "evaluated_occurrences",
+                 "review_groups", "blocked_groups", "findings_by_code", "limitations"]),
     "language_profile": _object({
         "schema_version": _VERSION,
         "profile_id": _TEXT,

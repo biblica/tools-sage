@@ -1,7 +1,8 @@
 """A PCC check Run (plan P6-7): prepare the check's inputs, run it, write the machine outputs and the reports.
 
 Machine outputs (Run ``validation/pcc``): the terms analysis of the scope, ``findings.jsonl``,
-``occurrence-audit.jsonl`` (one row per eligible occurrence), ``summary.json`` and ``qualification.json``.
+``occurrence-audit.jsonl`` (one row per eligible occurrence), ``reverse-audit.jsonl`` (one row per group
+rendering the reverse scan found outside the group's verses, P8), ``summary.json`` and ``qualification.json``.
 Operator reports (``localdata/reports/<job>/``): ``PCC-CHECK.md`` and ``PCC-FINDINGS.xlsx`` with blank
 *decision* / *scope* / *note* columns for P7. TARGET wording is quoted verbatim with references; SOURCE text is
 referred to by reference and short wording only. A kind the WIP could not be qualified for, and negation
@@ -21,19 +22,28 @@ from ..registry import EcosystemConfig
 from ..vrs import load_project_vrs
 from . import glossary
 from .align import ALIGNER_VERSION, load_model, save_model
-from .check import (CheckInput, Morphology, pair_verses, run_check, side_tokens, stop_forms, train_pair_model)
+from dataclasses import replace
+
+from .check import (CheckInput, Morphology, pair_verses, run_check, side_tokens, stop_forms, train_pair_model,
+                    wip_verse_hashes)
+from .decisions import DETAIL_FILE, HASHES_FILE, current_finding_decisions
+from .resolver import language_equivalences
 from .ids import full_digest
 from .jsonl import read_jsonl, write_json, write_jsonl
 from .rlservice import CACHE_FOLDER
-from .source_text import reference_units
+from ..references import parse_scope
+from .source_text import reference_units, source_units as scope_source_units
 from .traits import measure_traits
 
 CHECK_LIMITATION = (
-    "Forward consistency check (plan phase P6): each compared concept and sense was located in the WIP through "
-    "glossary forms and learned word alignment. Rule resolution is the simple form (group and passage rules); "
-    "the reverse scan (PC12) is not run yet."
+    "Consistency check (plan phases P6-P8): each compared concept and sense was located in the WIP through "
+    "glossary forms and learned word alignment; the reverse scan looked for each group's renderings in the scope's "
+    "other verses. A rendering there is PC12 only when no other listed concept, no SOURCE wording of the group and "
+    "no SOURCE word of the verse supports it. PC12 is a lower-confidence review candidate; its false-alarm rate is "
+    "not measured yet, and original-language referents (subjref) are not consulted."
 )
-REVIEW_CODES = ("PC10", "PC11", "PC13", "PC20", "PC21")
+REVIEW_CODES = ("PC10", "PC11", "PC12", "PC13", "PC20", "PC21")
+REVERSE_FILE = "reverse-audit.jsonl"
 
 
 def testament_of(ref: str) -> str:
@@ -69,7 +79,9 @@ def check_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any], 
         model = train_pair_model(training, source_side, target_side)
         save_model(model_path, model)
     facts = glossary.current_language_facts(job.root)
+    rules = glossary.current_rules(job.root)
     morph = Morphology.from_traits(wip_traits, facts)
+    morph = replace(morph, equivalences={**morph.equivalences, **language_equivalences(rules.values())})
     inp = CheckInput(
         run_id=run.run_id,
         run_input_sha256=full_digest({k: snapshot[k] for k in ("source", "target", "scope", "decision_snapshot_sha256",
@@ -79,10 +91,16 @@ def check_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any], 
         expressions=read_jsonl(output / "expressions.jsonl", kind="expression"),
         occurrences=occurrences,
         groups=read_jsonl(output / "groups.jsonl") if (output / "groups.jsonl").is_file() else [],
-        rules=glossary.current_rules(job.root), target_stops=stop_forms(target_side), source_stops=stop_forms(source_side))
+        rules=rules, target_stops=stop_forms(target_side), source_stops=stop_forms(source_side),
+        verse_hashes=wip_verse_hashes(target_units), decisions=current_finding_decisions(job.root),
+        scope_units=frozenset(u.unit_id for u in scope_source_units(source.path, parse_scope(snapshot["scope"]))))
     result = run_check(inp)
     write_jsonl(output / "findings.jsonl", result.findings, kind="finding", sort_key="finding_id")
     write_jsonl(output / "occurrence-audit.jsonl", result.audit, kind="occurrence_audit", sort_key="occurrence_id")
+    write_jsonl(output / DETAIL_FILE, result.details, sort_key="finding_id")
+    write_jsonl(output / REVERSE_FILE, result.reverse)
+    write_json(output / HASHES_FILE, dict(sorted(inp.verse_hashes.items())))
+    write_json(output / "stale-rules.json", {rule: sorted(set(refs)) for rule, refs in sorted(result.stale_rules.items())})
     write_json(output / "qualification.json", {"kinds": result.qualification, "pairs": len(pairs),
                                                "pair_kinds": dict(Counter(p.kind for p in pairs)),
                                                "wip_traits": wip_traits.as_record(), "counts": dict(sorted(result.counts.items()))})
@@ -93,6 +111,13 @@ def check_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any], 
                       f"{q['recall'] if q['recall'] is not None else 'n/a'} on {q['trials']} planted case(s), bar {q['bar']}. "
                       "Its findings are shown, labelled; some cases may be missed. Tune the reference list and glossary "
                       "through their import/export."))
+    if result.stale_rules:
+        notes.append(("PCC_RULES_STALE", f"{len(result.stale_rules)} approved rule(s) were not applied because the text "
+                      "they are bound to changed. Review them under 'Review stale rules'; they are never deleted."))
+    for gid, code in sorted(result.outcomes.items()):
+        if code == "PC23":
+            notes.append(("PCC_RULE_CONFLICT", f"Group {gid}: approved rules accept and reject the same form at the same "
+                          "scope; the group was not assessed (PC23). Revoke one of the rules."))
     if not morph.negation:
         notes.append(("PCC_NEGATION_NOT_CHECKED", "No negation markers are declared for the WIP language, so negation "
                       "shifts (PC13) were not checked. Declare them in the language facts sheet to switch this on."))
@@ -111,6 +136,8 @@ def check_analysis(config: EcosystemConfig, job: Any, snapshot: dict[str, Any], 
         "review_groups": sum(n for c, n in outcomes.items() if c in REVIEW_CODES),
         "blocked_groups": outcomes["PC23"],
         "findings_by_code": dict(sorted(codes.items())),
+        "issue_clusters": len({f["issue_cluster_id"] for f in result.findings if f["code"] in REVIEW_CODES + ("PC23",)}),
+        "reverse_scan": dict(sorted(Counter(r["disposition"] for r in result.reverse).items())),
         "limitations": [CHECK_LIMITATION] + [f"{kind} BEST_EFFORT (self-qualification below the bar)" for kind in result.best_effort],
     }
     write_reports(Path(config.reports_root) / job.job_id, job.job_id, run.run_id, snapshot, result, inp, fields)
@@ -137,7 +164,11 @@ def write_reports(folder: Path, job_id: str, run_id: str, snapshot: dict[str, An
              f"- Groups compared: {fields['evaluated_groups']} ({fields['fully_resolved_groups']} consistent with approved "
              f"renderings); groups needing review: {fields['review_groups']}; blocked: {fields['blocked_groups']}.",
              f"- Occurrences: {fields['eligible_occurrences']} listed, {fields['evaluated_occurrences']} evaluated without review.",
-             "- Uniform but unapproved renderings are PC02: they look consistent, but no rendering has been approved yet.", ""]
+             "- Uniform but unapproved renderings are PC02: they look consistent, but no rendering has been approved yet.",
+             f"- Issues: {fields.get('issue_clusters', 0)} (findings on the same problem, such as a PC11 omission and a PC12 "
+             "rendering in the next verse, count once).",
+             "- Reverse scan: " + (", ".join(f"{n} {k.lower().replace('_', ' ')}" for k, n in fields.get("reverse_scan", {}).items())
+                                   or "no group rendering found outside its verses") + ". Only 'added' ones are PC12.", ""]
     for kind, q in sorted(result.qualification.items()):
         lines.append(f"- Self-check {kind.lower()}: {q['status']} (found {q['detected']} of {q['trials']} planted cases).")
     lines += ["", "| Code | Severity | SOURCE wording | References | TARGET renderings |", "|---|---|---|---|---|"]
@@ -150,10 +181,11 @@ def write_reports(folder: Path, job_id: str, run_id: str, snapshot: dict[str, An
     sheet = book.active
     sheet.title = "Findings"
     sheet.append(["Finding ID", "Code", "Severity", "SOURCE wording", "SOURCE references", "TARGET references",
-                  "Evidence", "Reason", "Decision", "Scope", "Note"])
+                  "Evidence", "Reason", "Issue", "Decision", "Scope", "Note"])
     for f in sorted(result.findings, key=lambda f: f["finding_id"]):
         sheet.append([_safe(v) for v in (f["finding_id"], f["code"], f["severity"], wording(f), ", ".join(f["source_refs"]),
-                                         ", ".join(f["target_refs"]), "\n".join(f["evidence"]), f["reason"], "", "", "")])
+                                         ", ".join(f["target_refs"]), "\n".join(f["evidence"]), f["reason"],
+                                         f["issue_cluster_id"], "", "", "")])
     about = book.create_sheet("About")
     about.append(["Run", run_id])
     about.append(["Run input", full_digest(snapshot)[:16]])

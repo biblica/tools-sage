@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure the PCC forward check (P6-8) on real texts: planted-error recall per kind and review workload.
+"""Measure the PCC check (P6-8, P8) on real texts: planted-error recall per kind and review workload.
 
     evaluate_pcc_check.py --source <SOURCE Project> --wip <WIP Project> [--biblical-terms BT.xml] \\
         [--samples 300] [--seed 0] BOOK ...
@@ -90,7 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     pcc_check.QUALIFY_SAMPLES = args.samples
     inp = CheckInput("EVAL", "e" * 64, s_map, t_map, pairs, unit_pair, s_side, t_side, model,
                      Morphology.from_traits(wtraits), terms.expressions, terms.occurrences, terms.groups, {},
-                     stop_forms(t_side), stop_forms(s_side))
+                     stop_forms(t_side), stop_forms(s_side), scope_units=frozenset(scope))
     result = run_check(inp, seed=args.seed)
     verses = len(scope)
     statuses = Counter(e.status for evs in result.evidence.values() for e in evs)
@@ -101,6 +101,9 @@ def main(argv: list[str] | None = None) -> int:
         "occurrence_status": dict(sorted(statuses.items())),
         "findings_per_1000_verses": {c: round(1000 * n / max(verses, 1), 1)
                                      for c, n in sorted(Counter(f["code"] for f in result.findings).items())},
+        "reverse_scan": dict(sorted(Counter(r["disposition"] for r in result.reverse).items())),
+        "pc12_hits_per_1000_verses": round(1000 * sum(r["disposition"] == "ADDED" for r in result.reverse) / max(verses, 1), 1),
+        "issue_clusters": len({f["issue_cluster_id"] for f in result.findings}),
         "qualification": result.qualification, "model_seconds": trained,
         "seconds": round(time.monotonic() - started, 1),
     }

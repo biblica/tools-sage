@@ -10,7 +10,9 @@ from sage.errors import SageError, ValidationError
 from sage.jobs import PCC_RUN_OPERATIONS, pcc_default_settings
 from pathlib import Path
 
-from sage.pcc import glossary, reflist_xlsx, transfer
+import json
+
+from sage.pcc import decisions, glossary, reflist_xlsx, transfer
 from sage.pcc.pin import repin
 from sage.pcc.reflist import ReferenceListStore
 from sage.pcc.rlservice import build_reference_list_for, reference_context
@@ -101,7 +103,8 @@ def continue_run(center, job, run):
         center.io.write(f"- {limitation}")
     if run.operation == "check":
         found = ", ".join(f"{code} {n}" for code, n in summary.get("findings_by_code", {}).items()) or "none"
-        center.io.write(f"Groups compared: {summary.get('evaluated_groups', 0)}; findings: {found}.")
+        center.io.write(f"Groups compared: {summary.get('evaluated_groups', 0)}; findings: {found}; "
+                        f"issues: {summary.get('issue_clusters', 0)}.")
         center.io.write(f"Reports: {center.store.storage.reports_root / job.job_id / 'PCC-CHECK.md'} and PCC-FINDINGS.xlsx")
     center.io.pause()
     return run
@@ -161,11 +164,17 @@ def terms_menu(center, job) -> None:
                    ("4", "Review proposed renderings"),
                    ("5", "Import Paratext Biblical Terms (key theological terms, always listed)"),
                    ("6", "Export a terms bundle (to use in another WIP)"), ("7", "Import a terms bundle from another WIP"),
-                   ("8", "Import my own terms list (CSV, TXT or XLSX)"), ("B", "Back")]
+                   ("8", "Import my own terms list (CSV, TXT or XLSX)"),
+                   ("9", "Import decisions on check findings (PCC-FINDINGS.xlsx)"),
+                   ("10", "Review stale rules"), ("11", "Revoke an approved rendering"), ("B", "Back")]
         choice = center.io.choose(f"PCC terms list {job.job_id}", options, context=tuple(context))
         if choice == "B":
             return
         try:
+            if choice in ("9", "10", "11"):
+                _rules_and_decisions(center, job, {"9": "D", "10": "S", "11": "R"}[choice])
+                center.io.pause()
+                continue
             if choice == "5":
                 path = _ask_path(center, "Path of Paratext BiblicalTerms.xml (blank to cancel)")
                 if path:
@@ -229,6 +238,68 @@ def terms_menu(center, job) -> None:
         except SageError as exc:
             center.show_error(exc)
         center.io.pause()
+
+
+def _latest_check(center, job):
+    """(run, snapshot, output folder) of the newest finished check Run, or None."""
+    for run in center.store.list_runs(job, include_archived=False):
+        if run.operation == "check" and run.status in {"COMPLETE", "COMPLETE_WITH_EXCEPTIONS"}:
+            output = run.root / "validation" / OUTPUT_DIRECTORY
+            if (output / decisions.DETAIL_FILE).is_file():
+                return run, load_run_snapshot(run.root), output
+    return None
+
+
+def _rules_and_decisions(center, job, choice: str) -> None:
+    """Findings decisions (D), stale rules (S) and revoking a rule (R) — P7."""
+    latest = _latest_check(center, job)
+    config = load_ecosystem(job.runtime_settings_path)
+    sha = latest[1]["source"]["content_sha256"] if latest else project_identity(config, job.bindings["source"])["content_sha256"]
+    rules = glossary.current_rules(job.root)
+    if choice == "D":
+        if latest is None:
+            center.io.write("Run a consistency check first; its PCC-FINDINGS.xlsx is what you decide on.")
+            return
+        path = _ask_path(center, "Path of the filled PCC-FINDINGS.xlsx (blank to cancel)")
+        if path:
+            report = decisions.import_finding_decisions(job, path, latest[2], lock_path=_lock(job), source_corpus_sha256=sha,
+                                                        target_language=job.defaults["target_language"], actor=ACTOR)
+            center.io.write(f"Recorded {report.imported} decision(s); {report.unchanged} already recorded. Run the check "
+                            "again to see their effect.")
+            for line in report.problems[:30]:
+                center.io.write(f"- {line}")
+        return
+    if choice == "S":
+        reported = json.loads((latest[2] / "stale-rules.json").read_text(encoding="utf-8")) if latest else {}
+        pending = [rid for rid in sorted(reported) if rules.get(rid, {}).get("state") == "APPROVED"]
+        marked = sorted(rid for rid, r in rules.items() if r["state"] == "STALE")
+        center.io.write(f"{len(marked)} rule(s) already marked STALE; {len(pending)} reported by the last check as bound "
+                        "to text that changed.")
+        for rid in pending:
+            rule = rules[rid]
+            answer = center.io.choose(f"'{rule['target_form']}' ({rule['effect'].lower()}, {rule['scope']['level']}) at "
+                                      f"{', '.join(reported[rid][:5])}",
+                                      (("1", "Mark STALE (kept, never applied; decide again on the next findings)"),
+                                       ("2", "Revoke"), ("S", "Skip"), ("B", "Stop")))
+            if answer == "B":
+                break
+            if answer in ("1", "2"):
+                glossary.change_rule_state(job, rid, "STALE" if answer == "1" else "REVOKED", lock_path=_lock(job),
+                                           source_corpus_sha256=sha, reason="Reviewed: its text changed.", actor=ACTOR)
+        return
+    approved = sorted((r for r in rules.values() if r["state"] == "APPROVED"),
+                      key=lambda r: (r["target_form"].casefold(), r["rule_id"]))
+    if not approved:
+        center.io.write("No approved renderings yet.")
+        return
+    for n, rule in enumerate(approved[:60], 1):
+        center.io.write(f"{n:3}. {rule['target_form']}  ({rule['effect'].lower()}, {rule['scope']['level']})")
+    text = center.io.text("Number of the rendering to revoke (blank to cancel)").strip()
+    if text.isdigit() and 1 <= int(text) <= min(len(approved), 60):
+        rule = approved[int(text) - 1]
+        glossary.change_rule_state(job, rule["rule_id"], "REVOKED", lock_path=_lock(job), source_corpus_sha256=sha,
+                                   reason="Revoked by the Operator.", actor=ACTOR)
+        center.io.write(f"Revoked '{rule['target_form']}'. It stays in the journal and is never applied again.")
 
 
 def _review_proposals(center, job, source_sha: str) -> None:
@@ -327,9 +398,10 @@ def reference_list_menu(center, job) -> None:
     build_key = str(len(lists) + 1)
     options += [(build_key, f"Build a new reference list from {source} now")]
     pin = job.defaults.get("reference_list")
+    export_key, import_key = str(len(lists) + 2), str(len(lists) + 3)
     if pin:
-        options += [("E", "Export the pinned list as a workbook (edit KEEP / DROP / NEW)"),
-                    ("I", "Import an edited workbook (writes a new version)")]
+        options += [(export_key, "Export the pinned list as a workbook (edit KEEP / DROP / NEW)"),
+                    (import_key, "Import an edited workbook (writes a new version)")]
     options += [("B", "Keep the current setting")]
     context = (f"Pinned now                   {pin['rl_id']} v{pin['version']}" if pin else "Pinned now                   none",
                "A reference list holds the key concepts and their senses for one reference text. Glossary",
@@ -337,12 +409,12 @@ def reference_list_menu(center, job) -> None:
     choice = center.io.choose(f"Reference list for {job.job_id}", tuple(options), context=context)
     if choice == "B":
         return
-    if choice == "E":
+    if pin and choice == export_key:
         path = reflist_xlsx.export_workbook(store, pin["rl_id"], pin["version"], center.store.storage.exports_root / "pcc")
         center.io.write(f"Workbook written to {path}. Edit it, then import it here; pinning the new version is your choice.")
         center.io.pause()
         return
-    if choice == "I":
+    if pin and choice == import_key:
         path = _ask_path(center, "Path of the edited reference-list workbook (blank to cancel)")
         if path is None:
             return

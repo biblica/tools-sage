@@ -656,3 +656,19 @@ def current_key_terms(job_root: Path) -> dict[str, str]:
     """Return the imported key-term lemmas ({} when none were imported)."""
     path = journal_path(job_root).parent / KEY_TERMS_FILE
     return dict(read_json(path)["terms"]) if path.is_file() else {}
+
+
+def change_rule_state(job: Any, rule_id: str, state: str, *, lock_path: Path, source_corpus_sha256: str,
+                      reason: str, actor: str = "operator") -> bool:
+    """Revoke a rule or mark it STALE (P7-3/P7-4); journaled, never deleted. True when the state changed."""
+    operations = {"REVOKED": "REVOKE", "STALE": "MARK_STALE"}
+    if state not in operations:
+        raise ValidationError(f"Unsupported rule state change: {state}", code="PCC_RULE_STATE_INVALID")
+    rules = current_rules(job.root)
+    rule = rules.get(rule_id)
+    if rule is None:
+        raise ValidationError(f"No glossary rule {rule_id}", code="PCC_RULE_MISSING")
+    if rule["state"] == state:
+        return False
+    updated = dict(rule, state=state, rationale=f"{rule['rationale']} {reason}".strip())
+    return _append_rule(job, lock_path, source_corpus_sha256, updated, operations[state], actor, rules) == "imported"

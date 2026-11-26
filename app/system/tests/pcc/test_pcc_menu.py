@@ -82,3 +82,42 @@ def test_manage_pins_a_stored_reference_list_and_offers_wip_attach(make_workspac
     assert "Attach a WIP (once)" in rendered and "Syn list: syn-list-0123abcd v1" in rendered and "(this SOURCE)" in rendered
     assert "Reference list: none -> syn-list-0123abcd v1" in rendered
     assert center.store.load_job(job.job_id, tool="pcc").defaults["reference_list"]["version"] == 1
+
+
+def test_terms_menu_offers_findings_decisions_stale_review_and_revoke(make_workspace) -> None:
+    """P7 actions are reachable and explain themselves when there is nothing to act on."""
+    from sage.pcc_menu import terms_menu
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = _center(root, ["11", "", "9", "", "a"], output)
+    job = center.store.create_job(
+        tool="pcc", job_id="", display_name="PCC usNIVv2", bindings={"source": "usNIVv2"},
+        defaults=pcc_default_settings("sw"),
+    )
+    terms_menu(center, job)
+    rendered = output.getvalue()
+    assert "Import decisions on check findings" in rendered and "Review stale rules" in rendered
+    assert "No approved renderings yet." in rendered and "Run a consistency check first" in rendered
+
+
+def test_reference_list_menu_exports_the_pinned_list_with_numeric_keys(make_workspace) -> None:
+    """With a pinned list the workbook actions appear (numeric keys) and export writes RL-<id>-v1.xlsx."""
+    from sage.pcc.pin import pin_for
+    from sage.pcc.reflist import ReferenceListStore
+    from sage.pcc_menu import reference_list_menu
+
+    root = make_workspace(configured=True, qualification_status="VALIDATED")
+    output = io.StringIO()
+    center = _center(root, ["3", ""], output)
+    store = ReferenceListStore(center.store.storage.resources_root)
+    store.save(rl_id="syn-list-0123abcd", title="Syn list",
+               reference={"project_id": "usNIVv2", "edition": "usNIVv2", "language_tag": "en", "content_sha256": "c" * 64,
+                          "versification_id": "eng"},
+               license={"license_id": "SYNTHETIC", "local_only": True, "note": ""}, build={"mode": "SCRATCH"}, entries=[],
+               created_utc="2026-11-25T00:00:00Z")
+    job = center.store.create_job(tool="pcc", job_id="", display_name="PCC usNIVv2", bindings={"source": "usNIVv2"},
+                                  defaults=pcc_default_settings("sw") | {"reference_list": pin_for(store, "syn-list-0123abcd")})
+    reference_list_menu(center, job)
+    assert "3. Export the pinned list" in output.getvalue()
+    assert (center.store.storage.exports_root / "pcc" / "RL-syn-list-0123abcd-v1.xlsx").is_file()

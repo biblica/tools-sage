@@ -35,7 +35,7 @@ import random
 import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from ..references import parse_scope
@@ -43,7 +43,8 @@ from ..vrs import VerseRef, VersificationSchema
 from .align import DirectModel, OlToken, _NULL, _prior, train_direct
 from .contracts import SCHEMA_VERSION
 from .discovery import SourceUnit
-from .ids import full_digest, make_id
+from .ids import make_id
+from .resolver import Site, resolve, text_hash
 from .segment import Token, tokenize
 from .traits import MIN_STEM, WipTraits
 
@@ -59,7 +60,10 @@ CHECK_LAMBDA = 4.0           # relative-position prior for SOURCE <-> WIP spans 
 QUALIFY_BAR = 0.8             # minimum measured recall per kind (plan L4)
 QUALIFY_MIN_TRIALS = 20       # fewer planted cases than this: too little text to measure -> BEST_EFFORT
 QUALIFY_SAMPLES = 60          # planted errors per kind
-KINDS = ("SUBSTITUTION", "REMOVAL")
+KINDS = ("SUBSTITUTION", "REMOVAL")                 # forward kinds; INSERTION (PC12) is planted by the reverse scan
+KIND_CODE = {"SUBSTITUTION": "PC10", "REMOVAL": "PC11", "INSERTION": "PC12"}
+REVERSE_NEAR = 1              # pairs either side of a PC11 omission where a stray rendering may have moved
+REVERSE_CONFIDENCE = 0.3      # PC12 is a lower-confidence review candidate, never an error verdict (REV03)
 SEVERITY = {"PC10": "MEDIUM", "PC11": "MEDIUM", "PC12": "LOW", "PC13": "HIGH", "PC20": "LOW", "PC21": "LOW",
             "PC23": "HIGH"}
 KEY_CATEGORIES = frozenset({"BE", "AT", "RI", "KEY_TERM", "DECLARED"})
@@ -256,7 +260,7 @@ class Evidence:
     occurrence_id: str
     group_id: str
     ref: str
-    status: str                  # ACCEPTED | REJECTED | FORM | OMISSION | UNCERTAIN | NO_TARGET_VERSE
+    status: str                  # ACCEPTED | REJECTED | CONFLICT | FORM | OMISSION | UNCERTAIN | NO_TARGET_VERSE
     form: str = ""               # TARGET wording as written
     form_key: str = ""           # comparison class
     variant: str = ""            # EXACT | SPELLING | INFLECTION | LEARNED
@@ -265,14 +269,15 @@ class Evidence:
     confidence: float = 0.0
     negated: bool = False
     reason: str = ""
+    nth: int = 0                 # occurrence of the group within its SOURCE verse (OCCURRENCE scope)
+    verse_hash: str = ""         # SOURCE verse + paired WIP verse(s)
+    level: str = ""              # scope of the deciding rule
+    stale: tuple[str, ...] = ()  # approved rules that would apply but whose text changed (AT13)
 
 
-def learned_span(model: DirectModel, src: Sequence[Token], tgt: Sequence[Token], occ: set[int],
-                 stops: frozenset[str], source_stops: frozenset[str], lam: float = CHECK_LAMBDA
-                 ) -> tuple[list[int], bool, float, bool]:
-    """Target tokens of the occurrence, whether reliable, their mean posterior, and whether the verse aligns."""
-    if not src or not tgt:
-        return [], False, 0.0, False
+def best_links(model: DirectModel, src: Sequence[Token], tgt: Sequence[Token], lam: float = CHECK_LAMBDA
+               ) -> tuple[list[tuple[int, float]], list[tuple[int, float]]]:
+    """Each WIP token's best SOURCE token and each SOURCE token's best WIP token, with posteriors."""
     ns, nt = len(src), len(tgt)
     best_src: list[tuple[int, float]] = []
     for i, e in enumerate(tgt):
@@ -286,6 +291,17 @@ def learned_span(model: DirectModel, src: Sequence[Token], tgt: Sequence[Token],
         z = sum(scores) + model.f_given_e.get((f.norm, _NULL), 0.0) * 0.5
         i = max(range(nt), key=scores.__getitem__)
         best_tgt.append((i, scores[i] / z if z else 0.0))
+    return best_src, best_tgt
+
+
+def learned_span(model: DirectModel, src: Sequence[Token], tgt: Sequence[Token], occ: set[int],
+                 stops: frozenset[str], source_stops: frozenset[str], lam: float = CHECK_LAMBDA
+                 ) -> tuple[list[int], bool, float, bool]:
+    """Target tokens of the occurrence, whether reliable, their mean posterior, and whether the verse aligns."""
+    if not src or not tgt:
+        return [], False, 0.0, False
+    nt = len(tgt)
+    best_src, best_tgt = best_links(model, src, tgt, lam)
     agreed = {(j, i) for i, (j, p) in enumerate(best_src) if best_tgt[j][0] == i
               and model.e_given_f.get((tgt[i].norm, src[j].norm), 0.0) >= LINK_MIN_PROB}
     # Context: the SOURCE content words around the occurrence (the whole verse when it has too few). An
@@ -352,6 +368,9 @@ class CheckResult:
     qualification: dict[str, dict[str, Any]] = field(default_factory=dict)
     best_effort: list[str] = field(default_factory=list)
     counts: Counter[str] = field(default_factory=Counter)
+    details: list[dict[str, Any]] = field(default_factory=list)      # per finding: its occurrences and forms (P7-4)
+    stale_rules: dict[str, list[str]] = field(default_factory=dict)  # rule -> sites where its text changed
+    reverse: list[dict[str, Any]] = field(default_factory=list)      # P8: one row per rendering found outside its group
 
 
 @dataclass
@@ -374,6 +393,25 @@ class CheckInput:
     rules: Mapping[str, Mapping[str, Any]]
     target_stops: frozenset[str] = frozenset()
     source_stops: frozenset[str] = frozenset()
+    verse_hashes: Mapping[str, str] = field(default_factory=dict)    # WIP canonical ref -> text hash (passages)
+    decisions: Mapping[str, str] = field(default_factory=dict)       # finding id -> review status (P7-4)
+    scope_units: frozenset[str] | None = None                        # SOURCE units of the scope (None: every pair)
+
+
+def wip_verse_hashes(target_units: Mapping[str, SourceUnit]) -> dict[str, str]:
+    """Canonical WIP verse -> hash of its unit text (a bridge shares its unit's hash)."""
+    found: dict[str, str] = {}
+    for unit in target_units.values():
+        h = text_hash(unit.text)
+        for ref in unit.native_refs:
+            found.setdefault(ref, h)
+    return found
+
+
+def pair_hash(inp: "CheckInput", pair_id: str, source_unit: str) -> str:
+    """Hash binding an occurrence: its SOURCE verse text and the paired WIP verse text(s)."""
+    pair = next(p for p in inp.pairs if p.pair_id == pair_id) if not hasattr(inp, "_pair_index") else inp._pair_index[pair_id]
+    return text_hash(inp.source_units[source_unit].text, *(inp.target_units[u].text for u in pair.target))
 
 
 def _source_token_span(side: Side, pair_id: str, unit: str, start: int, end: int) -> set[int]:
@@ -382,63 +420,60 @@ def _source_token_span(side: Side, pair_id: str, unit: str, start: int, end: int
             if u == unit and t.start < end and t.end > start}
 
 
-def _rules_for(rules: Mapping[str, Mapping[str, Any]], group: str, ref: str) -> list[Mapping[str, Any]]:
-    """Rules of one group that apply at ``ref`` (group scope, or a passage holding ``ref``)."""
-    book, _, cv = ref.partition(" ")
-    chapter, _, verse = cv.partition(":")
-    found = []
-    for rule in rules.values():
-        if rule["group_id"] != group:
-            continue
-        scope = rule["scope"]
-        if scope["level"] == "PASSAGE":
-            try:
-                if not parse_scope(scope["identifier"]).contains(VerseRef(book, int(chapter), int(verse))):
-                    continue
-            except Exception:  # noqa: BLE001 - an unreadable passage never applies
-                continue
-        found.append(rule)
-    return found
+def _group_rules(rules: Mapping[str, Mapping[str, Any]], group: str) -> list[Mapping[str, Any]]:
+    """The group's rules plus WIP-language rules, longest form first (any state: all of them locate forms)."""
+    found = [r for r in rules.values() if r["group_id"] == group
+             or (r["scope"]["level"] == "LANGUAGE_PROFILE" and "=" not in r["normalized_target_form"])]
+    return sorted(found, key=lambda r: (r["state"] != "APPROVED", -len(r["normalized_target_form"]), r["rule_id"]))
 
 
-def locate(inp: CheckInput, occ: Mapping[str, Any], group: str) -> Evidence:
-    """B2: glossary forms first, then the learned span; never a guess."""
+def locate(inp: CheckInput, occ: Mapping[str, Any], group: str, nth: int = 0) -> Evidence:
+    """B2 + P7-2: find the rendering (glossary forms first, then the learned span), then resolve its rules."""
     ref = occ["canonical_ref"]
     pair_id = inp.unit_pair.get("S:" + occ["source_unit_id"])
     if pair_id is None:
-        return Evidence(occ["occurrence_id"], group, ref, "NO_TARGET_VERSE", reason="NO_TARGET_VERSE")
+        return Evidence(occ["occurrence_id"], group, ref, "NO_TARGET_VERSE", reason="NO_TARGET_VERSE", nth=nth)
+    vhash = pair_hash(inp, pair_id, occ["source_unit_id"])
     tgt = inp.target_side.tokens[pair_id]
     owners = inp.target_side.units[pair_id]
-    rules = sorted(_rules_for(inp.rules, group, ref), key=lambda r: (r["state"] != "APPROVED", -len(r["normalized_target_form"]), r["rule_id"]))
+    rules = _group_rules(inp.rules, group)
+    found = None
     for rule in rules:
-        form = [nfc_fold(t) for t in rule["normalized_target_form"].split()]
-        hit = find_form(form, tgt, inp.morph)
-        if hit is None:
-            continue
-        first, last, kind = hit
-        unit = inp.target_units[owners[first]]
-        text = unit.text[tgt[first].start:tgt[last].end] if owners[first] == owners[last] else " ".join(t.text for t in tgt[first:last + 1])
-        approved = rule["state"] == "APPROVED"
-        status = ("ACCEPTED" if rule["effect"] == "ACCEPT" else "REJECTED") if approved else "FORM"
-        return Evidence(occ["occurrence_id"], group, ref, status, text, form_class(" ".join(t.norm for t in tgt[first:last + 1]), inp.morph),
-                        kind, rule["rule_id"], unit.canonical_ref, 0.95, _negated(tgt, first, last, inp.morph),
-                        f"glossary form ({rule['state'].lower()})")
-    src = inp.source_side.tokens[pair_id]
-    span_src = _source_token_span(inp.source_side, pair_id, occ["source_unit_id"], occ["body_start"], occ["body_end"])
-    span, reliable, mean, aligned = learned_span(inp.model, src, tgt, span_src, inp.target_stops, inp.source_stops)
-    target_ref = inp.target_units[owners[0]].canonical_ref if owners else ref
-    if span and reliable:
-        first, last = span[0], span[-1]
-        unit = inp.target_units[owners[first]]
-        text = unit.text[tgt[first].start:tgt[last].end] if owners[first] == owners[last] else " ".join(t.text for t in tgt[first:last + 1])
-        norm = " ".join(t.norm for t in tgt[first:last + 1])
-        return Evidence(occ["occurrence_id"], group, ref, "FORM", text, form_class(norm, inp.morph), "LEARNED", "",
-                        unit.canonical_ref, mean, _negated(tgt, first, last, inp.morph), "learned alignment")
-    if not span and aligned:
-        return Evidence(occ["occurrence_id"], group, ref, "OMISSION", target_ref=target_ref,
-                        reason="the verse aligns but nothing in it renders this SOURCE wording")
-    return Evidence(occ["occurrence_id"], group, ref, "UNCERTAIN", target_ref=target_ref, confidence=mean,
-                    reason="alignment too weak to locate the rendering")
+        hit = find_form([nfc_fold(t) for t in rule["normalized_target_form"].split()], tgt, inp.morph)
+        if hit is not None:
+            found = (hit, "glossary form")
+            break
+    if found is None:
+        src = inp.source_side.tokens[pair_id]
+        span_src = _source_token_span(inp.source_side, pair_id, occ["source_unit_id"], occ["body_start"], occ["body_end"])
+        span, reliable, mean, aligned = learned_span(inp.model, src, tgt, span_src, inp.target_stops, inp.source_stops)
+        target_ref = inp.target_units[owners[0]].canonical_ref if owners else ref
+        if not (span and reliable):
+            if not span and aligned:
+                return Evidence(occ["occurrence_id"], group, ref, "OMISSION", target_ref=target_ref, nth=nth,
+                                verse_hash=vhash, reason="the verse aligns but nothing in it renders this SOURCE wording")
+            return Evidence(occ["occurrence_id"], group, ref, "UNCERTAIN", target_ref=target_ref, confidence=mean, nth=nth,
+                            verse_hash=vhash, reason="alignment too weak to locate the rendering")
+        found = ((span[0], span[-1], "LEARNED"), "learned alignment")
+        confidence = mean
+    else:
+        confidence = 0.95
+    (first, last, kind), how = found
+    unit = inp.target_units[owners[first]]
+    text = unit.text[tgt[first].start:tgt[last].end] if owners[first] == owners[last] else " ".join(t.text for t in tgt[first:last + 1])
+    norm = " ".join(t.norm for t in tgt[first:last + 1])
+    key = form_class(norm, inp.morph)
+    site = Site(group, ref, nth, vhash)
+    decision = resolve(rules, site, key, lambda form: form_class(nfc_fold(form), inp.morph), inp.verse_hashes)
+    status = {"ACCEPT": "ACCEPTED", "CONTEXT_ONLY": "ACCEPTED", "REJECT": "REJECTED", "CONFLICT": "CONFLICT"}.get(decision.effect or "", "FORM")
+    if status == "ACCEPTED" and kind == "LEARNED":
+        approved = {nfc_fold(r["normalized_target_form"]) for r in rules if r["rule_id"] in decision.rule_ids}
+        kind = "EXACT" if nfc_fold(norm) in approved else "INFLECTION"
+    reason = how + (f"; {decision.effect.lower()} by {', '.join(decision.rule_ids)} ({decision.level})" if decision.effect
+                    else "; no approved rule")
+    return Evidence(occ["occurrence_id"], group, ref, status, text, key, kind, ",".join(decision.rule_ids),
+                    unit.canonical_ref, confidence, _negated(tgt, first, last, inp.morph), reason, nth, vhash,
+                    decision.level, decision.stale)
 
 
 def _negated(tokens: Sequence[Token], first: int, last: int, morph: Morphology) -> bool:
@@ -459,10 +494,11 @@ def _distribution(items: Sequence[Evidence]) -> list[str]:
             for form, evs in sorted(forms.items(), key=lambda kv: (-len(kv[1]), kv[0]))]
 
 
-def classify(evs: Sequence[Evidence], *, confirmed: bool, conflict: bool, morph: Morphology) -> tuple[str, dict[str, str]]:
+def classify(evs: Sequence[Evidence], *, confirmed: bool, morph: Morphology,
+             conflict: bool = False) -> tuple[str, dict[str, str]]:
     """Group code and per-occurrence codes, in the handover's decision order (doc 02)."""
     per: dict[str, str] = {}
-    if conflict:
+    if conflict or any(e.status == "CONFLICT" for e in evs):
         return "PC23", {e.occurrence_id: "PC23" for e in evs}
     uncertain = [e for e in evs if e.status in ("UNCERTAIN", "NO_TARGET_VERSE")]
     rest = [e for e in evs if e not in uncertain]
@@ -518,6 +554,9 @@ def orthographic_only(evs: Sequence[Evidence]) -> bool:
 def run_check(inp: CheckInput, *, qualify: bool = True, seed: int = 0) -> CheckResult:
     """Classify every eligible group of the scope; findings, audit and qualification."""
     result = CheckResult()
+    if not inp.verse_hashes:
+        inp.verse_hashes = wip_verse_hashes(inp.target_units)
+    inp._pair_index = {p.pair_id: p for p in inp.pairs}
     by_group: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     occ_by_id = {o["occurrence_id"]: o for o in inp.occurrences}
     group_of = {(g["expression_id"], g["sense_id"]): g for g in inp.groups}
@@ -544,11 +583,18 @@ def run_check(inp: CheckInput, *, qualify: bool = True, seed: int = 0) -> CheckR
                        "Group has fewer than two confirmed verses in this scope: listed, not compared (AT16).")
             result.counts["informational_groups"] += 1
             continue
-        evs = [locate(inp, occ, gid) for occ in sorted(occs, key=lambda o: (o["canonical_ref"], o["body_start"]))]
+        ordered = sorted(occs, key=lambda o: (o["canonical_ref"], o["source_unit_id"], o["body_start"]))
+        seen: Counter[str] = Counter()
+        evs = []
+        for occ in ordered:
+            evs.append(locate(inp, occ, gid, seen[occ["source_unit_id"]]))
+            seen[occ["source_unit_id"]] += 1
+        for ev in evs:
+            for rule_id in ev.stale:
+                result.stale_rules.setdefault(rule_id, []).append(ev.ref)
         result.evidence[gid] = evs
         confirmed = all(o["sense_state"] == "CONFIRMED" for o in occs) and group.get("state", "CONFIRMED") == "CONFIRMED"
-        conflict = _conflict(inp.rules, gid)
-        code, per = classify(evs, confirmed=confirmed, conflict=conflict, morph=inp.morph)
+        code, per = classify(evs, confirmed=confirmed, morph=inp.morph)
         result.outcomes[gid] = code
         expr = exprs.get(group["expression_id"], {})
         _emit_group(result, inp, gid, group, expr, evs, code, per, occ_by_id)
@@ -561,10 +607,13 @@ def run_check(inp: CheckInput, *, qualify: bool = True, seed: int = 0) -> CheckR
         _finding(result, inp, "PC20", None, occs, [], [f"{len(occs)} occurrence(s) whose SOURCE sense is not one "
                  f"of the list's senses: {', '.join(sorted({o['source_text_span'] for o in occs}))}"],
                  "SOURCE sense unresolved; decide the sense before this wording is compared.", "LOW")
+    ctx = reverse_scan(inp, result)
+    result.reverse.sort(key=lambda r: (r["group_id"], r["pair_id"]))
     if qualify:
         result.qualification = self_qualify(inp, result, seed=seed)
+        result.qualification["INSERTION"] = qualify_insertion(inp, result, ctx, seed=seed)
         result.best_effort = [k for k, q in result.qualification.items() if q["status"] == "BEST_EFFORT"]
-        label = {"SUBSTITUTION": "PC10", "REMOVAL": "PC11"}
+        label = KIND_CODE
         for kind in result.best_effort:
             q = result.qualification[kind]
             measured = (f"measured {round(100 * q['recall'])}% on {q['trials']} planted case(s)" if q["recall"] is not None
@@ -576,18 +625,16 @@ def run_check(inp: CheckInput, *, qualify: bool = True, seed: int = 0) -> CheckR
                     if q["recall"] is not None:
                         finding["detection_confidence"] = round(min(finding["detection_confidence"], q["recall"]), 4)
                     result.counts["best_effort_findings"] += 1
+    status = {"CONFIRMED_ISSUE": "CONFIRMED_ISSUE", "DISMISS": "DISMISSED", "DEFER": "DEFERRED"}
+    for finding in result.findings:
+        decided = inp.decisions.get(finding["finding_id"])
+        if decided in status:
+            finding["review_status"] = status[decided]
+            result.counts["decided_findings"] += 1
     result.findings.sort(key=lambda f: f["finding_id"])
+    result.details.sort(key=lambda d: d["finding_id"])
     result.audit.sort(key=lambda r: r["occurrence_id"])
     return result
-
-
-def _conflict(rules: Mapping[str, Mapping[str, Any]], gid: str) -> bool:
-    """Equal-scope APPROVED ACCEPT and REJECT of the same form in one group (PC23)."""
-    seen: dict[tuple[str, str, str], set[str]] = defaultdict(set)
-    for rule in rules.values():
-        if rule["group_id"] == gid and rule["state"] == "APPROVED":
-            seen[(rule["normalized_target_form"], rule["scope"]["level"], rule["scope"]["identifier"])].add(rule["effect"])
-    return any({"ACCEPT", "REJECT"} <= effects for effects in seen.values())
 
 
 def _audit(result: CheckResult, inp: CheckInput, occ: Mapping[str, Any], gid: str, disposition: str, code: str,
@@ -599,25 +646,38 @@ def _audit(result: CheckResult, inp: CheckInput, occ: Mapping[str, Any], gid: st
 
 
 def _finding(result: CheckResult, inp: CheckInput, code: str, gid: str | None, occs: Sequence[Mapping[str, Any]],
-             evs: Sequence[Evidence], evidence: list[str], reason: str, severity: str, *, subkind: str = "") -> None:
-    """One finding record."""
-    rules = sorted({e.rule_id for e in evs if e.rule_id})
-    candidate = full_digest([code, subkind, sorted(e.form_key for e in evs)])
+             evs: Sequence[Evidence], evidence: list[str], reason: str, severity: str, *, subkind: str = "",
+             cluster: str = "", confidence: float | None = None) -> str:
+    """One finding record; returns its id. Each finding is its own issue cluster unless ``cluster`` links it to
+    another finding on the same problem (AT29)."""
+    rules = sorted({r for e in evs for r in e.rule_id.split(",") if r})
     subjects = sorted(o["occurrence_id"] for o in occs)
+    # Stable identity (P7-4): group, code, and each occurrence's place, form and verse text. A decision on a
+    # finding holds in later Runs until one of these changes.
+    if evs:
+        items = sorted([e.ref, e.nth, e.form_key, e.verse_hash] for e in evs)
+    else:
+        items = sorted([o["canonical_ref"], o["source_text_span"], text_hash(inp.source_units[o["source_unit_id"]].text)]
+                       for o in occs)
+    finding_id = make_id("finding", {"group": gid, "code": code, "subkind": subkind, "items": items})
+    result.details.append({"finding_id": finding_id, "group_id": gid, "code": code, "items": [
+        {"occurrence_id": e.occurrence_id, "ref": e.ref, "nth": e.nth, "verse_hash": e.verse_hash, "form": e.form,
+         "form_key": e.form_key, "status": e.status, "rule_ids": e.rule_id} for e in sorted(evs, key=lambda e: (e.ref, e.nth))]})
     result.findings.append({
         "schema_version": SCHEMA_VERSION,
-        "finding_id": make_id("finding", {"input": inp.run_input_sha256, "code": code, "subjects": subjects, "candidate": candidate}),
+        "finding_id": finding_id,
         "run_id": inp.run_id, "code": code, "review_status": "OPEN", "severity": severity,
         "is_blocking": code in ("PC23", "PC24", "PC25"),
-        "detection_confidence": round(min((e.confidence for e in evs), default=0.5) or 0.5, 4),
+        "detection_confidence": confidence if confidence is not None else round(min((e.confidence for e in evs), default=0.5) or 0.5, 4),
         "semantic_confidence": None, "group_id": gid,
-        "issue_cluster_id": make_id("cluster", {"group": gid or subjects[0], "code_family": code[:3]}),
-        "source_occurrence_ids": subjects, "source_refs": sorted({o["canonical_ref"] for o in occs}),
+        "issue_cluster_id": cluster or make_id("cluster", {"group": gid or subjects[0], "code": code, "subkind": subkind}),
+        "source_occurrence_ids": subjects, "source_refs": sorted({o["canonical_ref"] for o in occs} or {e.ref for e in evs}),
         "target_refs": sorted({e.target_ref for e in evs if e.target_ref}),
         "evidence": evidence or [reason], "applied_rule_ids": rules,
         "reason": reason + (f" ({subkind})" if subkind else ""),
     })
     result.counts[f"finding_{code}"] += 1
+    return finding_id
 
 
 def _emit_group(result: CheckResult, inp: CheckInput, gid: str, group: Mapping[str, Any], expr: Mapping[str, Any],
@@ -638,7 +698,8 @@ def _emit_group(result: CheckResult, inp: CheckInput, gid: str, group: Mapping[s
         return order[min(order.index(severity) + 1, 3)] if key else severity
     label = expr.get("source_surface", gid)
     if code == "PC23":
-        _finding(result, inp, "PC23", gid, occs({"PC23"}), evs, distribution,
+        _finding(result, inp, "PC23", gid, occs({"PC23"}), evs, distribution + [f"{e.ref}: {e.reason}" for e in evs
+                                                                                 if e.status == "CONFLICT"],
                  f"'{label}': approved rules accept and reject the same form at the same scope.", "HIGH")
         return
     if any(c == "PC21" for c in per.values()):
@@ -661,6 +722,238 @@ def _emit_group(result: CheckResult, inp: CheckInput, gid: str, group: Mapping[s
                   "different ways, not all approved.")
         _finding(result, inp, "PC10", gid, occs({"PC10", "PC01"}), rendered, distribution, reason,
                  "LOW" if ortho else bump("MEDIUM"), subkind="ORTHOGRAPHIC" if ortho else "")
+
+
+# --- reverse scan (plan B5, P8) -----------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ScanForm:
+    """A TARGET rendering of a compared group that the reverse scan looks for in the group's other verses."""
+
+    group_id: str
+    key: tuple[str, ...]          # comparison class, one entry per token
+    tokens: tuple[str, ...]       # token norms of one written form (what self-qualification plants)
+    origin: str                   # where the form comes from: an approved rule or the learned distribution
+    learned: bool
+
+
+@dataclass
+class ReverseContext:
+    """What the SOURCE side lists and the forward check located, per verse pair."""
+
+    pairs: list[Pair]
+    index: dict[str, int]                                  # pair -> position (for neighbouring verses)
+    postings: dict[str, set[str]]                          # WIP comparison token -> pairs holding it
+    group_pairs: dict[str, set[str]]                       # group -> pairs where SOURCE has it
+    wording_pairs: dict[str, set[str]]                     # expression -> pairs where SOURCE has the wording
+    rendered_at: dict[str, set[tuple[str, str]]]           # pair -> (group, form class) located there
+    omission_pairs: dict[str, set[str]]                    # group -> pairs of its PC11 occurrences
+
+
+def scan_forms(inp: CheckInput, result: CheckResult) -> list[ScanForm]:
+    """Approved group renderings and renderings learned at two or more of the group's occurrences (REV01)."""
+    occ_by_id = {o["occurrence_id"]: o for o in inp.occurrences}
+    forms: dict[tuple[str, tuple[str, ...]], ScanForm] = {}
+    for gid, evs in sorted(result.evidence.items()):
+        if result.outcomes.get(gid) == "PC23":
+            continue
+        for rule in sorted(inp.rules.values(), key=lambda r: r["rule_id"]):
+            if (rule["group_id"] == gid and rule["state"] == "APPROVED" and rule["effect"] in ("ACCEPT", "CONTEXT_ONLY")
+                    and rule["scope"]["level"] == "SECG" and "=" not in rule["normalized_target_form"]):
+                tokens = tuple(nfc_fold(rule["normalized_target_form"]).split())
+                key = tuple(form_class(" ".join(tokens), inp.morph).split())
+                forms.setdefault((gid, key), ScanForm(gid, key, tokens, f"approved rule {rule['rule_id']}", False))
+        seen = Counter(e.form_key for e in evs if e.status in ("ACCEPTED", "FORM") and e.form_key)
+        for key_text, n in sorted(seen.items()):
+            if n < 2:
+                continue
+            key = tuple(key_text.split())
+            if (gid, key) in forms:
+                continue
+            # the written tokens of the first occurrence carrying this form
+            for ev in sorted(evs, key=lambda e: (e.ref, e.nth)):
+                pair_id = inp.unit_pair.get("S:" + occ_by_id[ev.occurrence_id]["source_unit_id"]) if ev.form_key == key_text else None
+                hit = find_form(list(key), inp.target_side.tokens[pair_id], inp.morph) if pair_id else None
+                if hit:
+                    tokens = tuple(t.norm for t in inp.target_side.tokens[pair_id][hit[0]:hit[1] + 1])
+                    forms[(gid, key)] = ScanForm(gid, key, tokens, f"learned at {n} occurrences", True)
+                    break
+    return [f for _, f in sorted(forms.items()) if f.key]
+
+
+def _scope_pairs(inp: CheckInput) -> list[Pair]:
+    """Verse pairs of the Run's scope."""
+    if inp.scope_units is None:
+        return list(inp.pairs)
+    return [p for p in inp.pairs if any(u in inp.scope_units for u in p.source)]
+
+
+def reverse_context(inp: CheckInput, result: CheckResult) -> ReverseContext:
+    """Index the scope's WIP tokens and what the forward check found per pair."""
+    pairs = _scope_pairs(inp)
+    postings: dict[str, set[str]] = defaultdict(set)
+    for pair in pairs:
+        for token in inp.target_side.tokens[pair.pair_id]:
+            postings[inp.morph.stem(inp.morph.spell(token.norm))].add(pair.pair_id)
+    occ_by_id = {o["occurrence_id"]: o for o in inp.occurrences}
+    wording_pairs: dict[str, set[str]] = defaultdict(set)
+    for occ in inp.occurrences:
+        pair_id = inp.unit_pair.get("S:" + occ["source_unit_id"])
+        if pair_id:
+            wording_pairs[occ["expression_id"]].add(pair_id)
+    group_pairs: dict[str, set[str]] = defaultdict(set)
+    rendered_at: dict[str, set[tuple[str, str]]] = defaultdict(set)
+    for gid, evs in result.evidence.items():
+        for ev in evs:
+            pair_id = inp.unit_pair.get("S:" + occ_by_id[ev.occurrence_id]["source_unit_id"])
+            if pair_id:
+                group_pairs[gid].add(pair_id)
+                if ev.status in ("ACCEPTED", "FORM", "REJECTED") and ev.form_key:
+                    rendered_at[pair_id].add((gid, ev.form_key))
+    omission_pairs: dict[str, set[str]] = defaultdict(set)
+    for row in result.audit:
+        if row["result_code"] == "PC11":
+            pair_id = inp.unit_pair.get("S:" + occ_by_id[row["occurrence_id"]]["source_unit_id"])
+            if pair_id:
+                omission_pairs[row["group_id"]].add(pair_id)
+    return ReverseContext(pairs, {p.pair_id: i for i, p in enumerate(inp.pairs)}, postings, group_pairs, wording_pairs,
+                          rendered_at, omission_pairs)
+
+
+def reverse_support(inp: CheckInput, ctx: ReverseContext, form: ScanForm, pair_id: str, tgt: Sequence[Token],
+                    first: int, last: int, expression_id: str) -> tuple[str, str]:
+    """REV01-REV03: is a rendering found outside its group supported by something else in the SOURCE verse?
+
+    ``SUPPORTED_RENDERING`` (another listed SOURCE concept is rendered with this form here), ``SUPPORTED_WORDING``
+    (the group's SOURCE wording is here, in another sense or not compared), ``SUPPORTED_ALIGNMENT`` (a SOURCE word
+    of the verse links to it: an alternate construction or an explicit referent, AT09), ``UNCERTAIN`` (the verse
+    does not align well enough to claim anything) or ``ADDED`` (a possible addition: ``PC12``, AT08).
+    """
+    key = " ".join(form.key)
+    other = sorted(g for g, k in ctx.rendered_at.get(pair_id, ()) if k == key and g != form.group_id)
+    if other:
+        return "SUPPORTED_RENDERING", f"rendering of another listed concept here ({other[0]})"
+    if pair_id in ctx.wording_pairs.get(expression_id, ()):
+        return "SUPPORTED_WORDING", "the SOURCE wording is in this verse (another sense, or not compared)"
+    src = inp.source_side.tokens[pair_id]
+    if not src or not tgt:
+        return "UNCERTAIN", "empty verse"
+    # Support is word translation probability in either direction, without the position prior: the question is
+    # whether any SOURCE word of the verse is rendered this way, wherever it stands (languages reorder).
+    for i in range(first, last + 1):
+        for j, f in enumerate(src):
+            if (inp.model.e_given_f.get((tgt[i].norm, f.norm), 0.0) >= LINK_MIN_PROB
+                    or inp.model.f_given_e.get((f.norm, tgt[i].norm), 0.0) >= LINK_MIN_PROB):
+                return "SUPPORTED_ALIGNMENT", f"SOURCE word {j + 1} of the verse is rendered this way elsewhere"
+    best_src, best_tgt = best_links(inp.model, src, tgt)
+    content = [j for j, f in enumerate(src) if f.norm not in inp.source_stops]
+    linked = {j for i, (j, _) in enumerate(best_src) if inp.model.e_given_f.get((tgt[i].norm, src[j].norm), 0.0) >= LINK_MIN_PROB}
+    linked |= {j for j, (i, _) in enumerate(best_tgt) if inp.model.e_given_f.get((tgt[i].norm, src[j].norm), 0.0) >= LINK_MIN_PROB}
+    if not content or sum(1 for j in content if j in linked) / len(content) < VERSE_ALIGNED_SHARE:
+        return "UNCERTAIN", "the verse does not align well enough to judge"
+    return "ADDED", "no SOURCE word of the verse links to it"
+
+
+def reverse_scan(inp: CheckInput, result: CheckResult) -> ReverseContext | None:
+    """B5: look for every group rendering in the scope's other verses; unsupported ones are ``PC12`` (AT08, AT09).
+
+    A ``PC12`` next to a verse where the same group's rendering is missing (``PC11``) is a possibly moved
+    rendering (subkind ``NEAR_OMISSION``) and shares that ``PC11``'s issue cluster (AT29). Each hit gets one row
+    in ``result.reverse``; nothing here is an error verdict (REV03).
+    """
+    forms = scan_forms(inp, result)
+    if not forms:
+        return None
+    ctx = reverse_context(inp, result)
+    groups = {g["group_id"]: g for g in inp.groups}
+    exprs = {e["expression_id"]: e for e in inp.expressions}
+    pair_by_id = {p.pair_id: p for p in inp.pairs}
+    added: dict[str, list[tuple[Evidence, bool]]] = defaultdict(list)
+    done: set[tuple[str, str]] = set()
+    for form in forms:
+        candidates = set.intersection(*(ctx.postings.get(t, set()) for t in form.key))
+        outside = candidates - ctx.group_pairs.get(form.group_id, set())
+        others = len(ctx.pairs) - len(ctx.group_pairs.get(form.group_id, ()))
+        if outside and len(outside) / max(others, 1) >= STOP_SHARE:
+            # common in the verses without the concept too (a function word or a general word): not a rendering
+            # that can be traced back to this concept
+            result.counts["reverse_common_forms"] += 1
+            continue
+        expression_id = groups[form.group_id]["expression_id"]
+        for pair_id in sorted(outside):
+            if (form.group_id, pair_id) in done:
+                continue
+            tgt = inp.target_side.tokens[pair_id]
+            hit = find_form(list(form.key), tgt, inp.morph)
+            if hit is None:
+                continue
+            done.add((form.group_id, pair_id))
+            first, last, _ = hit
+            disposition, why = reverse_support(inp, ctx, form, pair_id, tgt, first, last, expression_id)
+            pair = pair_by_id[pair_id]
+            owners = inp.target_side.units[pair_id]
+            unit = inp.target_units[owners[first]]
+            text = unit.text[tgt[first].start:tgt[last].end] if owners[first] == owners[last] else " ".join(t.text for t in tgt[first:last + 1])
+            source_ref = inp.source_units[pair.source[0]].canonical_ref
+            result.reverse.append({"group_id": form.group_id, "pair_id": pair_id, "source_ref": source_ref,
+                                   "target_ref": unit.canonical_ref, "form": text, "form_key": " ".join(form.key),
+                                   "origin": form.origin, "disposition": disposition, "reason": why})
+            result.counts[f"reverse_{disposition.lower()}"] += 1
+            if disposition != "ADDED":
+                continue
+            near = any(abs(ctx.index[pair_id] - ctx.index[o]) <= REVERSE_NEAR
+                       and inp.source_units[pair_by_id[o].source[0]].canonical_ref.split(" ")[0] == source_ref.split(" ")[0]
+                       for o in ctx.omission_pairs.get(form.group_id, ()))
+            ev = Evidence("", form.group_id, source_ref, "ADDED", text, " ".join(form.key), "", "", unit.canonical_ref,
+                          REVERSE_CONFIDENCE, False, f"{why} ({form.origin})", 0, pair_hash(inp, pair_id, pair.source[0]))
+            added[form.group_id].append((ev, near))
+    for gid in sorted(added):
+        label = exprs.get(groups[gid]["expression_id"], {}).get("source_surface", gid)
+        where = _distribution(result.evidence.get(gid, ()))[:3]
+        for near in (True, False):
+            evs = sorted((e for e, n in added[gid] if n == near), key=lambda e: e.ref)
+            if not evs:
+                continue
+            lines = [f"{e.ref}: '{e.form}' ({e.reason})" for e in evs] + [f"Where SOURCE has '{label}': " + "; ".join(where)]
+            if near:
+                pc11 = next((f for f in result.findings if f["group_id"] == gid and f["code"] == "PC11"), None)
+                _finding(result, inp, "PC12", gid, [], evs, lines,
+                         f"'{label}': its rendering appears next to a verse where it is missing; it may have moved "
+                         "across the verse boundary (review, not an error verdict).", "LOW", subkind="NEAR_OMISSION",
+                         cluster=pc11["issue_cluster_id"] if pc11 else "", confidence=REVERSE_CONFIDENCE)
+            else:
+                _finding(result, inp, "PC12", gid, [], evs, lines,
+                         f"'{label}': its rendering appears where the SOURCE has no matching wording and no SOURCE word "
+                         "links to it (possible addition; review, not an error verdict).", "LOW",
+                         confidence=REVERSE_CONFIDENCE)
+    return ctx
+
+
+def qualify_insertion(inp: CheckInput, result: CheckResult, ctx: ReverseContext | None, *, seed: int = 0) -> dict[str, Any]:
+    """L4 for the reverse scan: plant a learned group rendering into a verse without the group and count PC12."""
+    rng = random.Random(seed + 1)
+    forms = [f for f in scan_forms(inp, result) if f.learned] if ctx else []
+    pair_ids = sorted(p.pair_id for p in ctx.pairs) if ctx else []
+    groups = {g["group_id"]: g for g in inp.groups}
+    trials = hits = attempts = 0
+    while forms and pair_ids and trials < QUALIFY_SAMPLES and attempts < 20 * QUALIFY_SAMPLES:
+        attempts += 1
+        form, pair_id = rng.choice(forms), rng.choice(pair_ids)
+        expression_id = groups[form.group_id]["expression_id"]
+        tokens = inp.target_side.tokens[pair_id]
+        if (pair_id in ctx.group_pairs.get(form.group_id, ()) or pair_id in ctx.wording_pairs.get(expression_id, ())
+                or any(k == " ".join(form.key) for _, k in ctx.rendered_at.get(pair_id, ()))
+                or not tokens or find_form(list(form.key), tokens, inp.morph)):
+            continue
+        at = rng.randrange(len(tokens) + 1)
+        copy = list(tokens[:at]) + [Token(w, w, 0, 0) for w in form.tokens] + list(tokens[at:])
+        disposition, _ = reverse_support(inp, ctx, form, pair_id, copy, at, at + len(form.tokens) - 1, expression_id)
+        trials += 1
+        hits += disposition == "ADDED"
+    recall = round(hits / trials, 3) if trials else None
+    status = "CHECKED" if trials >= QUALIFY_MIN_TRIALS and recall is not None and recall >= QUALIFY_BAR else "BEST_EFFORT"
+    return {"trials": trials, "detected": hits, "recall": recall, "bar": QUALIFY_BAR, "status": status}
 
 
 # --- self-qualification (plan L4) --------------------------------------------------------------------------
@@ -702,7 +995,7 @@ def self_qualify(inp: CheckInput, result: CheckResult, *, seed: int = 0) -> dict
             planted, synonym = planted
             trials += 1
             code, per = classify([planted if e.occurrence_id == victim.occurrence_id else e for e in evs],
-                                 confirmed=True, conflict=False, morph=inp.morph)
+                                 confirmed=True, morph=inp.morph)
             got = per.get(victim.occurrence_id)
             # a known synonym must be caught as variation (PC10); a random word may also read as a gap (PC11)
             wanted = ("PC10",) if kind == "SUBSTITUTION" and synonym else ("PC10", "PC11") if kind == "SUBSTITUTION" else ("PC11",)
@@ -744,9 +1037,10 @@ def _plant(inp: CheckInput, occ: Mapping[str, Any], ev: Evidence, kind: str, rng
     else:
         replacement, known = [], []
     copy = list(tokens[:first]) + replacement + list(tokens[last + 1:])
-    sub = CheckInput(**{**inp.__dict__, "target_side": Side({**inp.target_side.tokens, pair_id: copy},
-                                                           {**inp.target_side.units, pair_id: _owners(inp, pair_id, first, last, len(replacement))})})
-    return locate(sub, occ, ev.group_id), bool(known)
+    sub = replace(inp, target_side=Side({**inp.target_side.tokens, pair_id: copy},
+                                         {**inp.target_side.units, pair_id: _owners(inp, pair_id, first, last, len(replacement))}))
+    sub._pair_index = inp._pair_index
+    return locate(sub, occ, ev.group_id, ev.nth), bool(known)
 
 
 def _owners(inp: CheckInput, pair_id: str, first: int, last: int, inserted: int) -> list[str]:

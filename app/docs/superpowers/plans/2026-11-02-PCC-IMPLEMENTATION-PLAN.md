@@ -1,6 +1,6 @@
 # Phrase Consistency Checker (PCC) — implementation plan
 
-**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages), P5b-2 (top-down build), P5b-3 (Job pin, terms Run from the list), P5b-4 (list workbook) and P6 (forward check) built; P5b-5–P7 planned in §8. Tracked as `TODO-20261102-001` (`0.02a3`,
+**Status:** 2026-11-02: PO decisions D1–D6, D10 and D11 recorded (§3). P1a (backend skeleton), P1b (menu) and P2 (segmenter, trie, traits) P3a (discovery, index packages, builder tool) and P4 (sense evidence, groups) built. P3b (shipped BSB package) is open, see below. No consistency analysis exists yet. 2026-11-25: reference lists split from the Job and rebuilt top-down from OL concepts (D12–D20, §5b, review §5b.7); P5b-R (PCC original-language package), P5b-0 (aligner), P5b-1 (RL packages), P5b-2 (top-down build), P5b-3 (Job pin, terms Run from the list), P5b-4 (list workbook), P6 (forward check), P7 (rule resolver and decisions) and P8 (reverse scan and issue clusters) built; P5b-5..7 open. Tracked as `TODO-20261102-001` (`0.02a3`,
 `MS-02A3`); it supersedes ATT (`TODO-20261015-001`, `-002`).
 
 **Handover:** `externaldata/pcc/MASTER_HANDOVER.md` and
@@ -1222,6 +1222,129 @@ Each phase leaves tests green and updates this plan. The handover's M0–M8 map 
   - A Run-level check in `test_pcc_pin.py`.
 - PCC 154 passed, `test_package.py` 19 passed, source audit PASS.
 
+### P7 as built (2026-11-25): rule scopes, resolver, staleness and finding decisions
+
+- **P7-1 scopes** (`pcc/resolver.py`). The existing contract levels are used. The plan's `GROUP` is
+  `SECG`, and `LANGUAGE` is `LANGUAGE_PROFILE`.
+  - `OCCURRENCE`: `<ref>|<nth occurrence of the group in the verse>|<verse hash>`. The hash covers the
+    SOURCE verse and the paired WIP verse(s).
+  - `PASSAGE`: `<range>#<hash of the WIP verses of the range>`. Passages from the P5 terms-list import
+    (`PASSAGE:<ref>` without `#`) stay unbound.
+  - `SECG`: the concept + sense group.
+  - `LANGUAGE_PROFILE`: group `LANGUAGE`. An approved `a=b` form is a spelling equivalence added to the
+    check's morphology; any other form is a rendering rule for every group.
+  - Effects `ACCEPT` / `REJECT` / `CONTEXT_ONLY` (the existing enum).
+- **P7-2 resolver** (`resolve`, pure).
+  - All of a group's rules, in any state, help **locate** a rendering. Only approved rules that apply
+    at the site and match its form class **decide**. The most specific scope wins (occurrence >
+    passage > group > language), so a more specific `REJECT` beats a broader `ACCEPT` (AT24).
+  - `PROPOSED` / `REVOKED` / `STALE` never accept (AT23).
+  - Approved `ACCEPT` or `CONTEXT_ONLY` and `REJECT` of one form at the same, highest level is
+    `CONFLICT`: the group is `PC23` and `BLOCKED`, with a `PCC_RULE_CONFLICT` exception report, and the
+    Run continues (AT14, D9).
+  - Each audit row names the deciding rule ids and level.
+  - This replaces P6's group-level conflict test and the "approved forms only" lookup.
+- **P7-3 staleness.**
+  - Text-bound rules whose verse or passage text changed are not applied. They are reported per Run
+    (`stale-rules.json`, `PCC_RULES_STALE`). A Run never writes the journal, because that would stale its
+    own sealed decision snapshot.
+  - The Operator marks them `STALE` (`MARK_STALE`) or revokes them under **Review stale rules**.
+  - Group rules whose concept or sense is gone are marked `STALE` at re-pin (P5b-3). A changed entry
+    whose sense key still exists keeps its rules: marking every rule of an edited concept stale was judged
+    too aggressive.
+- **P7-4 decisions** (`pcc/decisions.py`). The Operator imports a filled `PCC-FINDINGS.xlsx`; the
+    workbook must come from the latest check Run (`PCC_FINDINGS_RUN_MISMATCH` otherwise).
+  - `APPROVE_VARIANT` / `REJECT_FORM` turn the finding's unapproved forms into approved rules. The scope
+    cell is blank/`GROUP`, `PASSAGE:<range>` (text-bound) or `OCCURRENCE` (one rule per occurrence,
+    text-bound).
+  - `CONFIRMED_ISSUE` / `DISMISS` / `DEFER` become `FINDING` review events (new operations
+    `CONFIRM_ISSUE`, `DISMISS`, `DEFER`), and the stored record holds the decision and note.
+  - Bad rows are reported by row number. A repeated import is idempotent.
+  - **Finding identity is now stable:** `H(group, code, subkind, [(ref, nth, form class, verse hash)])`,
+    with no Run input. A decided finding keeps `DISMISSED` / `CONFIRMED_ISSUE` / `DEFERRED` in later Runs
+    until its evidence changes; then it is a new `OPEN` finding.
+  - The check Run writes `finding-detail.jsonl` (each finding's occurrences, forms and statuses) and
+    `wip-verse-hashes.json` for the import.
+- **Menu** (Terms list and glossary, numeric keys as the menu contract requires):
+  - 9: import decisions on check findings;
+  - 10: review stale rules;
+  - 11: revoke an approved rendering (`glossary.change_rule_state`).
+
+  The Reference list menu's workbook actions moved to numeric keys as well. The letter keys of P5b-4
+  would have been refused at run time once a list was pinned.
+- **P7-5 determinism.** The same inputs and journal give identical findings, ids, details and audit, in
+  any rule order. The rule view is rebuilt from the journal alone, and an edited or reordered journal
+  still fails closed (P1).
+- Tests: `tests/pcc/test_pcc_p7.py` (10) covers AT13, AT14, AT23, AT24, occurrence-scoped approval,
+  stale binding, APPROVE_VARIANT → PC01, DISMISS persistence and expiry, bad rows, foreign workbooks,
+  journaled state changes and determinism. Two menu tests were added. PCC 166 passed, `test_package.py`
+  19 passed, source audit PASS.
+
+### P8 as built (2026-11-26): reverse scan and issue clusters
+
+- **P8-1 forms to scan** (`check.scan_forms`, REV01).
+  - Each compared group's approved group-scope `ACCEPT` / `CONTEXT_ONLY` forms, plus forms the forward check located at
+    two or more of the group's occurrences. `PC23` groups are skipped.
+  - A form found in at least 15% of the scope's verses without the concept is not traced (`reverse_common_forms`).
+    The WIP stop-word filter of P6 was tried first; it dropped frequent key-term renderings (a word for *God* in Romans).
+- **P8-2 scan.** Only the Run's scope (`CheckInput.scope_units`; the WIP of other books is not scanned). An index of WIP
+  comparison tokens (declared spellings applied, learned inflection removed) gives candidate verses; `find_form`
+  confirms. One hit per group and verse pair; the group's own verses are skipped.
+- **P8-3 SOURCE support, in order** (REV02, AT09). The first that holds decides:
+  1. `SUPPORTED_RENDERING`: another compared concept is rendered with the same form in that verse.
+  2. `SUPPORTED_WORDING`: the group's SOURCE wording is in the verse, in another sense or not compared.
+  3. `SUPPORTED_ALIGNMENT`: some SOURCE word of the verse has t(WIP word | SOURCE word) or t(SOURCE word | WIP word)
+     ≥ 0.05. There is no position prior, since languages reorder. This covers alternate constructions and explicit
+     referents (a name for *he*).
+  4. `UNCERTAIN`: less than 40% of the verse's SOURCE content words link. Nothing is claimed (REV03).
+  5. Otherwise `ADDED` → `PC12`.
+- **P8-4 findings.**
+  - One `PC12` per group: `LOW`, detection confidence 0.3 (capped by measured recall), `OPEN`, never blocking. SOURCE
+    and WIP are given by reference; the WIP form is quoted.
+  - Subkind `NEAR_OMISSION` when the hit is within one verse pair of the same group's `PC11` in the same book. It then
+    shares that `PC11`'s `issue_cluster_id` (AT29); both evidence traces stay.
+  - **Clusters changed:** each finding is now its own issue (group, code, subkind) unless linked. Before, every `PC1x`
+    of a group shared one cluster, so an unrelated `PC12` would have merged with a `PC10`.
+  - `summary.json` gains `issue_clusters` (review and blocked findings, linked ones once) and `reverse_scan`
+    (dispositions). Both are optional in the contract (terms Runs lack them).
+  - `reverse-audit.jsonl` has one row per hit with its disposition and reason. `PCC-CHECK.md` gives the issue and
+    reverse-scan counts. `PCC-FINDINGS.xlsx` gains an *Issue* column (the decision import reads columns by name).
+  - Decisions: `PC12` takes `CONFIRMED_ISSUE` / `DISMISS` / `DEFER` only. A rendering decision on it is refused with the
+    row number.
+- **P8-5 self-qualification `INSERTION`.** A learned group rendering is planted at a random place in a scope verse
+  without the group, its wording or that form. It must come out `ADDED`. Same bar, minimum and best-effort labelling
+  as P6-6 (`PCC_KIND_BEST_EFFORT`).
+- **Deviations.**
+  - The OL `subjref` / `participantref` check of B5 is not done: the `SAGE_PCC_OL` package does not carry them. Explicit
+    referents are covered by alignment support (P8-3 step 3).
+  - The handover's optional "salient TARGET phrase" discovery is not built.
+- **P8-6 evaluation** (`tools/evaluate_pcc_check.py`, same setup as P6-8: NIV, John + Romans, 1,312 verses, no glossary,
+  300 planted insertions):
+
+| WIP | Hits outside the group | Supported (rendering / wording / alignment) | Uncertain | `ADDED` | `PC12` findings / 1000 verses | Insertion recall |
+|---|---|---|---|---|---|---|
+| Spanish NVI | 3,245 | 1,220 / 198 / 1,721 | 7 | 99 | 29.7 | 75.3% (best effort) |
+| Swahili Neno | 3,062 | 911 / 290 / 1,761 | 16 | 84 | 32.8 | 55.7% (best effort) |
+| Hindi HCV | 3,223 | 966 / 271 / 1,815 | 16 | 155 | 35.1 | 71.7% (best effort) |
+
+  - **Why insertions are missed (Spanish, 74 of 300).** 5 were uncertain verses. 69 were "supported" by alignment;
+    for 34 of these the only link was backward from a SOURCE function word.
+  - **Trade-off.** Ignoring that path would give 86.7% recall (checked). It would also add 58 real candidates
+    (99 → 157), likely explicit referents, at unmeasured precision. Because false alarms are the named reverse-scan
+    risk (§10), the permissive rule is kept and `INSERTION` is best effort.
+  - **Open:** the `PC12` false-alarm rate, by two-LLM judging (§9). This waits for an LLM provider, as for `PC11`.
+- Tests: `tests/pcc/test_pcc_p8.py` (7) covers:
+  - AT08: an unsupported addition is `PC12`, low, open and contract-valid; a clean text has none.
+  - AT09: an alternate SOURCE word rendered the same way suppresses it.
+  - REV02/REV03: the same wording in another sense is supported; a verse that does not align is uncertain.
+  - AT29: a moved rendering shares the `PC11` cluster, and an unrelated addition is its own issue.
+  - The scope bounds the scan.
+  - Insertion self-qualification, and determinism.
+  - `PC12` decisions: `DISMISS` holds in the next Run, and `APPROVE_VARIANT` is refused.
+
+  The pin test checks `reverse-audit.jsonl` and `issue_clusters`. PCC 173 passed, `test_package.py` 19 passed,
+  source audit PASS.
+
 ### P5b plan (reference lists, D12–D20)
 
 PCC is alpha and this is a clean instance, so there is no migration. P4/P5 Job-local list data is
@@ -1325,6 +1448,8 @@ senses; D13, D14 (revised) and D16 recommended. P5b-R (the `SAGE_PCC_OL` package
 distro; P5b-0 (word aligner), P5b-1 (concept keys, RL packages and store) and P5b-2 (top-down build,
 alignment cache) and P5b-3 (Job pin, terms Run from the list, re-pin, WIP attach) are built. P5b-4 (RL
 workbook, overlay removed) and P6 (forward check with self-qualification) are built. Open from P6: PC11
-false-alarm rate and substitution plant quality (§ P6 as built). Next is P7 (rule resolver and decisions),
-with P5b-5..7 alongside. Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
+false-alarm rate and substitution plant quality (§ P6 as built). P7 (scopes, resolver, staleness, finding decisions) is built.
+P8 (reverse scan, `PC12`, issue clusters) is built (2026-11-26), so the handover's Stage 1 functions (M0–M6) exist.
+Open: P5b-5..7 (Key Concepts package, inheritance, exchange, RL menu outside a Job), P9 (reports, guide, full
+acceptance), and the `PC11` / `PC12` false-alarm rates (two-LLM judging, waits for a provider). Order: P5b-0 → P5b-1 → P5b-2 → P5b-3 → P6, with
 P5b-4..7 alongside P6 (P5b-5a needs an LLM provider) → P7. Revised 2026-11-25 after the §5b.7 review.

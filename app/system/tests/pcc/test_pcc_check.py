@@ -219,9 +219,9 @@ def test_self_qualification_measures_recall_and_labels_unqualified_kinds():
     tiny_s, tiny_t = _synthetic({7, 8})
     inp, _ = _input(tiny_s, tiny_t, _occurrences(tiny_s, "keep the promise"))
     small = run_check(inp)
-    assert set(small.best_effort) == {"SUBSTITUTION", "REMOVAL"}
+    assert set(small.best_effort) == {"SUBSTITUTION", "REMOVAL", "INSERTION"}
     for finding in small.findings:
-        if finding["code"] in ("PC10", "PC11"):
+        if finding["code"] in ("PC10", "PC11", "PC12"):
             assert "Best effort for this WIP" in finding["evidence"][-1]
 
 

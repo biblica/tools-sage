@@ -294,4 +294,5 @@ def test_check_run_with_a_pinned_list_writes_findings_audit_and_reports(workspac
     assert read_json(output / "qualification.json")["kinds"]["SUBSTITUTION"]["status"] == "BEST_EFFORT"
     reports = store.storage.reports_root / job.job_id
     assert (reports / "PCC-CHECK.md").is_file() and (reports / "PCC-FINDINGS.xlsx").is_file()
-    assert "Forward consistency check" in summary["limitations"][0]
+    assert "Consistency check (plan phases P6-P8)" in summary["limitations"][0]
+    assert (output / "reverse-audit.jsonl").is_file() and "issue_clusters" in summary

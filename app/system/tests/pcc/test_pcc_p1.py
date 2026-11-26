@@ -336,7 +336,7 @@ def test_check_run_on_a_tiny_text_claims_no_pass(make_workspace) -> None:
                            defaults=pcc_default_settings("en"))
     config, run = _run(store, job, operation="check")
     summary = execute_pcc_run(store, config, job, run)
-    assert summary["fully_resolved_groups"] == 0 and "Forward consistency check" in summary["limitations"][0]
+    assert summary["fully_resolved_groups"] == 0 and "Consistency check (plan phases P6-P8)" in summary["limitations"][0]
     exceptions = (run.root / "diagnostics" / "EXCEPTION-REPORTS.jsonl").read_text(encoding="utf-8")
     assert "PCC_KIND_BEST_EFFORT" in exceptions and "PCC_NEGATION_NOT_CHECKED" in exceptions
     output = run.root / "validation" / "pcc"
